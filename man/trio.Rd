@@ -91,11 +91,11 @@
 
 \seealso{\code{\link{trio.check}}, \code{\link[haplo.stats]{haplo.em}}}
 
-\examples{
+\examples{\dontrun{
 data(trio.ped1)
 trio.tmp = trio.check(dat=trio.ped1)
 trio.bin = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3))
 trio.bin$bin[1:8,]
-}
+}}
 
 \section{Acknowledgments}{Support was provided by NIH grants R01 DK061662 and HL090577.}

@@ -57,34 +57,4 @@ Holger Schwender, \email{holger.schwender@udo.edu}
  \code{\link{findLDblocks}}, \code{\link{plot.getLD}}
 }
 
-\examples{\dontrun{
-# Andrea's data
-data(mat)
-
-# LD blocks can be identified either by
-out <- getLD(mat, addVarN=TRUE)
-out2 <- findLDblocks(out)
-out2
-
-# or directly by
-out3 <- findLDblocks(mat)
-
-
-# Plot Gabriel's categories with LD blocks for all SNPs.
-plot(out3)
-
-# Plot Gabriel's categories starting with SNP 24 and 
-# ending with SNP 60.
-plot(out3,  start=24, end=60)
-
-# Note that the SNPs ABI.354, ABI.355, and ABI.357
-# form a LD-block. But since ABI.354 is not part of
-# the plot, and thus the block is only shown partly
-# in the plot, the vertical block border is missing.
-
-
-# Now the same for D', but by using the SNP names
-plot(out3, "Dprime", start="ABI.355", end="CRC.45")
-}}
-
 \keyword{hplot}

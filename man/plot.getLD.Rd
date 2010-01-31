@@ -76,24 +76,4 @@ Holger Schwender, \email{holger.schwender@udo.edu}
  \code{\link{getLD}}, \code{\link{plot.LDblocks}}
 }
 
-\examples{\dontrun{
-# Andrea's data
-data(mat)
-
-out <- getLD(mat, addVarN=TRUE)
-
-# Plot r^2
-plot(out)
-
-# Plot r starting with SNP 24 and ending with SNP 60.
-plot(out, squared=FALSE, start=24, end=60)
-
-# Now the same for D'.
-plot(out, "Dprime", start=24, end=60)
-
-# Now Gabriel's categories starting with SNP ABI.355
-# and ending with SNP CRC.45.
-plot(out, "gabriel", start="ABI.355", end="CRC.45")
-}}
-
 \keyword{hplot}

@@ -118,7 +118,7 @@ returned.}
 
 \seealso{\code{\link{trio}}}
 
-\examples{
+\examples{\dontrun{
 data(trio.ped1)
 trio.tmp = trio.check(dat=trio.ped1)
 str(trio.tmp, max=1)
@@ -138,7 +138,7 @@ trio.tmp$trio.err[1:6, c(1,2,7), drop=FALSE]
 
 trio.rep = trio.check(dat=trio.gen.err, is.linkage=FALSE, replace=TRUE)
 trio.rep$trio[1:6,c(1,2,7)]
-}
+}}
 
 \section{Acknowledgments}{Support was provided by NIH grants R01 DK061662 and HL090577.}
 

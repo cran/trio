@@ -123,11 +123,11 @@
 \seealso{\code{\link{trio}}}
 
 
-\examples{
+\examples{\dontrun{
 data(simuBkMap)
 sim = trio.sim(freq=simuBkMap, interaction="1R and 5R", prev=.001, OR=2, n=20, rep=1)
 sim[[1]][1:6, 1:12]
-}
+}}
 
 
 \section{Acknowledgments}{Support was provided by NIH grants R01
