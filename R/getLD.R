@@ -274,7 +274,7 @@ findLDblocks <- function(x, alpha=0.1, ciLD=c(0.7, 0.98), cuRecomb=0.9, ratio=9,
 		x <- getLD(x, which="Dprime", iter=iter, snp.in.col=snp.in.col,
 			addVarN=TRUE)
 	calls <- getCalls4LD(x$Dprime, x$varDprime, alpha=alpha, ciLD=ciLD,
-		cuRecomb=0.9)
+		cuRecomb=cuRecomb)
 	n.snps <- length(x$rn)
 	combs <- allCombs(n.snps)
 	i <- b <- 1
@@ -363,20 +363,20 @@ plot.LDblocks <- function(x, y="gabriel", col=NULL, start=1, end=NA, xlab="", yl
 		rangeBlock <- rangeBlock[!nullBlock]
 		vecBlock <- x$vec.blocks[!nullBlock]
 		if(length(rangeBlock)>0){
-			if(rangeBlock[[1]][1]==1){
+			if(start==1 || rangeBlock[[1]][1]!=1)
+				showSeg1 <- TRUE
+			else{
 				tmpids <- which(names(x$blocks)==namesBlock[1])
 				showSeg1 <- ifelse(x$blocks[tmpids] == x$blocks[tmpids-1],
 					FALSE, TRUE)
 			}
-			else
-				showSeg1 <- TRUE
-			if(rangeBlock[[length(rangeBlock)]][2] == n.snps){
+			if(end==length(x$block) || rangeBlock[[length(rangeBlock)]][2]!=n.snps)
+				showSegLast <- TRUE
+			else{
 				tmpids <- which(names(x$blocks) == namesBlock[n.snps])
 				showSegLast <- ifelse(x$blocks[tmpids] == x$blocks[tmpids+1],
 					FALSE, TRUE)
 			}
-			else
-				showSegLast <- TRUE
 		}
 	}
 	else
