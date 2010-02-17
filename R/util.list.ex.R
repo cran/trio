@@ -11,6 +11,10 @@ function(nameList, varList, na.allow = T, na.replace = NULL){
   varMap = data.frame(item = seq.int(from=1, to=varLen, by=1), key = varNames)
 
   namePos = rep(0, length=exLen)
+  
+  tryCatchEnv = new.env(parent=baseenv())
+  assign("namePos", namePos, env=tryCatchEnv)
+  
   ## based on this map, find the right sequence of positions to extract values
   for ( i in 1:exLen){
     tryCatch({namePos[i] = varMap$item[varMap$key == nameList[i]]},
@@ -18,7 +22,10 @@ function(nameList, varList, na.allow = T, na.replace = NULL){
                if(!na.allow){
                  stop(paste("var with name=[", nameList[i], "] not found in the varList.", sep=""))
                }else{
-                 namePos[i] <<- 0
+				 a = get("namePos", env=tryCatchEnv)
+				 a[i]=0
+				 assign("namePos", a, env=tryCatchEnv)
+                 #namePos[i] <<- 0
                }
              })
 

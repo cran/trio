@@ -1,8 +1,7 @@
 bindHapBkGenoMaps <-
 function (hapBkMap=NULL, genoMap) 
 {
-  #print(str(genoMap))
-  if(is.null(hapBkMap)){
+	if(is.null(hapBkMap)){
 		# when all the marker are single marker
 		snpCtNum = nrow(genoMap$df)/3
 		genomeMarkerInfo = matrix(NA, ncol=5, nrow=snpCtNum)
@@ -11,15 +10,16 @@ function (hapBkMap=NULL, genoMap)
 		genomeMarkerInfo[,3]=1:snpCtNum
 		genomeMarkerInfo[,4]=1:snpCtNum
 		genomeMarkerInfo[,5]=rep(1, snpCtNum)
-                
-	genoMapDf = cbind(genoMap$df, hapLens = rep(1, nrow(genoMap$df)))
-	genoOnlyMap = dfToHapBkMap(genoMapDf, keyCol = NULL, chCol = genoMap$chCol, 
-			blockCol = genoMap$genomeSeqCol, expCol = genoMap$expCol, 
-			probCol = genoMap$probCol, hapLenCol = genoMap$genomeSeqCol, 
-			beginCol = NULL, endCol = NULL, snpBase = genoMap$snpBase, 
-			re.bf = T, re.javaGUI = T)
-                
+
 		genoIndex = which(genomeMarkerInfo[, 5] == 1)
+		
+		genoMapDf = cbind(genoMap$df, hapLens = rep(1, nrow(genoMap$df)))
+		genoOnlyMap = dfToHapBkMap(genoMapDf, keyCol = NULL, chCol = genoMap$chCol, 
+				blockCol = genoMap$genomeSeqCol, expCol = genoMap$expCol, 
+				probCol = genoMap$probCol, hapLenCol = genoMap$genomeSeqCol, 
+				beginCol = NULL, endCol = NULL, snpBase = genoMap$snpBase, 
+				re.bf = T, re.javaGUI = T)		
+		
 		re = list(hapBkOnlyMap=NULL, genoOnlyMap = genoOnlyMap, genomeMarkerInfo = genomeMarkerInfo, genoIndex = genoIndex)
 		return(re)
 		

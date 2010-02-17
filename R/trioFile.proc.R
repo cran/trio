@@ -119,7 +119,10 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 		
 		MedErr = matrix(NA, ncol=4, nrow=ncol(snpTrio))
 		colnames(MedErr)=c("y", "x", "trio", "SNP")
-		MedErr.ct = 0
+		tryCatchEnv = new.env(parent=baseenv())
+		assign("MedErr.ct", 0, env=tryCatchEnv)	
+		assign("MedErr", MedErr, env=tryCatchEnv)
+
 		trioCt = nrow(snp1digit)/3
 		
 		#print(str(snpTrio))
@@ -127,18 +130,21 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 			tryCatch({
 						tt = checkMendelianError(codedSNPTrio=snpTrio[,i], snpCoding=c(0,1,2,3))
 					}, error = function(e){
-						#print(paste("trioCt=", trioCt))
-						#print(paste("snpStartLeftIndex=", snpStartLeftIndex))
-						MedErr.ct <<- MedErr.ct +1
-						#print(paste("MedErr.ct=", MedErr.ct, " i=", i))
+						a = get("MedErr.ct", env=tryCatchEnv)
+						a = a+1
+						assign("MedErr.ct", a, env=tryCatchEnv)
 						tttx = ceiling(i/trioCt)
 						ttty = i%%trioCt
 						if(ttty==0) ttty = trioCt
-						MedErr[MedErr.ct,] <<- c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+1+snpStartLeftIndex-1,  ttty,    tttx)
+						b = get("MedErr", env=tryCatchEnv)
+						b[a,] = c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+1+snpStartLeftIndex-1,  ttty,    tttx)
+						assign("MedErr", b, env=tryCatchEnv)
 						#print( MedErr[MedErr.ct,,drop=F] )
 					})          
 		}
-		
+		MedErr.ct = get("MedErr.ct", env=tryCatchEnv)
+		MedErr = get("MedErr", env=tryCatchEnv)
+				
 		if(MedErr.ct==0) {
 			MedErr=NULL
 			#print("No Mendelian error.")

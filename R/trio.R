@@ -82,15 +82,15 @@ function(trio.dat, freq=NULL, blocks=NULL, logic=T, ...){
    
       if(!is.null(colnames(trio.datIn))){
         ## check unique
-        tmpColName = paste( rep( colnames(trio.datIn)[-c(1,2)], times=2), c(".D", ".R"), sep="")
+        tmpColName = paste( rep( colnames(trio.datIn)[-c(1,2)], each=2), c(".D", ".R"), sep="")
         if( length(unique(tmpColName)) != length(tmpColName)) {
           #print("Column names based on original name is not unique. Will use sequential indexes of SNPs as column names in the returned binary data.")
-          colnames(bina) = paste( rep(1:ncol(child), each=2), c("D", "R"), sep="")
+          colnames(bina) = paste( rep(1:ncol(child), each=2), c(".D", ".R"), sep="")
         }else{
           colnames(bina) = tmpColName
         }
       }else{
-        colnames(bina) = paste( rep(1:ncol(child), each=2), c("D", "R"), sep="")
+        colnames(bina) = paste( rep(1:ncol(child), each=2), c(".D", ".R"), sep="")
       }
       if(ifD){
         print("check code: trio.datIn, imputed")

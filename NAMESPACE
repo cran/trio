@@ -6,9 +6,14 @@ export(
 trio.sim,
 trio,
 trio.check,
-getLD,findLDblocks 
+getLD,findLDblocks,
+ped2geno, tdt, colTDT, tdt2way, colTDT2way
 )
 
 S3method(plot, getLD)
 S3method(print, LDblocks)
 S3method(plot, LDblocks)
+S3method(print, tdt)
+S3method(print, colTDT)
+S3method(print, tdtEpi)
+S3method(print, colTDTepi)

@@ -71,28 +71,40 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 		
 		MedErr = matrix(NA, ncol=4, nrow=ncol(snpTrio))
 		colnames(MedErr)=c("y", "x", "trio", "SNP")
-		MedErr.ct = 0
+		
+		tryCatchEnv = new.env(parent=baseenv())
+		assign("MedErr.ct", 0, env=tryCatchEnv)	
+		assign("MedErr", MedErr, env=tryCatchEnv)
+		
 		trioCt = nrow(snp1digit)/3
 		
 		## CHANGED: 2009: report the index in the trio1digit
 		tmpDigit = 1
 		#print(str(snpTrio))
+	
 		for ( i in 1:ncol(snpTrio)){
 			tryCatch({
 						tt = checkMendelianError(codedSNPTrio=snpTrio[,i], snpCoding=c(0,1,2,3))
 					}, error = function(e){
 						#print(paste("trioCt=", trioCt))
 						#print(paste("snpStartLeftIndex=", snpStartLeftIndex))
-						MedErr.ct <<- MedErr.ct +1
+					    a = get("MedErr.ct", env=tryCatchEnv)
+					    a = a+1
+					    assign("MedErr.ct", a, env=tryCatchEnv)
+					    #MedErr.ct <<- MedErr.ct +1
 						#print(paste("MedErr.ct=", MedErr.ct, " i=", i))
 						tttx = ceiling(i/trioCt)
 						ttty = i%%trioCt
 						if(ttty==0) ttty = trioCt
 						## CHANGED: 2009: report the index in the trio1digit
-						MedErr[MedErr.ct,] <<- c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+3,  ttty,    tttx)
+						b = get("MedErr", env=tryCatchEnv)
+						b[a,] = c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+3,  ttty,    tttx)
+						assign("MedErr", b, env=tryCatchEnv)
 						#print( MedErr[MedErr.ct,,drop=F] )
 					})          
 		}
+		MedErr.ct = get("MedErr.ct", env=tryCatchEnv)
+		MedErr = get("MedErr", env=tryCatchEnv)
 		
 		if(MedErr.ct==0) {
 			MedErr=NULL

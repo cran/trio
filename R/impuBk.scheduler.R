@@ -88,7 +88,10 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
   }
   imputBkRecord.ct = 0
   errorTrap = NULL
-  trapID = 0
+  
+  tryCatchEnv = new.env(parent=baseenv())
+  assign("trapID", 0, env=tryCatchEnv)
+  assign("errorTrap", errorTrap, env=tryCatchEnv)
 
   if(!is.null(get(toolname$freqMap)$hapBkOnlyMap)){
 	  all.hapIndex = get(toolname$freqMap)$hapIndex
@@ -190,13 +193,21 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
            },  error = function(e) {
                ##print(qTraceback())
                traceback()
-               trapID <<- trapID+1
+			   b = get("trapID", env=tryCatchEnv)
+			   b = b +1 
+			   assign("trapID", b, env=tryCatchEnv)
+               #trapID <<- trapID+1
+	
                ## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
-               errorInfo = c(trapID=trapID, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
-               errorTrap <<- rbind(errorTrap, errorInfo)
+			   #errorTrap <<- rbind(errorTrap, errorInfo)
+	           errorInfo = c(trapID=b, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
+			   a = get("errorTrap", env=tryCatchEnv)
+			   a = rbind(a, errorInfo)
+			   assign("errorTrap", a, env=tryCatchEnv)
+			   
                
                 if(!is.null(logF)){
-                  logl(logF, paste("\nError trap id=(", trapID, ") and details for errors:", sep=""))
+                  logl(logF, paste("\nError trap id=(", b, ") and details for errors:", sep=""))
                   logl(logF, paste("Error block index {idx=", unit, "}------------", sep=""))
                   logl(logF, paste("Error trap famId=(", famId, ") and details for errors:", sep=""))
                   
@@ -278,14 +289,21 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
            },  error = function(e) {
                ##print(qTraceback())
                traceback()
-               trapID <<- trapID+1
-               ## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
-               errorInfo = c(trapID=trapID, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
-               errorTrap <<- rbind(errorTrap, errorInfo)
-
+			   
+			   b = get("trapID", env=tryCatchEnv)
+			   b = b +1 
+			   assign("trapID", b, env=tryCatchEnv)
+			   #trapID <<- trapID+1
+			   
+	           ## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
+			   #errorTrap <<- rbind(errorTrap, errorInfo)
+			   errorInfo = c(trapID=b, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
+    		   a = get("errorTrap", env=tryCatchEnv)
+			   a = rbind(a, errorInfo)
+			   assign("errorTrap", a, env=tryCatchEnv)			   
      
                 if(!is.null(logF)){
-                  logl(logF, paste("\nError trap id=(", trapID, ") and details for errors:", sep=""))
+                  logl(logF, paste("\nError trap id=(", b, ") and details for errors:", sep=""))
                   logl(logF, paste("Error block index {idx=", unit, "}------------", sep=""))
                   logl(logF, paste("Error trap famId=(", famId, ") and details for errors:", sep=""))
                   
@@ -313,6 +331,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
       } ## if (is.element(unit, all.hapIndex)){
     } ## for( unit in idx){
 
+	errorTrap=get("errorTrap", env=tryCatchEnv)
     if(!is.null(errorTrap)){
       write.table(errorTrap, file=paste(logErr, "_errorTrap.csv", sep=""), sep=",",
                  append = F, row.names = F, col.names = TRUE)
