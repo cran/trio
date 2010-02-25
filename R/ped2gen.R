@@ -34,8 +34,18 @@ ped2geno <- function(ped, snpnames=NULL, coded=c("12", "AB", "ATCG", "1234"),
 		mat.allele[,i] <- colSums(mat.snp==allele[i], na.rm=TRUE)
 	mat.count <- mat.allele[seq(1, 2*n.snp, 2),, drop=FALSE] + 
 		mat.allele[seq(2, 2*n.snp, 2),, drop=FALSE]
-	if(any(rowSums(mat.count != 0) != 2))
-		stop("Each SNP must show exactly two alleles.")
+	rsmc0 <- rowSums(mat.count != 0)
+	if(any(rsmc0 > 2))
+		stop("Each SNP must show at most two alleles.")
+	if(any(rsmc0 < 2)){
+		ids.rs2 <- rsmc0 == 2
+		mat.count <- mat.count[ids.rs2,]
+		seq.in <- rep(ids.rs2, e=2)
+		mat.allele <- mat.allele[seq.in,]
+		mat.snp <- mat.snp[,seq.in]
+		n.snp <- ncol(mat.snp) / 2
+		warning(sum(!ids.rs2), " of the SNPs are monomorph. These SNPs are removed.")
+	}
 	mat.recoded <- matrix(NA, nrow(mat.snp), ncol(mat.snp))
 	if(length(allele) == 2){
 		ids.major <- rep(max.col(mat.count), e=2)

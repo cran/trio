@@ -205,9 +205,9 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive")){
 	upper <- exp(coef + qnorm(0.975) * se)
 	pval <- 1 - pchisq(stat * stat, 1)
 	if(is.null(colnames(mat.snp)))
-		names(coef) <- paste("SNP", 1:ncol(mat.snp), sep="")
+		names(coef) <- names(pval) <- names(stat) <- paste("SNP", 1:ncol(mat.snp), sep="")
 	else
-		names(coef) <- colnames(mat.snp)
+		names(coef) <- names(pval) <- names(stat) <- colnames(mat.snp)
 	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
 		lowerOR=lower, upperOR=upper, ia=FALSE, type=type, add=FALSE) 
 	class(out) <- "colTDT"
@@ -289,7 +289,7 @@ colTDT2way <- function(mat.snp, epistatic=TRUE,
 			"misleading, as the small p-values might be caused by non-biological artefacts\n",
 			"(e.g., sparseness of the data).", call.=FALSE)
 	rn <- if(is.null(colnames(mat.snp))) paste("SNP", 1:n.snp, sep="") else colnames(mat.snp)
-	names(coef) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
+	names(coef) <- names(stat) <- names(pval) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
 	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
 		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add) 
 	class(out) <- "colTDT"
@@ -396,7 +396,7 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, warnError=TRUE){
 			"(e.g., sparseness of the data).", call.=FALSE)
 	if(is.null(rn))
 		rn <- paste("SNP", 1:n.snp, sep="")
-	names(ll.full) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
+	names(ll.full) <- names(stat) <- names(pval) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
 	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval)
 	class(out) <- "colTDTepi"
 	out
@@ -437,5 +437,171 @@ print.colTDTepi <- function(x, top=5, digits=4, ...){
 	
 
 
+colTDTinter2way <- function(mat.snp1, mat.snp2, epistatic=TRUE,
+		model=c("additive", "dominant", "recessive"), add=FALSE,
+		warnError=TRUE){
+	require(survival)
+	if(!is.matrix(mat.snp1))
+		stop("mat.snp1 has to be a matrix.")
+	if(!is.matrix(mat.snp2))
+		stop("mat.snp2 has to be a matrix.")
+	n.obs <- nrow(mat.snp1)
+	if(n.obs != nrow(mat.snp2))
+		stop("mat.snp1 must have the same number of rows as mat.snp2.")
+	if(n.obs %% 3 != 0)
+		stop("The matrices do not seem to contain trio data, as its number of rows is\n",
+			"not dividable by 3.")
+	if(!is.null(rownames(mat.snp1)) && !is.null(rownames(mat.snp2)) && 
+		any(rownames(mat.snp1) != rownames(mat.snp2)))
+		stop("mat.snp1 must have the same row names as mat.snp2.")
+	if(any(!mat.snp1 %in% c(0, 1, 2, NA)))
+		stop("The values in mat.snp1 must be 0, 1, and 2.")
+	if(any(!mat.snp2 %in% c(0, 1, 2, NA)))
+		stop("The values in mat.snp2 must be 0, 1, and 2.")
+	type <- match.arg(model)
+	mat.code <- matrix(c(0,0,0,0, 0,0,1,1, 0,0,1,1, 1,0,0,1, 1,0,0,1, 1,1,1,1, 
+		1,1,1,1, 2,2,2,2, 1,1,2,2, 1,1,2,2, 2,1,1,2, 2,1,1,2, 0,1,1,2, 
+		1,0,1,2, 2,0,1,1, NA,NA,NA,NA), nrow=4)
+	cn <- c("000", "010", "100", "011", "101", "021", "201", "222", "121", "211",
+		"122", "212", "110", "111", "112", "NANANA")
+	colnames(mat.code) <- cn
+	n.snp1 <- ncol(mat.snp1)
+	mat.pseudo1 <- matrix(NA, 4/3 * n.obs, n.snp1)
+	for(i in 1:n.snp1){
+		mat.trio <- matrix(mat.snp1[,i], ncol=3, byrow=TRUE)
+		mat.trio[rowSums(is.na(mat.trio)) > 0, ] <- NA
+		code <- paste(mat.trio[,1], mat.trio[,2], mat.trio[,3], sep="")
+		if(any(!code %in% cn)){
+			tmp.ids <- !code %in% cn
+			warning(sum(tmp.ids), " trios in mat.snp1 show Mendelian errors. These are removed.",
+				call.=FALSE)
+			code[tmp.ids] <- "NANANA"
+		}
+		mat.pseudo1[,i] <- as.vector(mat.code[,code])
+	}
+	n.snp2 <- ncol(mat.snp2)
+	mat.pseudo2 <- matrix(NA, 4/3 * n.obs, n.snp2)
+	for(i in 1:n.snp2){
+		mat.trio <- matrix(mat.snp2[,i], ncol=3, byrow=TRUE)
+		mat.trio[rowSums(is.na(mat.trio)) > 0, ] <- NA
+		code <- paste(mat.trio[,1], mat.trio[,2], mat.trio[,3], sep="")
+		if(any(!code %in% cn)){
+			tmp.ids <- !code %in% cn
+			warning(sum(tmp.ids), " trios show Mendelian errors. These are removed.",
+				call.=FALSE)
+			code[tmp.ids] <- "NANANA"
+		}
+		mat.pseudo2[,i] <- as.vector(mat.code[,code])
+	}
+	n.trio <- length(code)
+	if(epistatic)
+		return(colTDTinterEpi(mat.pseudo1, mat.pseudo2, n.trio, colnames(mat.snp1), colnames(mat.snp2),
+			warnError=warnError))
+	if(type=="dominant"){
+		mat.pseudo1 <- (mat.pseudo1 >= 1) * 1
+		mat.pseudo2 <- (mat.pseudo2 >= 1) * 1
+	}
+	if(type=="recessive"){
+		mat.pseudo1 <- (mat.pseudo1 > 1) * 1
+		mat.pseudo2 <- (mat.pseudo2 > 1) * 1
+	}
+	mat.ids <- cbind(rep.int(rep(1:4, e=4), n.trio), rep.int(1:4, 4*n.trio))
+	mat.ids <- mat.ids + 4 * rep(0:(n.trio-1), e=16)
+	y <- rep.int(c(1, rep.int(0, 15)), n.trio)
+	strat <- rep(1:n.trio, e=16)
+	coef <- se <- numeric(n.snp1 * n.snp2)
+	if(warnError){
+		wa <- options()$warn
+		options(warn=2)
+	}
+	for(i in 1:n.snp1){
+		x1 <- mat.pseudo1[mat.ids[,1], i]
+		for(j in 1:n.snp2){ 
+			x2 <- mat.pseudo2[mat.ids[,2], j]
+			IA <- x1 * x2
+			if(add)
+				c.out <- try(clogit(y ~ IA + x1 + x2 + strata(strat)), silent=TRUE)
+			else
+				c.out <- try(clogit(y ~ IA + strata(strat)), silent=TRUE)
+			k <- (i-1) * n.snp2 + j
+			coef[k] <- if(is(c.out, "try-error")) NA else c.out$coefficients[1]
+			se[k] <- if(is(c.out, "try-error")) NA else sqrt(diag(c.out$var))[1]
+		}
+	}
+	if(warnError)
+		options(warn=wa)
+	if(any(is.na(coef)))
+		warning("The fitting of some of the models has failed. A possible reason\n",
+			"is that the two SNPs might be in (strong) LD. For these interactions,\n",
+			"all statistics are therefore set to NA.", call.=FALSE)
+	stat <- coef / se
+	lower <- exp(coef - qnorm(0.975) * se)
+	upper <- exp(coef + qnorm(0.975) * se)
+	pval <- pchisq(stat * stat, 1, lower.tail=FALSE)
+	if(any(pval <= .Machine$double.eps, na.rm=TRUE))
+		warning("Some of the p-values are very small (< 2.2e-16). These results might be\n",
+			"misleading, as the small p-values might be caused by non-biological artefacts\n",
+			"(e.g., sparseness of the data).", call.=FALSE)
+	rn1 <- if(is.null(colnames(mat.snp1))) paste("SNP", 1:n.snp1, sep="") else colnames(mat.snp1)
+	rn2 <- if(is.null(colnames(mat.snp2))) paste("SNP", n.snp1 + (1:n.snp2), sep="") else colnames(mat.snp2)
+	names(coef) <- names(stat) <- names(pval) <- paste(rep(rn1, e=n.snp2), rep(rn2, n.snp1), sep=" : ")
+	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
+		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add) 
+	class(out) <- "colTDT"
+	out	
+
+}
 	
+colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, warnError=TRUE){
+	mat.x1 <- mat.pseudo1 - 1 
+	mat.z1 <- (mat.x1 == 0) - 0.5
+	mat.x2 <- mat.pseudo2 - 1
+	mat.z2 <- (mat.x2 == 0) - 0.5
+	mat.ids <- cbind(rep.int(rep(1:4, e=4), n.trio), rep.int(1:4, 4*n.trio))
+	mat.ids <- mat.ids + 4 * rep(0:(n.trio-1), e=16)
+	y <- rep.int(c(1, rep.int(0, 15)), n.trio)
+	strat <- rep(1:n.trio, e=16)
+	n.snp1 <- ncol(mat.pseudo1)
+	n.snp2 <- ncol(mat.pseudo2)
+	ll.main <- ll.full <- numeric(n.snp1 * n.snp2)
+	if(warnError){
+		wa <- options()$warn
+		options(warn=2)
+	}
+	for(i in 1:n.snp1){
+		x1 <- mat.x1[mat.ids[,1], i]
+		z1 <- mat.z1[mat.ids[,1], i]
+		for(j in 1:n.snp2){ 
+			x2 <- mat.x2[mat.ids[,2], j]
+			z2 <- mat.z2[mat.ids[,2], j]
+			woIA <- try(clogit(y ~ x1 + z1 + x2 + z2 + strata(strat)), silent=TRUE)
+			full <- try(clogit(y ~ x1 + z1 + x2 + z2 + x1*x2 + x1*z2 + z1*x2 + 
+				z1*z2 + strata(strat)), silent=TRUE)
+			k <- (i-1) * n.snp2 + j
+			ll.main[k] <- if(is(woIA, "try-error")) NA else woIA$loglik[2]
+			ll.full[k] <- if(is(full, "try-error")) NA else full$loglik[2]
+		}
+	}
+	if(warnError)
+		options(warn=wa)
+	if(any(is.na(ll.full)) | any(is.na(ll.main)))
+		warning("The fitting of some of the models has failed. A possible reason\n",
+			"is that the two respective SNPs might be in (strong) LD.\n",
+			"The corresponding test statistic and the p-value are thus set to NA.",
+			call.=FALSE)
+	stat <- -2 * (ll.main - ll.full)
+	pval <- pchisq(stat, 4, lower.tail=FALSE)
+	if(any(pval <= .Machine$double.eps, na.rm=TRUE))
+		warning("Some of the p-values are very small (< 2.2e-16). These results might be\n",
+			"misleading, as the small p-values might be caused by non-biological artefacts\n",
+			"(e.g., sparseness of the data).", call.=FALSE)
+	if(is.null(rn1))
+		rn1 <- paste("SNP", 1:n.snp1, sep="")
+	if(is.null(rn2))
+		rn2 <- paste("SNP", n.snp1 + (1:n.snp2), sep="")
+	names(ll.full) <- names(stat) <- names(pval) <- paste(rep(rn1, e=n.snp2), rep(rn2, n.snp1), sep=" : ")
+	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval)
+	class(out) <- "colTDTepi"
+	out
+}
 	

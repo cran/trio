@@ -3,12 +3,16 @@
 \alias{colTDT2way}
 \alias{print.tdtEpi}
 \alias{print.colTDTepi}
+\alias{colTDTinter2way}
 
 \title{
 Genotypic TDT for Two-Way Interactions
 }
 \description{
 Computes the genotypic TDT for the interactions of two SNPs or of each pair of columns of a matrix representing SNPs.
+Alternatively, \code{colTDTinter2way} can be used to compute all possible interactions between each SNP from one matrix
+with each SNP from another matrix, where the two matrices contain SNPs, e.g., from two different genes.
+
 This test makes use of the 16 possible genotypes that can be obtained from combining the parents' genotypes of the
 two considered SNPs. Thus, for each family, genotypes for one case (i.e. the offspring) and 15 pseudo-controls are used.
 }
@@ -18,6 +22,9 @@ tdt2way(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessi
 	 add = FALSE, warnError = TRUE)
 	 
 colTDT2way(mat.snp, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
+   add = FALSE, warnError = TRUE)
+   
+colTDTinter2way(mat.snp1, mat.snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
    add = FALSE, warnError = TRUE)
 }
 
@@ -30,8 +37,8 @@ colTDT2way(mat.snp, epistatic = TRUE, model = c("additive", "dominant", "recessi
     sets such as \code{trio.gen1} (see \code{data(trio.gen1)}), and can be generated from a ped-file by, e.g., employing 
     \code{\link{ped2geno}}.
 }
-  \item{mat.snp}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have the same structure
-    as \code{snp}, and can, e.g., be generated from a ped-file by employing \code{\link{ped2geno}}.
+  \item{mat.snp, mat.snp1, mat.snp2}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have
+    the same structure as \code{snp}, and can, e.g., be generated from a ped-file by employing \code{\link{ped2geno}}.
 }
   \item{epistatic}{logical value specifying whether a conditional logistic regression version of the test proposed by Cordell (2002)
     is used to test for epistatistical interactions. If \code{FALSE}, the respective two vectors containing the case and the 15 pseudo-controls for
