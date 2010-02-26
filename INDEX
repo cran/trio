@@ -1,0 +1,25 @@
+Functions:
+=========
+
+trio                    Generate trio data format suitable for trio logic regression.
+trio.check              Check case-parent trio data for Mendelian errors.
+trio.simu		Simulate case-parent trios with population disease risk dependent on SNP-SNP interaction
+
+findLDblocks            Identifying LD blocks
+getLD                   Computation of LD Measures
+plot.LDblocks           Plotting a LDblock Object
+plot.getLD              Plotting a getLD Object
+
+
+Datasets:
+========
+
+freq.hap		Haplotype frequencies.
+simuBkMap		Haplotype frequencies for simulation.
+step3way		A used internally for simulation, containing some indexes and sampling frequencies. 
+trio.gen1		Genotype data for trios.
+trio.gen2		Genotype data for trios with missing genotypes.
+trio.gen.err		Genotype data for trios with Mendelian errors.
+trio.ped1		Genotype data for pedigrees in the format of a linkage file.
+trio.ped2		Genotype data for pedigrees in the format of a linkage file, with missing genotypes.
+trio.ped.err		Genotype data for pedigrees in the format of a linkage file, with Mendelian errors.

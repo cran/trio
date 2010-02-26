@@ -1,0 +1,14 @@
+.onLoad <- function(libname, pkgname) {
+   require("methods")
+}
+
+export(
+trio.sim,
+trio,
+trio.check,
+getLD,findLDblocks 
+)
+
+S3method(plot, getLD)
+S3method(print, LDblocks)
+S3method(plot, LDblocks)
