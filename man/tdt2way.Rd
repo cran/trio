@@ -11,7 +11,8 @@ Genotypic TDT for Two-Way Interactions
 \description{
 Computes the genotypic TDT for the interactions of two SNPs or of each pair of columns of a matrix representing SNPs.
 Alternatively, \code{colTDTinter2way} can be used to compute all possible interactions between each SNP from one matrix
-with each SNP from another matrix, where the two matrices contain SNPs, e.g., from two different genes.
+\code{mat.snp1} with another SNP \code{snp} or each SNP from another matrix \code{mat.snp2}, 
+where the two matrices contain SNPs, e.g., from two different genes.
 
 This test makes use of the 16 possible genotypes that can be obtained from combining the parents' genotypes of the
 two considered SNPs. Thus, for each family, genotypes for one case (i.e. the offspring) and 15 pseudo-controls are used.
@@ -24,8 +25,8 @@ tdt2way(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessi
 colTDT2way(mat.snp, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
    add = FALSE, warnError = TRUE)
    
-colTDTinter2way(mat.snp1, mat.snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
-   add = FALSE, warnError = TRUE)
+colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE, 
+	 model = c("additive", "dominant", "recessive"), add = FALSE, warnError = TRUE)
 }
 
 \arguments{
@@ -37,9 +38,17 @@ colTDTinter2way(mat.snp1, mat.snp2, epistatic = TRUE, model = c("additive", "dom
     sets such as \code{trio.gen1} (see \code{data(trio.gen1)}), and can be generated from a ped-file by, e.g., employing 
     \code{\link{ped2geno}}.
 }
-  \item{mat.snp, mat.snp1, mat.snp2}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have
+  \item{mat.snp, mat.snp1}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have
     the same structure as \code{snp}, and can, e.g., be generated from a ped-file by employing \code{\link{ped2geno}}.
 }
+  \item{mat.snp2}{a numeric matrix similar to \code{mat.snp1} (or \code{mat.snp}). The interaction between each SNP in this
+    matrix and in each SNP in \code{mat.snp1} will be tested. If the interaction between each SNP in \code{mat.snp1} and a 
+    single SNP should be tested, \code{snp} needs to be specified instead of \code{mat.snp2}.
+}
+  \item{snp}{a numeric vector representing a SNP. This vector must have the same format as each columns in \code{mat.snp1}.
+    If the interaction between each SNP in \code{mat.snp1} and a single variable should be tested, \code{snp} needs to
+    be specified instead of \code{mat.snp2}.
+} 
   \item{epistatic}{logical value specifying whether a conditional logistic regression version of the test proposed by Cordell (2002)
     is used to test for epistatistical interactions. If \code{FALSE}, the respective two vectors containing the case and the 15 pseudo-controls for
     each trio are simply multiplied (considering \code{model}).

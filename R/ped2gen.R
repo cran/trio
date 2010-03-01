@@ -44,6 +44,7 @@ ped2geno <- function(ped, snpnames=NULL, coded=c("12", "AB", "ATCG", "1234"),
 		mat.allele <- mat.allele[seq.in,]
 		mat.snp <- mat.snp[,seq.in]
 		n.snp <- ncol(mat.snp) / 2
+		snpnames <- snpnames[ids.rs2]
 		warning(sum(!ids.rs2), " of the SNPs are monomorph. These SNPs are removed.")
 	}
 	mat.recoded <- matrix(NA, nrow(mat.snp), ncol(mat.snp))

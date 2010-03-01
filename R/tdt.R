@@ -306,15 +306,15 @@ print.colTDT <- function(x, top=5, digits=4, ...){
 			"\n\n")
 	else
 		cat("        Genotypic TDT Based on 3 Pseudo Controls","\n\n")
+	cat("Model Type: ", switch(x$type, "additive"="Additive", "dominant"="Dominant",
+		"recessive"="Recessive"), "\n", 
+		if(x$add) "Model also contains the two respective individual SNPs.\n",
+		"\n", sep="")
 	if(length(x$coef) > top){
 		ord <- order(x$pval)[1:top]
 		out <- out[ord,]
 		cat("Top", top, ifelse(x$ia, "SNP Interactions:\n", "SNPs:\n"))
 	}
-	cat("Model Type: ", switch(x$type, "additive"="Additive", "dominant"="Dominant",
-		"recessive"="Recessive"), "\n", 
-		if(x$add) "Model also contains the two respective individual SNPs.\n",
-		"\n", sep="")
 	print(format(out, digits=digits))
 }
 
@@ -437,10 +437,19 @@ print.colTDTepi <- function(x, top=5, digits=4, ...){
 	
 
 
-colTDTinter2way <- function(mat.snp1, mat.snp2, epistatic=TRUE,
+colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE,
 		model=c("additive", "dominant", "recessive"), add=FALSE,
 		warnError=TRUE){
 	require(survival)
+	if(missing(mat.snp2)){
+		if(is.null(snp))
+			stop("Either mat.snp2 or snp has to be specified.")
+		mat.snp2 <- cbind(snp)
+	}
+	else{
+		if(!is.null(snp))
+			stop("If mat.snp2 is specified, snp cannot be specified.")
+	}
 	if(!is.matrix(mat.snp1))
 		stop("mat.snp1 has to be a matrix.")
 	if(!is.matrix(mat.snp2))
@@ -532,8 +541,9 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, epistatic=TRUE,
 		options(warn=wa)
 	if(any(is.na(coef)))
 		warning("The fitting of some of the models has failed. A possible reason\n",
-			"is that the two SNPs might be in (strong) LD. For these interactions,\n",
-			"all statistics are therefore set to NA.", call.=FALSE)
+			"is that the two corresponding SNPs might be in (strong) LD.\n",
+			"For these interactions, all statistics are therefore set to NA.", 
+			call.=FALSE)
 	stat <- coef / se
 	lower <- exp(coef - qnorm(0.975) * se)
 	upper <- exp(coef + qnorm(0.975) * se)
@@ -543,8 +553,12 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, epistatic=TRUE,
 			"misleading, as the small p-values might be caused by non-biological artefacts\n",
 			"(e.g., sparseness of the data).", call.=FALSE)
 	rn1 <- if(is.null(colnames(mat.snp1))) paste("SNP", 1:n.snp1, sep="") else colnames(mat.snp1)
-	rn2 <- if(is.null(colnames(mat.snp2))) paste("SNP", n.snp1 + (1:n.snp2), sep="") else colnames(mat.snp2)
-	names(coef) <- names(stat) <- names(pval) <- paste(rep(rn1, e=n.snp2), rep(rn2, n.snp1), sep=" : ")
+	if(is.null(snp)){
+		rn2 <- if(is.null(colnames(mat.snp2))) paste("SNP", n.snp1 + (1:n.snp2), sep="") else colnames(mat.snp2)
+		names(coef) <- names(stat) <- names(pval) <- paste(rep(rn1, e=n.snp2), rep(rn2, n.snp1), sep=" : ")
+	}
+	else
+		names(coef) <- names(stat) <- names(pval) <- rn1
 	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
 		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add) 
 	class(out) <- "colTDT"
@@ -597,9 +611,13 @@ colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, warnError
 			"(e.g., sparseness of the data).", call.=FALSE)
 	if(is.null(rn1))
 		rn1 <- paste("SNP", 1:n.snp1, sep="")
-	if(is.null(rn2))
-		rn2 <- paste("SNP", n.snp1 + (1:n.snp2), sep="")
-	names(ll.full) <- names(stat) <- names(pval) <- paste(rep(rn1, e=n.snp2), rep(rn2, n.snp1), sep=" : ")
+	if(n.snp2 > 1){
+		if(is.null(rn2))
+			rn2 <- paste("SNP", n.snp1 + (1:n.snp2), sep="")
+		names(ll.full) <- names(stat) <- names(pval) <- paste(rep(rn1, e=n.snp2), rep(rn2, n.snp1), sep=" : ")
+	}
+	else
+		names(ll.full) <- names(stat) <- names(pval) <- rn1
 	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval)
 	class(out) <- "colTDTepi"
 	out
