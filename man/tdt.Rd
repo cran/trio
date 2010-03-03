@@ -13,7 +13,7 @@ Computes the genotic TDT for a SNP or for each column of a matrix representing a
 
 \usage{
 tdt(snp, model = c("additive", "dominant", "recessive"))
-colTDT(mat.snp, model = c("additive", "dominant", "recessive"))
+colTDT(mat.snp, model = c("additive", "dominant", "recessive"), warnError = TRUE)
 
 \method{print}{tdt}(x, digits = 4, ...)
 \method{print}{colTDT}(x, top = 5, digits = 4, ...)
@@ -32,6 +32,11 @@ colTDT(mat.snp, model = c("additive", "dominant", "recessive"))
 }
   \item{model}{type of model that should be fitted. Abbreviations are allowed. Thus, e.g., \code{model = "dom"} will
     fit a dominant model, and \code{model = "r"} an recessive model. 
+}
+
+  \item{warnError}{logical indicating whether the statistics for the gTDT should be returned as \code{NA} if the fitting of the
+    conditional logistic regression model fails. This might in particular happen when the considered SNP is almost monomorphic,
+    i.e. if the minor allele frequency of this SNP is very low.
 }
 
   \item{x}{an object of class \code{tdt} or \code{colTDT}, i.e. the output of the function \code{tdt} (or \code{tdt2way})

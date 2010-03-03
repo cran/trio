@@ -162,7 +162,8 @@ tdt2way <- function(snp1, snp2, epistatic=TRUE,
 }
 	
 
-colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive")){
+colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), 
+		warnError=TRUE){
 	require(survival)
 	if(!is.matrix(mat.snp))
 		stop("mat.snp has to be a matrix.")
@@ -179,6 +180,8 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive")){
 		"122", "212", "110", "111", "112")
 	colnames(mat.code) <- cn
 	coef <- se <- numeric(ncol(mat.snp))
+	if(warnError)
+		wa <- options()$warn
 	for(i in 1:ncol(mat.snp)){
 		mat.trio <- matrix(mat.snp[,i], ncol=3, byrow=TRUE)
 		mat.trio <- mat.trio[rowSums(is.na(mat.trio))==0,]
@@ -196,10 +199,22 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive")){
 			x <- (x > 1) * 1
 		y <- rep.int(c(1,0,0,0), length(code))
 		strat <- rep(1:length(code), e=4)
-		c.out <- clogit(y ~ x + strata(strat))
-		coef[i] <- c.out$coefficients
-		se[i] <- sqrt(diag(c.out$var))
+		if(warnError)
+			options(warn=2)
+		c.out <- try(clogit(y ~ x + strata(strat)), silent=TRUE)
+		if(is(c.out, "try-error"))
+			coef[i] <- se[i] <- NA
+		else{
+			coef[i] <- c.out$coefficients
+			se[i] <- sqrt(diag(c.out$var))
+		}
+		if(warnError)
+			options(warn=wa)
 	}
+	if(any(is.na(coef)))
+		warning("The fitting of some of the models has failed. A possible reason\n",
+			"is that the corresponding SNPs have very low minor allele frequencies.\n",
+			"For these SNPs, all statistics are thus set to NA.", call.=FALSE)
 	stat <- coef / se
 	lower <- exp(coef - qnorm(0.975) * se)
 	upper <- exp(coef + qnorm(0.975) * se)
