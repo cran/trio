@@ -22,8 +22,8 @@ two considered SNPs. Thus, for each family, genotypes for one case (i.e. the off
 tdt2way(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
 	 add = FALSE, warnError = TRUE)
 	 
-colTDT2way(mat.snp, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
-   add = FALSE, warnError = TRUE)
+colTDT2way(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
+   model = c("additive", "dominant", "recessive"), add = FALSE, warnError = TRUE)
    
 colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE, 
 	 model = c("additive", "dominant", "recessive"), add = FALSE, warnError = TRUE)
@@ -53,6 +53,12 @@ colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE,
     is used to test for epistatistical interactions. If \code{FALSE}, the respective two vectors containing the case and the 15 pseudo-controls for
     each trio are simply multiplied (considering \code{model}).
 }
+  \item{genes}{a character vector containing the names of the genes to which the SNPs belong. If specified, only the two-way interactions
+    between SNPs from different genes are tested. If \code{NULL}, all two-way interactions between all possible pairs of SNPs are tested.
+}
+  \item{maf}{logical indicating whether the minor allele frequency (computed by considering the genotypes of only the parents) should
+    be added to the output.
+}
   \item{model}{type of model that should be considered. Abbreviations are allowed. Thus, e.g., \code{model = "dom"} will
     consider a dominant model for each of the respective two SNPs, and \code{model = "r"} an recessive model. Ignored if 
     \code{epistatic = TRUE}. 
@@ -67,9 +73,11 @@ colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE,
 }
 \value{
 Depending on \code{epistatic}, the output contains statistics and p-values either of a likelihood ratio test (\code{epistatic = TRUE})
-or the Wald statistic for the conditional logistic regression model (\code{epistatic = FALSE}).
-
+or the Wald statistic for the conditional logistic regression model (\code{epistatic = FALSE}). If \code{maf = TRUE}, a vector \code{maf}
+containing the minor allele frequencies of each SNP and a matrix \code{mat.maf} with two columns containing the SNP-wise minor allele
+frequencies for each tested pair of SNPs are added to the output.
 }
+
 \references{
 Cordell, H. J. (2002). Epistasis: What it Means, what it Doesn't mean, and Statistical Methods to Detect it in Humans.
 Human Molecular Genetics, 11, 2463-2468.

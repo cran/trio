@@ -229,7 +229,7 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"),
 	out
 }
 
-colTDT2way <- function(mat.snp, epistatic=TRUE,
+colTDT2way <- function(mat.snp, epistatic=TRUE, genes=NULL, maf=FALSE,
 		model=c("additive", "dominant", "recessive"), add=FALSE,
 		warnError=TRUE){
 	require(survival)
@@ -261,9 +261,17 @@ colTDT2way <- function(mat.snp, epistatic=TRUE,
 		}
 		mat.pseudo[,i] <- as.vector(mat.code[,code])
 	}
+	if(maf){
+		mat.snp <- mat.snp[-seq(3, nrow(mat.snp), 3), ]
+		mat.snp <- mat.snp[!duplicated(rownames(mat.snp)), ]
+		valMAF <- colSums(mat.snp, na.rm=TRUE) / (2 * colSums(!is.na(mat.snp)))
+	}
+	else
+		valMAF <- NULL
 	n.trio <- length(code)
 	if(epistatic)
-		return(colTDTepistatic(mat.pseudo, n.trio, colnames(mat.snp), warnError=warnError))
+		return(colTDTepistatic(mat.pseudo, n.trio, colnames(mat.snp), genes=genes, valMAF=valMAF,
+			warnError=warnError))
 	if(type=="dominant")
 		mat.pseudo <- (mat.pseudo >= 1) * 1
 	if(type=="recessive")
@@ -272,8 +280,19 @@ colTDT2way <- function(mat.snp, epistatic=TRUE,
 	mat.ids <- mat.ids + 4 * rep(0:(n.trio-1), e=16)
 	y <- rep.int(c(1, rep.int(0, 15)), n.trio)
 	strat <- rep(1:n.trio, e=16)
-	coef <- se <- numeric(n.snp * (n.snp - 1) / 2)
-	combs <- allCombs(n.snp)
+	if(is.null(genes)){
+		coef <- se <- numeric(n.snp * (n.snp - 1) / 2)
+		combs <- allCombs(n.snp)
+	}
+	else{
+		if(!is.character(genes))
+			stop("genes must be a vector of character strings.")
+		if(length(genes) != n.snp)
+			stop("The length of genes must be equal to the number of columns of mat.snp.")
+		ids.genes <- as.numeric(as.factor(genes))
+		combs <- allBetweenCombs(ids.genes)
+		coef <- se <- numeric(nrow(combs))
+	}
 	if(warnError){
 		wa <- options()$warn
 		options(warn=2)
@@ -305,8 +324,18 @@ colTDT2way <- function(mat.snp, epistatic=TRUE,
 			"(e.g., sparseness of the data).", call.=FALSE)
 	rn <- if(is.null(colnames(mat.snp))) paste("SNP", 1:n.snp, sep="") else colnames(mat.snp)
 	names(coef) <- names(stat) <- names(pval) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
+	if(!is.null(genes))
+		genes <- paste(genes[combs[,1]], genes[combs[,2]], sep=" : ")
+	if(maf){
+		mat.maf <- cbind(round(valMAF, 4)[combs[,1]], round(valMAF, 4)[combs[,2]])
+		rownames(mat.maf) <- names(coef) 
+		colnames(mat.maf) <- c("First SNP", "Second SNP")
+	}
+	else
+		mat.maf <- NULL
 	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
-		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add) 
+		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add, genes=genes, maf=valMAF,
+		matMAF=mat.maf) 
 	class(out) <- "colTDT"
 	out	
 
@@ -371,7 +400,7 @@ tdtEpistatic <- function(x1, x2, n.trio, warnError=TRUE){
 	out
 }
 
-colTDTepistatic <- function(mat.pseudo, n.trio, rn, warnError=TRUE){
+colTDTepistatic <- function(mat.pseudo, n.trio, rn, genes=NULL, valMAF=NULL, warnError=TRUE){
 	x <- mat.pseudo - 1 
 	z <- (x == 0) - 0.5
 	mat.ids <- cbind(rep.int(rep(1:4, e=4), n.trio), rep.int(1:4, 4*n.trio))
@@ -379,8 +408,19 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, warnError=TRUE){
 	y <- rep.int(c(1, rep.int(0, 15)), n.trio)
 	strat <- rep(1:n.trio, e=16)
 	n.snp <- ncol(mat.pseudo)
-	ll.main <- ll.full <- numeric(n.snp * (n.snp - 1) / 2)
-	combs <- allCombs(n.snp)
+	if(is.null(genes)){
+		ll.main <- ll.full <- numeric(n.snp * (n.snp - 1) / 2)
+		combs <- allCombs(n.snp)
+	}
+	else{
+		if(!is.character(genes))
+			stop("genes must be a vector of character strings.")
+		if(length(genes) != n.snp)
+			stop("The length of genes must be equal to the number of columns of mat.snp.")
+		ids.genes <- as.numeric(as.factor(genes))
+		combs <- allBetweenCombs(ids.genes)
+		ll.main <- ll.full <- numeric(nrow(combs))
+	}
 	if(warnError){
 		wa <- options()$warn
 		options(warn=2)
@@ -412,7 +452,16 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, warnError=TRUE){
 	if(is.null(rn))
 		rn <- paste("SNP", 1:n.snp, sep="")
 	names(ll.full) <- names(stat) <- names(pval) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
-	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval)
+	if(!is.null(genes))
+		genes <- paste(genes[combs[,1]], genes[combs[,2]], sep=" : ")
+	if(!is.null(valMAF)){
+		mat.maf <- cbind(round(valMAF, 4)[combs[,1]], round(valMAF, 4)[combs[,2]])
+		rownames(mat.maf) <- names(ll.full)
+		colnames(mat.maf) <- c("First MAF", "Second MAF") 
+	}
+	else
+		mat.maf <- NULL
+	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval, maf=valMAF, matMAF=mat.maf, genes=genes)
 	class(out) <- "colTDTepi"
 	out
 }
@@ -438,6 +487,10 @@ print.colTDTepi <- function(x, top=5, digits=4, ...){
 	pval <- format.pval(x$pval, digits=digits)
 	out <- data.frame("LL (with IAs)"=x$ll.full, "LL (w/o IAs)"=x$ll.main,
 		Statistic=x$stat, "P-Value"=pval, check.names=FALSE)
+	if(!is.null(x$genes))
+		out <- data.frame(out, Genes=x$genes, check.names=FALSE, stringsAsFactors=FALSE)
+	if(!is.null(x$matMAF))
+		out <- data.frame(out, x$matMAF, check.names=FALSE, stringsAsFactors=FALSE) 
 	cat("      Genotypic TDT for Epistatic Interactions (Using 15 Pseudo Controls)",
 		"\n\n")
 	if(length(x$ll.main) > top){
@@ -638,3 +691,15 @@ colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, warnError
 	out
 }
 	
+allBetweenCombs <- function(gene){
+	ids <- 1:length(gene)
+	mat.comb <- NULL
+	for(i in 1:(max(gene) - 1)){
+		tmp1 <- ids[gene == i]
+		tmp2 <- ids[gene > i]
+		tmpmat <- cbind(rep(tmp1, e=length(tmp2)), rep.int(tmp2, length(tmp1)))
+		mat.comb <- rbind(mat.comb, tmpmat)
+	}
+	mat.comb
+}
+
