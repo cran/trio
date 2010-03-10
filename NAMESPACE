@@ -7,7 +7,7 @@ trio.sim,
 trio,
 trio.check,
 getLD,findLDblocks,
-tdt, colTDT, tdt2way, colTDT2way, colTDTinter2way,
+tdt, colTDT, tdt2way, colTDT2way, colTDTinter2way, compPermTDT2way,
 ped2geno, read.pedfile
 )
 

@@ -452,8 +452,10 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, genes=NULL, valMAF=NULL, war
 	if(is.null(rn))
 		rn <- paste("SNP", 1:n.snp, sep="")
 	names(ll.full) <- names(stat) <- names(pval) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
-	if(!is.null(genes))
+	if(!is.null(genes)){
+		ind.genes <- genes
 		genes <- paste(genes[combs[,1]], genes[combs[,2]], sep=" : ")
+	}
 	if(!is.null(valMAF)){
 		mat.maf <- cbind(round(valMAF, 4)[combs[,1]], round(valMAF, 4)[combs[,2]])
 		rownames(mat.maf) <- names(ll.full)
@@ -461,7 +463,8 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, genes=NULL, valMAF=NULL, war
 	}
 	else
 		mat.maf <- NULL
-	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval, maf=valMAF, matMAF=mat.maf, genes=genes)
+	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval, 
+		maf=valMAF, matMAF=mat.maf, genes=genes, ind.genes=ind.genes)
 	class(out) <- "colTDTepi"
 	out
 }
