@@ -131,6 +131,7 @@ tdt2way <- function(snp1, snp2, epistatic=TRUE,
 	strat <- rep(1:n.trio, e=16)
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	if(!add)
@@ -180,8 +181,10 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"),
 		"122", "212", "110", "111", "112")
 	colnames(mat.code) <- cn
 	coef <- se <- numeric(ncol(mat.snp))
-	if(warnError)
+	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
+	}
 	for(i in 1:ncol(mat.snp)){
 		mat.trio <- matrix(mat.snp[,i], ncol=3, byrow=TRUE)
 		mat.trio <- mat.trio[rowSums(is.na(mat.trio))==0,]
@@ -295,6 +298,7 @@ colTDT2way <- function(mat.snp, epistatic=TRUE, genes=NULL, maf=FALSE,
 	}
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	for(i in 1:nrow(combs)){
@@ -381,6 +385,7 @@ tdtEpistatic <- function(x1, x2, n.trio, warnError=TRUE){
 	y <- rep.int(c(1, rep.int(0, 15)), n.trio)
 	strat <- rep(1:n.trio, e=16)
 	wa <- options()$warn
+	on.exit(options(warn=wa))
 	options(warn=ifelse(warnError, 2, wa))
 	woIA <- try(clogit(y ~ x1 + z1 + x2 + z2 + strata(strat)), silent=TRUE)
 	full <- try(clogit(y ~ x1 + z1 + x2 + z2 + x1x2 + x1z2 + z1x2 + z1z2 + 
@@ -423,6 +428,7 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, genes=NULL, valMAF=NULL, war
 	}
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	for(i in 1:nrow(combs)){
@@ -508,7 +514,7 @@ print.colTDTepi <- function(x, top=5, digits=4, ...){
 	
 
 
-colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE,
+colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE, maf=FALSE,
 		model=c("additive", "dominant", "recessive"), add=FALSE,
 		warnError=TRUE){
 	require(survival)
@@ -573,10 +579,21 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE,
 		}
 		mat.pseudo2[,i] <- as.vector(mat.code[,code])
 	}
+	if(maf){
+		mat.tmp <- mat.snp1[-seq(3, nrow(mat.snp1), 3), ]
+		mat.tmp <- mat.tmp[!duplicated(rownames(mat.tmp)),]
+		valMAF1 <- colSums(mat.tmp, na.rm=TRUE) / (2 * colSums(!is.na(mat.tmp)))
+		mat.tmp <- mat.snp2[-seq(3, nrow(mat.snp2), 3), ]
+		mat.tmp <- mat.tmp[!duplicated(rownames(mat.tmp)),]
+		valMAF2 <- colSums(mat.tmp, na.rm=TRUE) / (2 * colSums(!is.na(mat.tmp)))
+		valMAF <- list(mat.snp1=valMAF1, mat.snp2=valMAF2)
+	}
+	else
+		valMAF <- NULL
 	n.trio <- length(code)
 	if(epistatic)
 		return(colTDTinterEpi(mat.pseudo1, mat.pseudo2, n.trio, colnames(mat.snp1), colnames(mat.snp2),
-			warnError=warnError))
+			valMAF=valMAF, warnError=warnError))
 	if(type=="dominant"){
 		mat.pseudo1 <- (mat.pseudo1 >= 1) * 1
 		mat.pseudo2 <- (mat.pseudo2 >= 1) * 1
@@ -592,6 +609,7 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE,
 	coef <- se <- numeric(n.snp1 * n.snp2)
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	for(i in 1:n.snp1){
@@ -630,14 +648,23 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE,
 	}
 	else
 		names(coef) <- names(stat) <- names(pval) <- rn1
+	if(maf){
+		mat.maf <- cbind(rep(round(valMAF1, 4), e=n.snp2), rep(round(valMAF2, 4), n.snp1))
+		rownames(mat.maf) <- names(coef)
+		colnames(mat.maf) <- c("First SNP", "Second SNP")
+	}
+	else
+		mat.maf <- NULL
 	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
-		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add) 
+		lowerOR=lower, upperOR=upper, ia=TRUE, type=type, add=add,
+		maf=valMAF, matMAF=mat.maf) 
 	class(out) <- "colTDT"
 	out	
 
 }
 	
-colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, warnError=TRUE){
+colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, valMAF=NULL,
+		warnError=TRUE){
 	mat.x1 <- mat.pseudo1 - 1 
 	mat.z1 <- (mat.x1 == 0) - 0.5
 	mat.x2 <- mat.pseudo2 - 1
@@ -651,6 +678,7 @@ colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, warnError
 	ll.main <- ll.full <- numeric(n.snp1 * n.snp2)
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	for(i in 1:n.snp1){
@@ -689,7 +717,15 @@ colTDTinterEpi <- function(mat.pseudo1, mat.pseudo2, n.trio, rn1, rn2, warnError
 	}
 	else
 		names(ll.full) <- names(stat) <- names(pval) <- rn1
-	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval)
+	if(!is.null(valMAF)){
+		mat.maf <- cbind(rep(round(valMAF[[1]], 4), e=n.snp2), rep(round(valMAF[[2]], 4), n.snp1))
+		rownames(mat.maf) <- names(ll.full)
+		colnames(mat.maf) <- c("First MAF", "Second MAF")
+	}
+	else
+		mat.maf <- NULL
+	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval,
+		maf=valMAF, matMAF=mat.maf)
 	class(out) <- "colTDTepi"
 	out
 }

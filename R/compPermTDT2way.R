@@ -100,6 +100,7 @@ getOriginalStat <- function(x, z, mat.ids, combs, n.trio, warnError=TRUE){
 	strat <- rep(1:n.trio, e=16)
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	for(i in 1:nrow(combs)){
@@ -130,6 +131,7 @@ getPermStat <- function(x, z, mat.ids, combs, n.trio, mat.y, stat, warnError=TRU
 	strat <- rep(1:n.trio, e=16)
 	if(warnError){
 		wa <- options()$warn
+		on.exit(options(warn=wa))
 		options(warn=2)
 	}
 	for(i in 1:n.combs){
