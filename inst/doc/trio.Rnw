@@ -27,11 +27,12 @@
 %\setlength{\topmargin}{-15mm}
 \setlength{\parskip}{2ex plus0.5ex minus0.2ex}
 
-\doublespacing
+%\doublespacing
 \parindent0em
 
 
 \renewcommand{\familydefault}{cmss}
+\renewcommand{\baselinestretch}{1.5}
 
 \begin{document}
 
@@ -41,26 +42,34 @@
 
 \begin{center}
 
-{\LARGE \bf A Vignette for the R Package \texttt{trio}}
+{\LARGE \bf Preparing case-parent trio data\\[-6pt] and detecting disease-associated\\[12pt]
+SNP interactions with \texttt{trio}}
 
+\vspace*{0.9cm}
+
+{\Large Qing Li and Holger Schwender}
+\vspace*{0.1cm}
 \end{center}
-
-\newpage
-\doublespace
-
+%\doublespace
 
 \section{Introduction}
 
 The R package, \texttt{trio}, provides functionality relevant
 for the analysis of case-parent trio data with {\it trio logic
-  regression}. Two major features are implemented in this package:
+regression} \citep{li2010}. Two major features are implemented in this package:
 functions that aid in the transformation of the trio data from
 standard linkage files (ped format) or genotype format into objects
 suitable as input for trio logic regression, and a framework that
 allows for the simulation of case-parent data where the risk of
 disease is specified by (higher order) SNP-SNP interactions. 
 
-The first section of this vignette is devoted to the steps relevant
+Furthremore, \texttt{trio} contains functions for performing genotypic transmission
+disequilibrium test (gTDT) for testing individual SNPs \citep{schaid1996} and
+two-way interactions of SNPs \citep{cordell2002, cordell2004} whether the distributions
+of their genotypes differ between the cases, i.e.\ the children, and the pseudo-controls
+derived from the parents' genotypes.
+
+Section \ref{trio} of this vignette is devoted to the steps relevant
 for data processing, to derive a matrix or data frame suitable as
 input for trio logic regression, starting from a linkage or genotype
 file which possibly contains missing data and/or Mendelian errors. We
@@ -74,7 +83,7 @@ process. While this function is intended to generate complete case
 pseudo-control data as input for trio logic regression, an option to
 simply return the completed trio data is available.
 
-The second section of the vignette explains in more detail how to set
+Section \ref{simulation} of the vignette explains in more detail how to set
 up simulations of case-parent data where the risk of disease is
 specified by SNP-SNP interactions. The most time consuming step for
 these types of simulations is the generation of mating tables and
@@ -82,6 +91,16 @@ the respective probabilities. The mating table information however can
 be stored, which allows for fast simulations when replicates of the
 case-parent data are generated.
 
+Section \ref{getLD} shows how the pairwise values of the typically used
+LD measures $D^\prime$ and $r^2$ can be computed with the function \texttt{getLD()}
+provided by \texttt{trio}, and how the $D^\prime$ values can be employed to
+estimate haplotype blocks with the algorithm of \citet{gabriel2002}. The
+resulting haplotype structure can then be used in the functions discussed in Section \ref{trio}.
+
+In Section \ref{read}, it is described how family-based data stored in a ped file can be read into
+\texttt{R} and transformed into a format suitable for the application of the functions for performing the gTDTs,
+whereas Section \ref{testing} contains examples for how these gTDT functions can be used to test individual 
+SNPs and two-way SNP interactions.
 
 
 \section{Generating data for trio logic regression input}\label{trio}
@@ -113,15 +132,18 @@ estimated, using the function \texttt{haplo.em()} in the
 
 In this section, we show how to generate data suitable for input to
 trio logic regression from complete pedigree data without Mendelian
-errors.  The \texttt{trio} package requires that the trio data are
-already available as an R object, either as linkage file in ped format
-(the default), or as genotype file.  The first six columns in such a
-linkage file identify the family structure of the data, and the
+errors. The function \texttt{trio.check()} requires that the trio data are
+already available as a data frame or matrix, either in linkage/ped format
+(the default), or in genotype format. Therefore, the \texttt{R} package \texttt{trio}
+provides a function called \texttt{read.pedfile} for reading a ped file, in which
+typically family-based data are stored, into \texttt{R} (for details, see Section \ref{testing}.
+ 
+The first six columns in such a ped or linkage file identify the family structure of the data, and the
 phenotype. It is assumed that only one phenotype variable (column 6)
 is used.  The object \texttt{trio.ped1}, available in the R package,
-is an example of such a data set. It contains information for 10 SNPs
+is an example of a data set in ped format. It contains information for 10 SNPs
 in 100 trios. Besides the variables providing information on the
-family structure and the phenotypes (columns 1--6), each SNPs is
+family structure and the phenotypes (columns 1--6), each SNP is
 encoded in two variables denoting the alleles.
 
 %chunk1
@@ -159,7 +181,7 @@ different. %It is therefore assumed that the user has already
 In the function \texttt{findLDblocks}, a modified version of the method of \cite{gabriel2002}
 has been implemented, which can be used to specify the block structure by
 \begin{verbatim}
-> table(foundBlocks$blocks}
+   > table(foundBlocks$blocks}
 \end{verbatim}
 if \texttt{foundBlocks} is the output of \texttt{findLDblocks} (for details, see Section \ref{getLD}).
 
@@ -194,7 +216,7 @@ genotype data.  The object \texttt{trio.gen1}, available in the R
 package, is an example of such a data set. Equivalent to
 \texttt{trio.ped1} used above, it contains information for 10 SNPs in
 100 trios. When used in \texttt{trio.check()}, the argument
-\texttt{is.linkage} is set to \texttt{FALSE}. The output from this
+\texttt{is.linkage} needs to be set to \texttt{FALSE}. The output from this
 function is then identical to the one shown derived from the linkage
 file, and can be passed to the function \texttt{trio()}.
 
@@ -210,7 +232,7 @@ trio.bin = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3))
 
 \subsection*{Missing genotype information}
 
-Missing genotypes in pedigree files are typically encoded using the
+Missing genotypes in ped(igree) files are typically encoded using the
 integer 0. The data files can be processed as before if they contain
 such missing values:
 %chunk5
@@ -236,13 +258,13 @@ trio.bin$bin[1:8,]
 @ 
 
 Missing data in genotypes files should be encoded using \texttt{NA},
-the conventional symbol in R to indicate missing values.
+the conventional symbol in \texttt{R} to indicate missing values.
 
 %chunk7
 <<>>=
 data(trio.gen2)
 str(trio.gen2)
-trio.tmp = trio.check(dat=trio.gen2, is.linkage=F)
+trio.tmp = trio.check(dat=trio.gen2, is.linkage=FALSE)
 trio.bin = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3))
 trio.bin$bin[1:8,]
 @
@@ -251,15 +273,15 @@ trio.bin$bin[1:8,]
 As the user might also be interested in the completed genotype data in
 the original format (genotype or linkage file), the function
 \texttt{trio()} also allows for this option by using the argument
-\texttt{logic=F}. In the resulting object, the matrix \texttt{bin} is
+\texttt{logic = FALSE}. In the resulting object, the matrix \texttt{bin} is
 then replaced by the data frame \texttt{trio}, and \texttt{miss} and
 \texttt{freq} are also returned.
 
 %chunk8
 <<>>=
 data(trio.gen2)
-trio.tmp = trio.check(dat=trio.gen2, is.linkage=F)
-trio.imp = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3), logic=F)
+trio.tmp = trio.check(dat=trio.gen2, is.linkage=FALSE)
+trio.imp = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3), logic=FALSE)
 str(trio.imp, max=1)
 trio.imp$miss[c(1:6),]
 print(trio.gen2[1:6,])
@@ -271,7 +293,7 @@ The same applies to pedigree data:
 <<>>=
 data(trio.ped2)
 trio.tmp = trio.check(dat=trio.ped2)
-trio.imp = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3), logic=F)
+trio.imp = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3), logic=FALSE)
 @ 
 
 
@@ -279,7 +301,7 @@ trio.imp = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3), logic=F)
 
 To delineate the genotype information for the pseudo-controls, the
 trio data must not contain any Mendelian errors. The function
-\texttt{trio.check()} returns a warning, and an R object with relevant
+\texttt{trio.check()} returns a warning, and an \texttt{R} object with relevant
 information when Mendelian errors are encountered is created. 
 
 %chunk10
@@ -290,7 +312,7 @@ str(trio.tmp, max=1)
 trio.tmp$errors
 @ 
 
-In this data set, trio 1 for example contains two Mendelian errors, in SNPs 9 and 10.
+In this data set, trio 1, for example, contains two Mendelian errors, in SNPs 9 and 10.
 
 %chunk11
 <<>>=
@@ -301,16 +323,16 @@ trio.ped.err[1:3,c(1:2, 23:26)]
 It is the user's responsibility to find the cause for the Mendelian
 errors and correct those, if possible. However, Mendelian
 inconsistencies are often due to genotyping errors and thus, it might
-not be possible to correct those in a very straightforward manner. In
+not be possible to correct those in a very straight-forward manner. In
 this instance, the user might want to encode the genotypes that cause
 theses Mendelian errors in some of the trios as missing data. The
-argument \texttt{replace=T} in \texttt{trio.check()} allows for this
+argument \texttt{replace = TRUE} in \texttt{trio.check()} allows for this
 possibility. The resulting missing data can then be imputed as
 described in the previous section.
 
 %chunk12
 <<>>=
-trio.rep = trio.check(dat=trio.ped.err, replace=T)
+trio.rep = trio.check(dat=trio.ped.err, replace=TRUE)
 str(trio.rep, max=1)
 trio.rep$trio[1:3,11:12]
 @ 
@@ -321,10 +343,10 @@ Mendelian inconsistencies.
 %chunk13
 <<>>=
 data(trio.gen.err)
-trio.tmp = trio.check(dat=trio.gen.err, is.linkage=F)
+trio.tmp = trio.check(dat=trio.gen.err, is.linkage=FALSE)
 trio.tmp$errors
 trio.tmp$trio.err[1:6, c(1,2,7), drop=F]
-trio.rep = trio.check(dat=trio.gen.err, is.linkage=F, replace=T)
+trio.rep = trio.check(dat=trio.gen.err, is.linkage=FALSE, replace=TRUE)
 trio.rep$trio[1:6,c(1,2,7)]
 @ 
 
@@ -333,15 +355,15 @@ trio.rep$trio[1:6,c(1,2,7)]
 As mentioned above, when estimates for the haplotype frequencies are
 already available, they can be used in the
 imputation of missing data and the delineation of the
-pseudo-controls. In case there are blocks of length one, i.~e., ~SNPs
+pseudo-controls. In case there are blocks of length one, i.e.\ SNPs
 not belonging to any LD blocks, the minor allele frequencies of those
 SNPs are supplied. In this case, no haplotype estimation
-is required when the function \texttt{trio} is run, which can result
+is required when the function \texttt{trio()} is run, which can result
 in substantial time savings. 
 
 As an example for the format of a file containing haplotype frequency
 estimates and SNP minor allele frequencies, the object
-\texttt{freq.hap} is available in the R package:
+\texttt{freq.hap} is available in the \texttt{R} package:
 
 <<>>=
 data(freq.hap)
@@ -352,20 +374,20 @@ freq.hap[1:6,]
 We can now impute the missing genotypes using these underlying haplotype frequencies.
 <<>>=
 data(trio.gen2)
-trio.tmp = trio.check(dat=trio.gen2, is.linkage=F)
-trio.imp = trio(trio.dat=trio.tmp, freq=freq.hap, logic=F)
+trio.tmp = trio.check(dat=trio.gen2, is.linkage=FALSE)
+trio.imp = trio(trio.dat=trio.tmp, freq=freq.hap, logic=FALSE)
 str(trio.imp, max=1)
 print(trio.gen2[1:6,])
 print(trio.imp$trio[1:6,])
 @
 
 
-\section{Simulation}
+\section{Simulation}\label{simulation}
 
 
 The function \texttt{trio.sim()} simulates case-parents trio data when
 the disease risk of children is specified by (possibly higher-order)
-SNP-SNP interactions. The mating tables and the respective sampling
+SNP interactions. The mating tables and the respective sampling
 probabilities depend on the haplotype frequencies (or SNP minor allele
 frequencies when the SNP does not belong to a block). This information
 is specified in the \texttt{freq} argument of the function
@@ -385,11 +407,11 @@ simulations, and thus, speed up the simulations dramatically.
 
 We use the built-in object \texttt{simuBkMap} in a basic example to
 show how to simulate case-parent trios when the disease risk depends
-on (possibly higher order) SNP-SNP interactions. This file contains
+on (possibly higher order) SNP interactions. This file contains
 haplotype frequency information on 15 blocks with a total of 45 loci.
 In this example, we specify that the children with two variant alleles
 on SNP1 and two variant alleles on SNP5 have a higher disease risk. We
-assume that \texttt{prev=0.001} and \texttt{OR=2} in the logistic model specifying
+assume that \texttt{prev = 0.001} and \texttt{OR = 2} in the logistic model specifying
 disease risk, and simulate a single replicate of 20 trios total. 
 
 
@@ -414,8 +436,8 @@ trios for the above specified disease risk model.
 
 <<>>=
 data(trio.gen1)
-trio.tmp = trio.check(dat=trio.gen1, is.linkage=F)
-trio.impu = trio(trio.dat=trio.tmp, blocks=c(1, 4, 2, 3), logic=T)
+trio.tmp = trio.check(dat=trio.gen1, is.linkage=FALSE)
+trio.impu = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3), logic=TRUE)
 
 str(trio.impu, max=2)
 trio.impu$freq[1:7,]
@@ -454,7 +476,7 @@ sampling probabilities depend foremost on the interaction term and the
 underlying haplotype frequencies, and as long as these remain constant
 in the simulation study, the mating table information and the sampling
 probabilities can be ``recycled.'' This is done by storing the
-relevant information (denoted as ``step-stone'') as a binary R file in
+relevant information (denoted as ``step-stone'') as a binary \texttt{R} file in
 the working directory, and loading the binary file again in future
 simulations, speeding up the simulation process dramatically. It is
 even possible to change the parameters \texttt{prev} and \texttt{OR} in these
@@ -489,13 +511,21 @@ values for hundreds or thousands of SNPs, and for the identification of LD block
 data using a modified version of the algorithm proposed by \citet{gabriel2002}. For the latter, it
 is assumed that the SNPs are ordered by their position on the chromosomes.
 
-The matrix \texttt{LDdata} available in
+These functions are not restricted to trio data, but can also be applied to population-based data.
+The only argument of these functions specifically included for trio data is \texttt{parentsOnly}.
+If set to \texttt{TRUE}, only the genotypes of the parents are used in the determination of
+the pairwise values of the LD measures and the estimation of the LD blocks. Furthermore, each parent
+is only considered once so that parents with more than one offspring do not bias the estimations.
+If trio data is used as input, the functions assume that the matrix containing the SNP data is in genotype format.
+
+Here, we consider a simulated matrix \texttt{LDdata} from a population-based study. Thus, all subjects are assumed
+to be unrelated. This matrix is available by calling
 
 <<>>=
 data(LDdata)
 @ 
 
-contains simulated genotype data for 10 LD blocks each consisting of 5 SNPs each typed on 500 subjects.
+and contains simulated genotype data for 10 LD blocks each consisting of 5 SNPs each typed on 500 subjects.
 
 The pairwise $D^\prime$ and $r^2$ values can be computed by
 
@@ -517,18 +547,18 @@ round(ld.out$rSquare[1:10,1:10], 2)
 
 and the pairwise LD plot for all SNPs can be generated by
 
-\begin{figure}[!ht]
+\begin{figure}[bt]
 \centerline{\includegraphics[width=0.5\textwidth]{figure1}}
 \caption{Pairwise $r^2$ values for the SNPs from \texttt{LDdata}.}\label{fig:1}
 \end{figure} 
 
 \begin{verbatim}
-plot(ld.out)
+   > plot(ld.out)
 \end{verbatim}
 (see Figure \ref{fig:1}). This figure shows the $r^2$-values. The $D^\prime$ values can be plotted by
 
 \begin{verbatim}
-plot(ld.out, "Dprime")
+   > plot(ld.out, "Dprime")
 \end{verbatim} 
 (not shown).
 
@@ -540,8 +570,8 @@ blocks <- findLDblocks(LDdata)
 blocks
 @
 
-Alternatively, the output of \texttt{getLD} can be used when \texttt{addVarN} has been set to \texttt{TRUE}
-in \texttt{getLD} to store additional information on the pairwise LD values.
+Alternatively, the output of \texttt{getLD()} can be used when \texttt{addVarN} has been set to \texttt{TRUE}
+in \texttt{getLD()} to store additional information on the pairwise LD values.
 
 <<>>=
 ld.out2 <- getLD(LDdata, addVarN=TRUE)
@@ -549,7 +579,7 @@ blocks2 <- findLDblocks(ld.out2)
 blocks2
 @
 
-\begin{figure}[!b]
+\begin{figure}[!t]
 \centerline{\includegraphics[width=0.5\textwidth]{figure2}}
 \caption{LD blocks as found by the modified algorithm of \citet{gabriel2002}. The borders of the LD blocks are marked
 by red lines. The color for the LD between each pair of SNPs is defined by the three categories used by \citet{gabriel2002} 
@@ -560,14 +590,14 @@ to define the LD blocks.}\label{fig:2}
 The blocks can also be plotted by
 
 \begin{verbatim}
-plot(blocks)
+   > plot(blocks)
 \end{verbatim}
 (see Figure \ref{fig:2}). In this figure, the borders of the LD blocks are marked by red lines.
 By default, the three categories used by the algorithm of \citet{gabriel2002} to define the LD blocks are
 displayed. Since this algorithm is based on the $D^\prime$ values, it is also possible to show these values in
 the LD (block) plot.
 
-\begin{figure}[!b]
+\begin{figure}[!t]
 \centerline{\includegraphics[width=0.5\textwidth]{figure3}}
 \vspace*{-8pt}
 \caption{LD blocks as found by the modified algorithm of \citet{gabriel2002}. The borders of the LD blocks are marked
@@ -576,35 +606,127 @@ by red lines. The darker the field for each pair of SNPs, the larger is the $D^\
 
 
 \begin{verbatim}
-plot(blocks, "Dprime")
+   > plot(blocks, "Dprime")
 \end{verbatim}
 (see Figure \ref{fig:3}). 
 
-As mentioned in Section \ref{trio}, the haplotype structure required by \texttt{trio} can be obtained by
+As mentioned in Section \ref{trio}, the haplotype structure required by \texttt{trio()} can be obtained by
 
 <<>>=
 hap <- as.vector(table(blocks$blocks))
 hap
 @
 
+\section{Preparing data for the genotypic TDTs}\label{read}
+
+If the trio data is not already available in \texttt{R} as a data frame in ped format or a matrix in genotype format 
+(see Section \ref{trio}), but in a ped file called, for example, "pedfile.ped" in the working directory of the current
+\texttt{R} session, then this file can be read into \texttt{R} by calling
+
+\begin{verbatim}
+   > ped <- read.pedfile("pedfile.ped")
+\end{verbatim}
+If the arguments \texttt{coded} and \texttt{first.row} are not specified by the user, \texttt{read.pedfile()} automatically
+figures out how the alleles in the ped file are coded, and whether the first row contains the SNP names (\texttt{first.row = FALSE})
+or the data for the first subject (\texttt{first.row = TRUE}). In the former case, \texttt{read.pedfile()} adds the SNP names
+(with extensions \texttt{.1} and \texttt{.2} to differ between the two alleles) to the respective columns of the read data frame. 
+
+For the applications of the functions for performing gTDTs (see Section \ref{testing}), 
+the trio data must be in a matrix in genotype format. In such a matrix,
+each columns represents a SNP, which is coded by the number of minor alleles, and each block of 3 consecutive rows contains the genotypes
+of the father, the mother, and their offspring (in this order) of one specific trio. Missing values are allowed in this matrix, and
+need to be coded by \texttt{NA}. This matrix can either be generated from a data frame in ped format by employing the function
+\texttt{ped2geno()}, or more conveniently, by setting \texttt{p2g = TRUE} in \texttt{read.pedfile()}. Thus, a matrix in genotype format
+might be obtained from the above ped file by calling
+
+\begin{verbatim}
+   > geno <- read.pedfile("pedfile.ped", p2g=TRUE)
+\end{verbatim}
+The output of these functions just contains the matrix in genotype format, whereas \texttt{trio.check()} additionally contains information
+about Mendelian errors. Neither \texttt{ped2geno()} nor \texttt{read.pedfile()} check for Mendelian errors. Instead, such errors are removed
+SNP-wise in the functions for performing genotypic TDTs.
+
+If, for example, the data frame \texttt{trio.ped1} also used in the examples of Section \ref{trio} should be transformed into a
+matrix in genotype format, \texttt{ped2geno()} can be applied to it. However, \texttt{ped2geno()} requires unique personal IDs
+(second column of \texttt{trio.ped1}) such that we first have to combine the family ID and the personal ID (which would be automatically
+done by \texttt{read.pedfile()}), and change the IDs of the fathers and mothers in columns 3 and 4 likewise.
+
+<<>>=
+data(trio.ped1)
+trio.ped1[,2] <- paste(trio.ped1[,1], trio.ped1[,2], sep="_")
+ids <- trio.ped1[,3] != 0
+trio.ped1[ids,3] <- paste(trio.ped1[ids,1], trio.ped1[ids,3], sep="_")
+trio.ped1[ids,4] <- paste(trio.ped1[ids,1], trio.ped1[ids,4], sep="_")
+trio.ped1[1:5, 1:4]
+@
+
+Afterwards, \texttt{ped2geno()} can be applied to \texttt{trio.ped1}
+
+<<>>=
+geno <- ped2geno(trio.ped1)
+geno[1:5,]
+@
+
+As mentioned in Section \ref{trio}, the \texttt{trio.gen1} is the genotype matrix corresponding to
+\texttt{trio.ped1}. So the genotypes in the output of \texttt{ped2geno()} are identical to
+\texttt{trio.gen1}. 
+
+<<>>=
+data(trio.gen1)
+trio.gen1[1:5, 3:12]
+table(trio.gen1[,3:12] == geno)
+@
+
+\section{Testing SNPs and two-way SNP interactions}\label{testing}
 
 \section*{Acknowledgments}
 Support was provided by NIH grants R01 DK061662 and R01 HL090577, and by DFG grant SCHW 1508/1-1.
 
-\clearpage
+%\clearpage
 %\bibliography{xbib_appFinal}
 %\bibliographystyle{mypapers}
 
-\begin{thebibliography}{1}
+\begin{thebibliography}{4}
 
-\bibitem[{Gabriel et al.(2002)Gabriel, Schaffner, Nguyen, Moore,
-  Roy, Blumenstiel, H., {DeFelice}, Lochner, Faggart, {Liu-Cordero}, Rotimi,
-  Adeyemo, Cooper, Ward, Lander, Daly and Altshuler}]{gabriel2002}
-\textsc{Gabriel, S.~B., Schaffner, S.~F., Nguyen, H., Moore, J.~M., Roy, J.,
-  Blumenstiel, B., H., J., {DeFelice}, M., Lochner, A., Faggart, M.,
+\bibitem[Cordell(2002)Cordell]{cordell2002}
+Cordell, H.~J. (2002).
+\newblock Epistasis: What it means, what it doesn't mean, and statistical
+  methods to detect it in humans.
+\newblock {\em Hum. Mol. Genet.}, {\bf 11}, 2463--2468.
+
+\bibitem[Cordell {\em et~al.}(2004)Cordell, Barratt, and Clayton]{cordell2004}
+Cordell, H.~J., Barratt, B.~J., and Clayton, D.~G. (2004).
+\newblock Case/pseudocontrol analysis in genetic association studies: A unified
+  framework for detection of genotype and haplotype associations, gene-gene and
+  gene-environment interactions, and parent-of-origin effects.
+\newblock {\em Genet. Epidemiol.}, {\bf 26}, 167--185.
+
+\bibitem[Gabriel {\em et~al.}(2002)Gabriel, Schaffner, Nguyen, Moore, Roy,
+  Blumenstiel, Higgins, {DeFelice}, Lochner, Faggart, {Liu-Cordero}, Rotimi,
+  Adeyemo, Cooper, Ward, Lander, Daly, and Altshuler]{gabriel2002}
+Gabriel, S.~B., Schaffner, S.~F., Nguyen, H., Moore, J.~M., Roy, J.,
+  Blumenstiel, B., Higgins, J., {DeFelice}, M., Lochner, A., Faggart, M.,
   {Liu-Cordero}, S.~N., Rotimi, C., Adeyemo, A., Cooper, R., Ward, R., Lander,
-  E.~S., Daly, M.~J. and Altshuler, D.} (2002). The structure of haplotype
-  blocks in the human genome. \emph{Science} \textbf{296}, 2225--2229.
+  E.~S., Daly, M.~J., and Altshuler, D. (2002).
+\newblock The structure of haplotype blocks in the human genome.
+\newblock {\em Science\/}, {\bf 296}, 2225--2229.
+
+\bibitem[Li {\em et~al.}(2010)Li, Fallin, Louis, Lasseter, {McGrath},
+  Avramopoulos, Wolyniec, Valle, Liang, Pulver, and Ruczinski]{li2010}
+Li, Q., Fallin, M.~D., Louis, T.~A., Lasseter, V.~K., {McGrath}, J.~A.,
+  Avramopoulos, D., Wolyniec, P.~S., Valle, D., Liang, K.~Y., Pulver, A.~E.,
+  and Ruczinski, I. (2010).
+\newblock Detection of {SNP-SNP} interactions in trios of parents with
+  schizophrenic children.
+\newblock {\em Genet. Epidemiol.}
+\newblock To appear.
+
+\bibitem[Schaid(1996)Schaid]{schaid1996}
+Schaid, D.~J. (1996).
+\newblock General score tests for associations of genetic markers with disease
+  using cases and their parents.
+\newblock {\em Genet. Epidemiol.}, {\bf 13}, 423--449.
+
 \end{thebibliography}
 
 \end{document}

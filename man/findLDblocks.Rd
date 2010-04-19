@@ -11,7 +11,8 @@ Finds LD blocks using the procedure proposed by Gabriel et al. (2002).
 }
 \usage{
 findLDblocks(x, alpha = 0.1, ciLD = c(0.7, 0.98), cuRecomb = 0.9, 
-   ratio = 9, alsoOthers = FALSE, iter = 50, snp.in.col = TRUE)
+   ratio = 9, alsoOthers = FALSE, parentsOnly = FALSE, iter = 50,
+   snp.in.col = TRUE)
 }
 
 \arguments{
@@ -51,6 +52,12 @@ findLDblocks(x, alpha = 0.1, ciLD = c(0.7, 0.98), cuRecomb = 0.9,
      this condition is used. If \code{alsoOthers = TRUE}, the endmarkers can also be categorized
      as 'Others'.
 }
+  \item{parentsOnly}{logical indicating whether only the genotypes of the parents, i.e.\ rows 1, 2,
+    4, 5, ... of \code{x}, should be used in the computation of the LD measures when \code{x}
+    is in genotype format and contains case-parent trio data (see \code{\link{ped2geno}} and \code{\link{read.pedfile}}).
+    If \code{FALSE} (default), all rows are used in the determination of the pairwise LD measure. Ignored
+    if \code{x} is the output of \code{getLD}.
+} 
   \item{iter}{integer specifying the number of iterations used in the computation of D (for details,
       see \code{\link{getLD}}). Ignored if \code{x} is the output of \code{getLD}.
 }

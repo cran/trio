@@ -171,6 +171,9 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"),
 	if(nrow(mat.snp) %% 3 != 0)
 		stop("mat.snp does not seem to contain trio data, as its number of rows is\n",
 			"not dividable by 3.")
+	if(is.null(rownames(mat.snp)))
+		stop("mat.snp does not seem to be a matrix in genotype format,\n",
+			"as the names of the rows are missing.")
 	if(any(!mat.snp %in% c(0, 1, 2, NA)))
 		stop("The values in mat.snp must be 0, 1, and 2.")
 	type <- match.arg(model)
@@ -241,6 +244,9 @@ colTDT2way <- function(mat.snp, epistatic=TRUE, genes=NULL, maf=FALSE,
 	if(nrow(mat.snp) %% 3 != 0)
 		stop("mat.snp does not seem to contain trio data, as its number of rows is\n",
 			"not dividable by 3.")
+	if(is.null(rownames(mat.snp)))
+		stop("mat.snp does not seem to be a matrix in genotype format,\n",
+			"as the names of the rows are missing.")
 	if(any(!mat.snp %in% c(0, 1, 2, NA)))
 		stop("The values in mat.snp must be 0, 1, and 2.")
 	type <- match.arg(model)
@@ -458,10 +464,8 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, genes=NULL, valMAF=NULL, war
 	if(is.null(rn))
 		rn <- paste("SNP", 1:n.snp, sep="")
 	names(ll.full) <- names(stat) <- names(pval) <- paste(rn[combs[,1]], rn[combs[,2]], sep=" : ")
-	if(!is.null(genes)){
-		ind.genes <- genes
+	if(!is.null(genes))
 		genes <- paste(genes[combs[,1]], genes[combs[,2]], sep=" : ")
-	}
 	if(!is.null(valMAF)){
 		mat.maf <- cbind(round(valMAF, 4)[combs[,1]], round(valMAF, 4)[combs[,2]])
 		rownames(mat.maf) <- names(ll.full)
@@ -470,7 +474,7 @@ colTDTepistatic <- function(mat.pseudo, n.trio, rn, genes=NULL, valMAF=NULL, war
 	else
 		mat.maf <- NULL
 	out <- list(ll.main=ll.main, ll.full=ll.full, stat=stat, pval=pval, 
-		maf=valMAF, matMAF=mat.maf, genes=genes, ind.genes=ind.genes)
+		maf=valMAF, matMAF=mat.maf, genes=genes)
 	class(out) <- "colTDTepi"
 	out
 }
@@ -537,6 +541,9 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE, maf=FA
 	if(n.obs %% 3 != 0)
 		stop("The matrices do not seem to contain trio data, as its number of rows is\n",
 			"not dividable by 3.")
+	if(is.null(rownames(mat.snp1)))
+		stop("mat.snp1 does not seem to be a matrix in genotype format,\n",
+			"as the names of the rows are missing.")
 	if(!is.null(rownames(mat.snp1)) && !is.null(rownames(mat.snp2)) && 
 		any(rownames(mat.snp1) != rownames(mat.snp2)))
 		stop("mat.snp1 must have the same row names as mat.snp2.")

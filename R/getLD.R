@@ -1,7 +1,12 @@
-getLD <- function(x, which=c("both", "rSquare", "Dprime"), iter=50, snp.in.col=TRUE,
-		asMatrix=FALSE, addVarN=FALSE){
+getLD <- function(x, which=c("both", "rSquare", "Dprime"), parentsOnly=FALSE, 
+		iter=50, snp.in.col=TRUE, asMatrix=FALSE, addVarN=FALSE){
 	if(!is.matrix(x))
 		stop("x must be a matrix.")
+	if(parentsOnly){
+		if(!snp.in.col)
+			stop("The columns of x must represent the SNPs if parentsOnly=TRUE.")
+		x <- removeKids(x)
+	}
 	if(snp.in.col)
 		x <- t(x)
 	typeLD <- match.arg(which)
@@ -267,12 +272,12 @@ getCalls4LD <- function(Dprime, varDprime, alpha=0.1, ciLD=c(0.7, 0.98), cuRecom
 
 	
 findLDblocks <- function(x, alpha=0.1, ciLD=c(0.7, 0.98), cuRecomb=0.9, ratio=9,
-		alsoOthers=FALSE, iter=50, snp.in.col=TRUE){
+		alsoOthers=FALSE, parentsOnly=FALSE, iter=50, snp.in.col=TRUE){
 	if(!is(x, "getLD") && !is.matrix(x))
 		stop("x must either be a matrix or the output of getLD.")
 	if(is.matrix(x))	
-		x <- getLD(x, which="Dprime", iter=iter, snp.in.col=snp.in.col,
-			addVarN=TRUE)
+		x <- getLD(x, which="Dprime", parentsOnly=parentsOnly, iter=iter, 
+			snp.in.col=snp.in.col, addVarN=TRUE)
 	calls <- getCalls4LD(x$Dprime, x$varDprime, alpha=alpha, ciLD=ciLD,
 		cuRecomb=cuRecomb)
 	n.snps <- length(x$rn)
@@ -398,6 +403,16 @@ plot.LDblocks <- function(x, y="gabriel", col=NULL, start=1, end=NA, xlab="", yl
 }
 
 
+removeKids <- function(x){
+	if(nrow(x) %%3 != 0)
+		stop("x does not seem to be in genotype format, as its number of rows is\n",
+			"not dividable by 3.")
+	if(is.null(rownames(x)))
+		stop("x does not seem to be in genotype format, as the row names are missing.")
+	x <- x[-seq(3, nrow(x), 3), ]
+	x <- x[!duplicated(rownames(x)),]
+	x
+}
 
 			
 

@@ -10,8 +10,8 @@
  Computes the value of D' and r^2 for each pair of SNPs in a matrix.
 }
 \usage{
-  getLD(x, which = c("both", "rSquare", "Dprime"), iter = 50, 
-     snp.in.col = TRUE, asMatrix = FALSE, addVarN = FALSE)
+  getLD(x, which = c("both", "rSquare", "Dprime"), parentsOnly = FALSE,
+     iter = 50, snp.in.col = TRUE, asMatrix = FALSE, addVarN = FALSE)
 }
 
 \arguments{
@@ -24,6 +24,11 @@
   \item{which}{which LD measures should be computed? Either \code{"rSquare"}, or \code{"Dprime"},
     or the values of \code{"both"} measures are computed. The latter is the default.
 }
+  \item{parentsOnly}{logical indicating whether only the genotypes of the parents, i.e.\ rows 1, 2,
+    4, 5, ... of \code{x}, should be used in the computation of the LD measures when \code{x}
+    is in genotype format and contains case-parent trio data (see \code{\link{ped2geno}} and \code{\link{read.pedfile}}).
+    If \code{FALSE} (default), all rows are used in the determination of the pairwise LD measure.
+} 
   \item{iter}{integer specifying how many iterations are used in the procedure of Hill (1974)
     which is used to estimate D.
 }
