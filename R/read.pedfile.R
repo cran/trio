@@ -1,5 +1,5 @@
 read.pedfile <- function(file, first.row=NA, coded=NULL, naVal=0, sep=" ", 
-		p2g=FALSE, non.rs.IDs=FALSE){
+		p2g=FALSE, non.rs.IDs=FALSE, cols4ID=FALSE){
 	if(!is.null(coded) && !coded %in% c("12", "AB", "1234", "ATCG"))
 		stop("coded must be either '12', or 'AB', or '1234', or 'ATCG'.")
 	if(is.na(first.row)){
@@ -70,7 +70,7 @@ read.pedfile <- function(file, first.row=NA, coded=NULL, naVal=0, sep=" ",
 			"Please specify coded and naVal.")
 		cat("NOTE: Since coded has not been specified, it is set to \"", coded, "\".\n\n", sep="")
 	}
-	ped2geno(ped, snpnames=snpnames, coded=coded, naVal=naVal)
+	ped2geno(ped, snpnames=snpnames, coded=coded, naVal=naVal, cols4ID=cols4ID)
 }
 
 		   

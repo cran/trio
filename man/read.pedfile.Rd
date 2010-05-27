@@ -5,12 +5,12 @@
 Reading a Ped File
 }
 \description{
-Reads an ped file into R and creates a data frame in ped format, or transform the ped file into a matrix in
+Reads a ped file into R and creates a data frame in ped format, or transform the ped file into a matrix in
 genotype format.
 }
 \usage{
 read.pedfile(file, first.row = NA, coded = NULL, naVal = 0, sep = " ", 
-   p2g = FALSE, non.rs.IDs = FALSE)
+   p2g = FALSE, non.rs.IDs = FALSE, cols4ID=FALSE)
 }
 
 \arguments{
@@ -33,7 +33,11 @@ read.pedfile(file, first.row = NA, coded = NULL, naVal = 0, sep = " ",
     a data frame in ped format is returned. Otherwise, \code{\link{ped2geno}} is called within \code{read.pedfile} to transform
     the data frame into a matrix in genotype format, and the matrix is returned.
 }
-  \item{non.rs.IDs}{logical indicating whether (some of) the SNP names are specified by other names than rs-IDs.}
+  \item{non.rs.IDs}{logical indicating whether (some of) the SNP names are specified by other names than rs-IDs.
+}
+  \item{cols4ID}{logical indicating whether columns should be added to output matrix containing the family ID and the individual ID.
+    If \code{FALSE}, the individual IDs are used as the row names of the output matrix.
+}
 }
 
 \value{A data frame in ped format (if \code{p2g = FALSE}), or a matrix in genotype format (if \code{p2g = TRUE}).

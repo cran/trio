@@ -2,8 +2,8 @@ Package: trio
 Type: Package
 Title: Detection of disease-associated SNP interactions in case-parent
         trio data
-Version: 1.1.4
-Date: 2010-05-19
+Version: 1.1.5
+Date: 2010-05-27
 Author: Qing Li, Holger Schwender
 Maintainer: Holger Schwender <holger.schw@gmx.de>
 Depends: survival, haplo.stats
@@ -16,6 +16,6 @@ Description: Testing SNPs and SNP interactions with a genotypic TDT.
         simulate case-parent trios with disease risk dependent on SNP
         interaction.
 License: LGPL-2
-Packaged: 2010-05-19 04:47:13 UTC; hschwend
+Packaged: 2010-05-27 22:52:52 UTC; hschwend
 Repository: CRAN
-Date/Publication: 2010-05-19 08:13:07
+Date/Publication: 2010-05-28 06:56:15
