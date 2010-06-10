@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \alias{findLDblocks}
 \alias{print.LDblock}
+\alias{splitBlocks}
 
 \title{
 Identifying LD blocks
@@ -13,6 +14,8 @@ Finds LD blocks using the procedure proposed by Gabriel et al. (2002).
 findLDblocks(x, alpha = 0.1, ciLD = c(0.7, 0.98), cuRecomb = 0.9, 
    ratio = 9, alsoOthers = FALSE, parentsOnly = FALSE, iter = 50,
    snp.in.col = TRUE)
+   
+splitBlocks(blocks)
 }
 
 \arguments{
@@ -64,12 +67,17 @@ findLDblocks(x, alpha = 0.1, ciLD = c(0.7, 0.98), cuRecomb = 0.9,
   \item{snp.in.col}{logical specifying whether each column of \code{x} represents a SNP (and each row a subject).
      If \code{FALSE}, each row represents a SNP (and each column a subject). Ignored if \code{x} is the
      output of \code{getLD}.
-
+}     
+  \item{blocks}{output of \code{findLDblocks}. See Details.
 }
+
 }
 \details{
    The LD-blocks are estimated using the method of Gabriel et al. (2002) as described in Wall and Pritchard (2003),
    where we use the approximate variance estimates of D' proposed by Zabaleta et al. (1997).
+   
+   Since in \code{\link{trio}} the LD blocks are restricted to a maximum of 7 SNPs, \code{splitBlocks}
+   can be used to split LD blocks composed of more than 7 SNPs into smaller blocks.  
 }
 \value{An object of class \code{LDblocks} consisting of 
   	\item{\code{ld}}{the output of \code{getLD},}
