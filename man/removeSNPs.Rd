@@ -2,13 +2,16 @@
 \alias{removeSNPs}
 \alias{removeTrios}
 \alias{orderSNPs}
+\alias{colMAFtrio}
 \title{
 Remove SNPs or Trios
 }
 \description{
-This functions can be used to remove SNPs with a low minor allele frequency or a high percentage of missing values,
-or to remove trios in which at least one member shows a high percentage of missing values, or to order the SNPs
-by their position in the genome. 
+Functions for removing SNPs with a low minor allele frequency or a high percentage of missing values,
+for removing trios in which at least one member shows a high percentage of missing values, for ordering the SNPs
+by their position in the genome, and for computing the minor allele frequencies of the SNPs based on only the
+genotypes of the parents, where each parent is only used once in this computation, even if this person is part
+of more than one of the trios.
 }
 \usage{
 removeSNPs(geno, maf = NA, perc.na = NA)
@@ -16,6 +19,8 @@ removeSNPs(geno, maf = NA, perc.na = NA)
 removeTrios(geno, perc.na = 1)
 
 orderSNPs(geno, map, snp = "SNP", orderBy = c("Chr", "Position"))
+
+colMAFtrio(geno)
 }
 
 \arguments{
@@ -38,7 +43,8 @@ orderSNPs(geno, map, snp = "SNP", orderBy = c("Chr", "Position"))
     the chromosomes and the positions of the SNPs in \code{geno}.
 }
 }
-\value{A reduced or ordered version of \code{geno}.
+\value{For \code{removeSNPs}, \code{removeTrios}, and \code{orderSNPs}, a reduced or ordered version of \code{geno}.
+For \code{colMAFtrio}, a vector containing the minor allele frequencies of the SNPs in \code{geno}.
 }
 \author{
 Holger Schwender, \email{holger.schwender@udo.edu}
