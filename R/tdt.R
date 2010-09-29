@@ -41,8 +41,9 @@ tdt <- function(snp, model=c("additive", "dominant", "recessive")){
 	coef <- c.out$coefficients
 	names(coef) <- NULL
 	se <- sqrt(diag(c.out$var))
+	stat <- (coef/se)^2
 	conf <- exp(coef + c(-1, 1) * qnorm(0.975) * se)
-	out <- list(coef=coef, se=se, stat=coef/se, pval= 1 - pchisq((coef/se)^2, 1),
+	out <- list(coef=coef, se=se, stat=stat, pval= 1 - pchisq(stat, 1),
 		OR=exp(coef), lowerOR=conf[1], upperOR=conf[2], ia=FALSE, type=type)  
 	class(out) <- "tdt"
 	out
@@ -150,8 +151,8 @@ tdt2way <- function(snp1, snp2, epistatic=TRUE,
 		se <- sqrt(diag(c.out$var))
 		if(!add)
 			names(coef) <- NULL
-		stat <- coef/se
-		pval <- pchisq(stat^2, 1, lower.tail=FALSE)
+		stat <- (coef/se)^2
+		pval <- pchisq(stat, 1, lower.tail=FALSE)
 		lower <- exp(coef - qnorm(0.975) * se)
 		upper <- exp(coef + qnorm(0.975) * se)
 	}
@@ -163,9 +164,8 @@ tdt2way <- function(snp1, snp2, epistatic=TRUE,
 }
 	
 
-colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), 
+colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), fast=TRUE, size=50,  
 		warnError=TRUE){
-	require(survival)
 	if(!is.matrix(mat.snp))
 		stop("mat.snp has to be a matrix.")
 	if(nrow(mat.snp) %% 3 != 0)
@@ -177,6 +177,11 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"),
 	if(any(!mat.snp %in% c(0, 1, 2, NA)))
 		stop("The values in mat.snp must be 0, 1, and 2.")
 	type <- match.arg(model)
+	if(fast)
+		return(fastTDT(mat.snp, type, size=size))	
+	require(survival)
+	warning("This way (fast = FALSE) of performing a gTDT will not be available in\n",
+		"future versions of the package trio.")
 	mat.code <- matrix(c(0,0,0,0, 0,0,1,1, 0,0,1,1, 1,0,0,1, 1,0,0,1, 1,1,1,1, 
 		1,1,1,1, 2,2,2,2, 1,1,2,2, 1,1,2,2, 2,1,1,2, 2,1,1,2, 0,1,1,2, 
 		1,0,1,2, 2,0,1,1), nrow=4)
@@ -221,10 +226,10 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"),
 		warning("The fitting of some of the models has failed. A possible reason\n",
 			"is that the corresponding SNPs have very low minor allele frequencies.\n",
 			"For these SNPs, all statistics are thus set to NA.", call.=FALSE)
-	stat <- coef / se
+	stat <- (coef / se)^2
 	lower <- exp(coef - qnorm(0.975) * se)
 	upper <- exp(coef + qnorm(0.975) * se)
-	pval <- 1 - pchisq(stat * stat, 1)
+	pval <- 1 - pchisq(stat, 1)
 	if(is.null(colnames(mat.snp)))
 		names(coef) <- names(pval) <- names(stat) <- paste("SNP", 1:ncol(mat.snp), sep="")
 	else
@@ -324,10 +329,10 @@ colTDT2way <- function(mat.snp, epistatic=TRUE, genes=NULL, maf=FALSE,
 		warning("The fitting of some of the models has failed. A possible reason\n",
 			"is that the two SNPs might be in (strong) LD. For these interactions,\n",
 			"all statistics are therefore set to NA.", call.=FALSE)
-	stat <- coef / se
+	stat <- (coef / se)^2
 	lower <- exp(coef - qnorm(0.975) * se)
 	upper <- exp(coef + qnorm(0.975) * se)
-	pval <- pchisq(stat * stat, 1, lower.tail=FALSE)
+	pval <- pchisq(stat, 1, lower.tail=FALSE)
 	if(any(pval <= .Machine$double.eps, na.rm=TRUE))
 		warning("Some of the p-values are very small (< 2.2e-16). These results might be\n",
 			"misleading, as the small p-values might be caused by non-biological artefacts\n",
@@ -644,10 +649,10 @@ colTDTinter2way <- function(mat.snp1, mat.snp2, snp=NULL, epistatic=TRUE, maf=FA
 			"is that the two corresponding SNPs might be in (strong) LD.\n",
 			"For these interactions, all statistics are therefore set to NA.", 
 			call.=FALSE)
-	stat <- coef / se
+	stat <- (coef / se)^2
 	lower <- exp(coef - qnorm(0.975) * se)
 	upper <- exp(coef + qnorm(0.975) * se)
-	pval <- pchisq(stat * stat, 1, lower.tail=FALSE)
+	pval <- pchisq(stat, 1, lower.tail=FALSE)
 	if(any(pval <= .Machine$double.eps, na.rm=TRUE))
 		warning("Some of the p-values are very small (< 2.2e-16). These results might be\n",
 			"misleading, as the small p-values might be caused by non-biological artefacts\n",

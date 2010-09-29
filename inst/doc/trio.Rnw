@@ -821,8 +821,7 @@ Li, Q., Fallin, M.~D., Louis, T.~A., Lasseter, V.~K., {McGrath}, J.~A.,
   and Ruczinski, I. (2010).
 \newblock Detection of {SNP-SNP} interactions in trios of parents with
   schizophrenic children.
-\newblock {\em Genet. Epidemiol.}
-\newblock To appear.
+\newblock {\em Genet. Epidemiol.}, {\bf 34}, 396--406.
 
 \bibitem[Schaid(1996)Schaid]{schaid1996}
 Schaid, D.~J. (1996).
@@ -833,6 +832,3 @@ Schaid, D.~J. (1996).
 \end{thebibliography}
 
 \end{document}
-
-
-

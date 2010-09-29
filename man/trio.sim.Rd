@@ -3,8 +3,7 @@
 
 \alias{trio.sim}
 
-\title{Simulate Case-Parent Trios with Population Disease Risk Dependent
-  on SNP-SNP Interaction}
+\title{Simulate Case-Parent Trios}
 
 \description{This function generates case-parents trios when the disease
   risk of children is specified by (possibly higher-order) SNP-SNP

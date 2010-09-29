@@ -13,7 +13,8 @@ Computes the genotic TDT for a SNP or for each column of a matrix representing a
 
 \usage{
 tdt(snp, model = c("additive", "dominant", "recessive"))
-colTDT(mat.snp, model = c("additive", "dominant", "recessive"), warnError = TRUE)
+colTDT(mat.snp, model = c("additive", "dominant", "recessive"), fast = TRUE,
+   size = 50, warnError = TRUE)
 
 \method{print}{tdt}(x, digits = 4, ...)
 \method{print}{colTDT}(x, top = 5, digits = 4, ...)
@@ -33,7 +34,12 @@ colTDT(mat.snp, model = c("additive", "dominant", "recessive"), warnError = TRUE
   \item{model}{type of model that should be fitted. Abbreviations are allowed. Thus, e.g., \code{model = "dom"} will
     fit a dominant model, and \code{model = "r"} an recessive model. 
 }
-
+  \item{fast}{should closed-form parameter estimates be used? If \code{FALSE}, the function \code{clogit} is used to
+    fit the conditional logistic regression model. The latter ``traditional" way of performing a gTDT will be removed
+    in one of the next versions of \code{trio}.
+}
+  \item{size}{the number of SNPs considered simultaneously when computing the parameter estimates. Ignored if \code{fast = FALSE}.
+}
   \item{warnError}{logical indicating whether the statistics for the gTDT should be returned as \code{NA} if the fitting of the
     conditional logistic regression model fails. This might in particular happen when the considered SNP is almost monomorphic,
     i.e. if the minor allele frequency of this SNP is very low.
@@ -44,8 +50,8 @@ colTDT(mat.snp, model = c("additive", "dominant", "recessive"), warnError = TRUE
 }
   \item{digits}{number of digits that should be printed.}
   \item{top}{number of interactions that should be printed. If the number of interactions is smaller than or equal to 
-    \code{top}, then the statistics for all interactions are printed in the order of their computation. Otherwise, they 
-    the \code{top} Top interactions are printed.
+    \code{top}, then the statistics for all interactions are printed in the order of their computation. Otherwise, 
+    the \code{top} interactions with the smallest p-values are printed.
   }
   \item{...}{ignored.}
 }
@@ -71,4 +77,3 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \keyword{htest}
 \keyword{models}
 \keyword{array}
-

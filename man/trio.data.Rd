@@ -12,9 +12,9 @@
 \alias{step3way}
 \alias{LDdata}
 \alias{mat.test}
-\title{Genotype Data for Trios}
+\title{Case-Parent Trio Data}
 \description{
-\code{trio.data} contains several data sets used in the different examples for the analyses with the functions in the \code{R}
+\code{trio.data} contains several simulated data sets used in the different examples for the analyses with the functions in the \code{R}
 package \code{trio}.
 
 For the applications of genotypic TDTs for individual SNPs and two-way interactions with, for example,
