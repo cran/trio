@@ -9,7 +9,8 @@ trio.check,
 getLD,findLDblocks, splitBlocks,
 tdt, colTDT, tdt2way, colTDT2way, colTDTinter2way, compPermTDT2way,
 ped2geno, read.pedfile, removeSNPs, removeTrios, orderSNPs, colMAFtrio,
-colTDTmaxStat, colTDTmaxTest
+colTDTmaxStat, colTDTmaxTest,
+colGxE
 )
 
 S3method(plot, getLD)
@@ -21,4 +22,6 @@ S3method(print, tdtEpi)
 S3method(print, colTDTepi)
 S3method(print, maxTestTrio)
 S3method(print, maxStatTrio)
+S3method(print, colGxE)
+
 
