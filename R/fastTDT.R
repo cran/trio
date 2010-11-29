@@ -10,7 +10,7 @@ fastTDT <- function(mat.geno, type, size=50){
 
 
 
-fastTDTsplit <- function(geno, size=50, gxe=FALSE){
+fastTDTsplit <- function(geno, size=50){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))	
 	num <- denom <- numeric(n.snp)
@@ -21,10 +21,7 @@ fastTDTsplit <- function(geno, size=50, gxe=FALSE){
 	}
 	logit <- function(x) log(x/(1-x))
 	beta <- logit(num/denom)
-	se <- denom / ((denom-num)*num)
-	if(gxe)
-		return(cbind(beta, se))
-	se <- sqrt(se)
+	se <- sqrt(denom / ((denom-num)*num))
 	stat <- beta/se
 	stat <- stat*stat
 	lower <- exp(beta - qnorm(0.975) * se)
@@ -58,20 +55,18 @@ fastTDTchunk <- function(geno){
 }	
 	
 
-fastTDTdomSplit <- function(geno, size=50, gxe=FALSE){
+fastTDTdomSplit <- function(geno, size=50){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
 	dmat <- matrix(0, n.snp, 4)
 	for(i in 1:(length(int)-1))
 		dmat[int[i]:(int[i+1]-1),] <- fastTDTdomChunk(geno[,int[i]:(int[i+1]-1), drop=FALSE])
 	rownames(dmat) <- colnames(geno)
-	h <- (1/3*dmat[,1] - dmat[,2] + dmat[,3] - 1/3*dmat[,4]) / (2*(dmat[,1]+dmat[,3]))
+	h <- (dmat[,1]/3 - dmat[,2] + dmat[,3] - dmat[,4]/3) / (2*(dmat[,1]+dmat[,3]))
 	tmp <- (dmat[,2]+dmat[,4])/(3*(dmat[,1]+dmat[,3])) + h*h
 	or <- sqrt(tmp) - h
 	beta <- log(or)
 	tmp <- (dmat[,2]+dmat[,1])*or/(or+1)^2 + (dmat[,3]+dmat[,4])*or/(3*(or+1/3)^2)
-	if(gxe)
-		return(cbind(beta, 1/tmp))
 	se <- sqrt(1/tmp)
 	stat <- beta/se
 	stat <- stat * stat
@@ -101,7 +96,7 @@ fastTDTdomChunk <- function(geno){
 }
 
 
-fastTDTrecSplit <- function(geno, size=50, gxe=FALSE){
+fastTDTrecSplit <- function(geno, size=50){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
 	rmat <- matrix(0, n.snp, 4)
@@ -113,8 +108,6 @@ fastTDTrecSplit <- function(geno, size=50, gxe=FALSE){
 	or <- sqrt(tmp) - h		 
 	beta <- log(or)
 	tmp <- (rmat[,1] + rmat[,2]) * or/(or+1)^2 + 3 *(rmat[,3] + rmat[,4]) * or / (or+3)^2
-	if(gxe)
-		return(cbind(beta,1/tmp))
 	se <- sqrt(1/tmp)
 	stat <- (beta/se)^2
 	lower <- exp(beta - qnorm(0.975) * se)
