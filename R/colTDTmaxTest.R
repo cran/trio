@@ -38,9 +38,9 @@ print.maxStatTrio <- function(x, top=5, digits=4, ...){
 
 getStatsChunk <- function(geno){
 	n.row <- nrow(geno)
-	dad <- geno[seq.int(1, n.row, 3), ]
-	mom <- geno[seq.int(2, n.row, 3), ]
-	kid <- geno[seq.int(3, n.row, 3), ]
+	dad <- geno[seq.int(1, n.row, 3),, drop=FALSE]
+	mom <- geno[seq.int(2, n.row, 3),, drop=FALSE]
+	kid <- geno[seq.int(3, n.row, 3),, drop=FALSE]
 	tmp.mat <- matrix(0, ncol(dad), 8)
 	het1 <- (dad==1) & (mom==1)
 	tmp.mat[,3:4] <- colSums(het1 & !is.na(kid), na.rm=TRUE)
@@ -57,7 +57,7 @@ getStatsChunk <- function(geno){
 	a4 <- colSums(het1 & kid == 2, na.rm=TRUE)
 	tmp.mat[,2] <- a3+a4
 	h <- a2 + a4 + a6 + 2*a7
-	tmp <- rowSums(tmp.mat[,1:4])
+	tmp <- rowSums(tmp.mat[,1:4, drop=FALSE])
 	beta <- logit(h/tmp)
 	v <- tmp / ((tmp - h) * h)
 	add <- beta * beta / v
@@ -86,7 +86,7 @@ getStatsChunk <- function(geno){
 }
 
 
-colTDTmaxTest <- function(geno, perm=100000, size=50, minimum=0.000001, verbose=FALSE){
+colTDTmaxTest <- function(geno, perm=10000, size=50, chunk=10000, minimum=0.001, verbose=FALSE){
 	if(verbose)
 		cat("Starting with computing MAX-Statistics at ", date(), ".\n")
 	out <- colTDTmaxStat(geno, size=size)
@@ -99,13 +99,21 @@ colTDTmaxTest <- function(geno, perm=100000, size=50, minimum=0.000001, verbose=
 	mat.stat <- out$mat.stat
 	rm(out)
 	pval <- rep.int(NA, length(stat))
+	vec.perm <- diff(unique(c(seq(1, perm, chunk), perm+1)))
+	le.perm <- length(vec.perm)
 	ids.in <- stat > minimum
-	pval[!ids.in] <- 1
+	pval[!ids.in] <- perm
 	ids.in <- !is.na(stat) & ids.in	
 	ids.het <- matA[,3]==0 & ids.in
 	if(verbose)
 		cat("Considering SNPs without trios with two heterozygous parents.\n")
-	pval[ids.het] <- noBothHet(matA[ids.het,1], matA[ids.het,2], perm, stat[ids.het])
+	tmpPval <- numeric(sum(ids.het))
+	for(i in 1:le.perm){
+		if(verbose)
+			cat(i, "of", le.perm, "chunks. Considering", vec.perm[i], "permutations.\n")
+		tmpPval <- tmpPval + noBothHet(matA[ids.het,1], matA[ids.het,2], vec.perm[i], stat[ids.het])
+	}
+	pval[ids.het] <- tmpPval
 	if(verbose)
 		cat("Finished at ", date(), ".\n")
 	ids.het <- !ids.het & ids.in
@@ -117,10 +125,16 @@ colTDTmaxTest <- function(geno, perm=100000, size=50, minimum=0.000001, verbose=
 	if(verbose)
 		cat("These SNPs show ", length(uni.val), " different numbers of trios with two ",
 			"heterozygous parents.\n", sep="")
-	pval[ids.het] <- bothHet(matA[,1], matA[,2], matA[,3], perm, uni.val, stat[ids.het], 
-		denom[ids.het], verbose=verbose)
+	tmpPval <- numeric(sum(ids.het))
+	for(i in 1:le.perm){
+		if(verbose)
+			cat(i, "of", le.perm, "chunks. Considering", vec.perm[i], "permutations.\n")
+		tmpPval <- tmpPval + bothHet(matA[,1], matA[,2], matA[,3], vec.perm[i], uni.val,
+			stat[ids.het], denom[ids.het], verbose=verbose)
+	}
+	pval[ids.het] <- tmpPval
 	names(pval) <- names(stat)
-	out <- list(pval=pval, stat=stat, mat.stat=mat.stat)
+	out <- list(pval=pval/perm, stat=stat, mat.stat=mat.stat)
 	class(out) <- "maxTestTrio"
 	out
 } 
@@ -191,7 +205,7 @@ compBothHet <- function(a12, a34, val, perm, stat, denom){
 		tmp <- a34[i] * or/(or+1)^2 + 3 * val * or/(or+3)^2
 		v <- 1/tmp
 		rec <- beta * beta / v
-		tmpvec[i] <- mean(stat[i] <= pmax(add,dom,rec, na.rm=TRUE), na.rm=TRUE)
+		tmpvec[i] <- sum(stat[i] <= pmax(add,dom,rec, na.rm=TRUE), na.rm=TRUE)
 	}
 	tmpvec
 }		 
@@ -215,7 +229,7 @@ noBothHet <- function(a12, a34, perm, stat){
 		dom <- beta*beta/v
 		tmpstat <- stat[tmpids & a12==i]
 		for(k in 1:length(tmpstat))
-			tmpstat[k] <- mean(tmpstat[k] <= pmax(add, dom, na.rm=TRUE), na.rm=TRUE)
+			tmpstat[k] <- sum(tmpstat[k] <= pmax(add, dom, na.rm=TRUE), na.rm=TRUE)
 		tmpvec[tmpa12==i] <- tmpstat
 	}
 	vec[tmpids] <- tmpvec
@@ -245,7 +259,7 @@ noBothHet <- function(a12, a34, perm, stat){
 			rec <- beta*beta/v
 			ids2 <- which(a12==i & a34==j)
 			for(k in ids2)
-				vec[k] <- mean(stat[k] <= pmax(add, dom, rec, na.rm=TRUE), na.rm=TRUE)
+				vec[k] <- sum(stat[k] <= pmax(add, dom, rec, na.rm=TRUE), na.rm=TRUE)
 		}
 	}
 	vec

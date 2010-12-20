@@ -12,7 +12,7 @@ Computes the maximum over the gTDT statistics for an additive, dominant, and rec
 \code{colTDTmaxTest} additionally computes permutation-based p-values.
 }
 \usage{
-colTDTmaxTest(geno, perm = 1e+05, size = 50, minimum = 1e-06, verbose = FALSE)
+colTDTmaxTest(geno, perm = 10000, size = 50, chunk = 10000, minimum = 0.001, verbose = FALSE)
 colTDTmaxStat(geno, size = 50)
 
 \method{print}{maxTestTrio}(x, top = 5, digits = 4, ...)
@@ -29,6 +29,8 @@ colTDTmaxStat(geno, size = 50)
   \item{perm}{number of permutations of the response for which the permuted values of the test statistic should be computed.
 }
   \item{size}{number of SNPs that should be considered simultaneously when estimating the parameter.
+}
+  \item{chunk}{number of permutations that should be considered simultaneously in the computation of the p-values
 }
   \item{minimum}{minimum value that a test statistic must show that for the corresponding SNP the p-value is computed.
 }
