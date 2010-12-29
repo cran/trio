@@ -55,12 +55,12 @@ SNP interactions with \texttt{trio}}
 \section{Introduction}
 
 The \texttt{R} package \texttt{trio} contains functions for performing genotypic transmission
-disequilibrium tests (gTDTs) for testing whether the distributions of individual SNPs \citep{schaid1996} or
-two-way interactions of SNPs \citep{cordell2002, cordell2004} 
-differ between the cases, i.e.\ the children, and the pseudo-controls
+disequilibrium tests (gTDTs) for testing whether the distributions of individual SNPs \citep{schaid1996},
+two-way interactions of SNPs \citep{cordell2002, cordell2004}, or interactions between SNPs and binary environmental variables 
+differ between the cases, i.e.\ the children affected by a disease, and the pseudo-controls
 derived from the parents' genotypes.
 
-Furthremore, \texttt{trio} provides functionalities relevant
+Furthrmore, \texttt{trio} provides functionalities relevant
 for the analysis of case-parent trio data with {\it trio logic
 regression} \citep{li2010}. Two major features are implemented in this package:
 functions that aid in the transformation of the trio data from
@@ -72,7 +72,7 @@ disease is specified by (higher order) SNP interactions.
 In Section \ref{read} of this vignette, it is shown how family-based data stored in a linkage/ped file can be read into
 \texttt{R} and transformed into a format suitable for the application of the functions for performing the genotypic TDTs,
 whereas Section \ref{testing} contains examples for the application of these gTDT functions to individual 
-SNPs and two-way SNP interactions.
+SNPs, two-way SNP interactions, and gene-environment interactions.
 
 Section \ref{trio} is devoted to the steps relevant
 for data processing, to derive a matrix suitable as
@@ -84,15 +84,15 @@ user, or when this information is not readily available, automatically
 inferred. The haplotype blocks are also relevant in the delineation of
 the genotypes for the pseudo-controls, as the linkage disequilibrium
 (LD) structure observed in the parents is taken into account in this
-process. While this function is intended to generate complete case
-pseudo-control data as input for trio logic regression, an option to
-simply return the completed trio data is available.
+process. While this function is intended to generate complete case-pseudo-control 
+data as input for trio logic regression, an option to
+simply return the completed trio data is also available.
 
 For the estimation of the haplotype structure that might be used in the
 functions described in Section \ref{trio}, the \texttt{R} package \texttt{trio}
 also contains functions for computing and plotting the pairwise LD values
-and for detecting LD blocks. In Section \ref{getLD}, it is described how these
-pairwise values of the typically used LD measures $D^\prime$ and $r^2$ can be computed 
+and for detecting LD blocks. In Section \ref{getLD}, it is described how the
+pairwise values of the LD measures $D^\prime$ and $r^2$ can be computed 
 with the function \texttt{getLD()}, and how the $D^\prime$ values can be employed to
 estimate haplotype blocks with the algorithm of \citet{gabriel2002}. 
 
@@ -107,7 +107,7 @@ case-parent trio data are generated.
 \section{Preparing data for the genotypic TDTs}\label{read}
 
 Case-parent trio data are typically stored in a ped file. 
-The first six columns in such a ped file, which is also called linkage file, 
+The first six columns in such a ped file, which is also referred to as linkage file, 
 identify the family structure of the data, and the
 phenotype. It is assumed that only one phenotype variable (column 6)
 is used. The object \texttt{trio.ped1}, available in the \texttt{R} package,
@@ -137,7 +137,7 @@ If the arguments \texttt{coded} and \texttt{first.row} of \texttt{read.pedfile()
 are not specified by the user, \texttt{read.pedfile()} automatically tries to
 figures out how the alleles in the ped file are coded, and whether the first row contains the SNP names (\texttt{first.row = FALSE})
 or the data for the first subject (\texttt{first.row = TRUE}). In the former case, \texttt{read.pedfile()} adds the SNP names
-(with extensions \texttt{.1} and \texttt{.2} to differ between the two alleles) to the respective columns of the read data frame. 
+(with extensions \texttt{.1} and \texttt{.2} to differ between the two alleles) to the respective columns of the read-in data frame. 
 
 For the applications of the functions for performing gTDTs (see Section \ref{testing}), 
 the trio data must be in a matrix in genotype format. In such a matrix,
@@ -178,7 +178,7 @@ geno[1:5,]
 
 The matrix \texttt{trio.gen1} is the genotype matrix corresponding to
 \texttt{trio.ped1}. So the genotypes in the output of \texttt{ped2geno()} are identical to
-\texttt{trio.gen1} (except that the first two columns of \texttt{trio.gen1} contain the family ID and the personal ID). 
+\texttt{trio.gen1} (except for that the first two columns of \texttt{trio.gen1} contain the family ID and the personal ID). 
 
 <<>>=
 data(trio.data)
@@ -186,9 +186,9 @@ trio.gen1[1:5, 3:12]
 table(trio.gen1[,3:12] == geno)
 @
 
-\section{Testing SNPs and two-way SNP interactions}\label{testing}
+\section{Testing SNPs, pairs of SNPs, and GxE interactions}\label{testing}
 
-A single SNP or a two-way interaction can be tested with a gTDT by employing the functions \texttt{tdt()}
+A single SNP or two-way interaction can be tested with a gTDT by employing the functions \texttt{tdt()}
 and \texttt{tdt2way()}. If we, for example, would like to test the first SNP in the matrix \texttt{mat.test}
 available in the \texttt{R} package \texttt{trio}, then this could be done by calling
 
@@ -203,7 +203,7 @@ and \texttt{Upper} bound of the 95\% confidence interval of this odds ratio, the
 of the parameter estimate, the Wald \texttt{Statistic} for testing whether this SNP has an effect, and
 the corresponding \texttt{p-Value}.
 
-By default, an additive effect is assumed. It is, however, also possible to consider a dominant effect
+By default, an additive effect is tested. It is, however, also possible to consider a dominant effect
 <<>>=
 tdt(mat.test[,1], model="dominant")
 @
@@ -220,15 +220,17 @@ tdt2way(mat.test[,1], mat.test[,2])
 @
 
 In this case, the interaction is tested for epistatic interactions as described in \citet{cordell2002}.
-Thus, two conditional logistic regression models are fitted, one consisting of two dummy variables for each
+Thus, two conditional logistic regression models are fitted to the cases and the respective 15 matched pseudo-controls
+(i.e.\ the 15 possible, but not transmitted Mendelian genotype realizations, given the parents' genotypes at the two loci), 
+one consisting of two dummy variables for each
 of the two SNPs, and the other additionally containing the four possible interactions of these dummy variables.
 The two fitted models are then compared by a likelihood ratio test, and the $p$-values are computed by approximation
 to a $\chi^2$-distribution with four degrees of freedom.
 
 This is the recommended way to test the two-way interaction. \texttt{tdt2way()}, however,
 also provides a simpler test, in which the values of the SNPs (either coding for an additive -- which is the default --
-or for a recessive, or for a dominant model) are multiplied, and a conditional logistic regression is applied to this 
-interaction.
+for a recessive, or for a dominant model) are simply multiplied for each case and its 15 matched pseudo-controls, 
+and a conditional logistic regression is applied to this interaction.
 
 <<>>=
 tdt2way(mat.test[,1], mat.test[,2], epistatic=FALSE)
@@ -243,7 +245,7 @@ tdt.out
 @
 
 By default, the five top SNPs, i.e.\ the five SNPs with the lowest $p$-values, are shown ordered by their significance. 
-The top three SNPs are shown by
+The top three SNPs can be shown by
 
 <<>>=
 print(tdt.out, 3)
@@ -256,10 +258,34 @@ statistics for all SNPs are displayed in the order of their appearance in this m
 print(tdt.out, 10)
 @
 
-Analogously, \texttt{trio} provides a function \texttt{colTDT2way()} for testing two-way interactions. Since this gTDT
-assumes that the considered loci are unlinked, the testing might fail, i.e.\ the fitting of at least one of the two 
-conditional logistic regressions might not work properly, if SNPs are in (strong) LD. (Another reason why the fitting
-might not work properly is that the minor allele frequencies of both SNPs are small.) Therefore, \texttt{colTDT2way()}
+Since the genetic mode of inheritance is typically unknown, it might be beneficial to use the maximum over the gTDT statistics
+for an additive, a dominant, and a recessive effect as test statistic, which can be done using the function \texttt{colTDTmaxStat()}
+
+<<>>=
+max.stat <- colTDTmaxStat(mat.test)
+max.stat
+@
+
+This function just computes the MAX gTDT statistic, i.e.\ the maximum over the three gTDT statistics, since in contrast to these
+gTDT statistics, which under the null hypothesis follow an asymptotic $\chi^2_1$-distribution, the null distribution of the MAX gTDT
+statistic is unknown, and must therefore be estimated by a (time-consuming) permutation procedure. To also determine permutation-based
+p-values, \texttt{colTDTmaxTest()} can be applied to a matrix in genotype matrix. For example,
+
+<<>>=
+max.out <- colTDTmaxTest(mat.test, perm=1000)
+@
+
+computes p-values for the six SNPs in \texttt{mat.test} based on 1000 permutations of the case-pseudo-control status.
+
+<<>>=
+max.out
+@
+
+All two-way interactions comprised a matrix in genotype format can be tested using the function \texttt{colTDT2way()}. Since both the gTDT
+for two-way interactions and the likelihood ratio test of \citet{cordell2004}
+assume that the two considered loci are unlinked, the testing might fail, i.e.\ the fitting of the 
+conditional logistic regression might not work pro\-per\-ly, if the two SNPs are in (strong) LD. (Another reason why the fitting
+might not work properly is that the minor allele frequencies of both SNPs are very small.) Therefore, \texttt{colTDT2way()}
 provides an argument called \texttt{genes} that allows specifying which SNP belongs to which LD-block, gene, or genetic region.
 If \texttt{genes} is not specified, the interactions between all $m(m-1)/2$ pairs of the $m$ SNPs in a matrix are tested.
 If specified, only the interactions between SNPs showing different values of \texttt{genes} are tested.
@@ -285,7 +311,34 @@ Again, by default the top five SNP interactions are shown. The statistics for al
 print(tdt2.out, 8)
 @ 
 
+In genetic association studies, it is often also of interest to test gene-environment interactions, where most of the usually
+considered environmental variables are binary. The \texttt{R} package \texttt{trio} therefore also provides a function called
+\texttt{colGxE} to test the interactions between each of the SNPs comprised by a matrix in genotype format and a binary environmental
+variable with values zero and one. If we, for example, assume that the children in the first 50 trios comprised by (the first 150 rows of)
+\texttt{mat.test} are girls, and the remaining 50 are boys,
 
+<<>>=
+sex <- rep(0:1, e=50)
+@
+
+then we can test the interactions between the six SNPs in \texttt{mat.test} and the environmental variable ``sex" by
+
+<<>>=
+gxe.out <- colGxE(mat.test, sex)
+gxe.out
+@
+
+In this situation, a conditional logistic regression model $\beta_1 G + \beta_2 (G\times E)$ is fitted for each SNP, where $G$ is
+a variable coding for an additive effect of the SNP, and $G\times E$ is the corresponding gene-environment interaction. Analogously
+to the other gTDT functions, a dominant or a recessive effect can also be considered by changing the argument \texttt{model} of
+\texttt{colGxE}. The output
+contains the same statistics as, for example, \texttt{colTDT} for both $\beta_1$ and $\beta_2$, where the statistics for $\beta_2$
+are printed first, as these are here the effects of interest. The printing of the statistics for the testing of $G$ can be avoided
+by calling
+
+<<>>=
+print(gxe.out, onlyGxE=TRUE)
+@
 
 
 \section{Generating data for trio logic regression input}\label{trio}
@@ -359,7 +412,7 @@ an argument (in the following, we assume that the block structure is given by \t
 i.e.\ the first block consists only of the first SNP, the second block of the next four SNPs, the third
 of the following two SNPs, and the last block of the remaining three SNPs). 
 If this argument is not specified, a uniform block length
-of 1 (i.e.~no LD structure) is assumed. If the haplotype frequencies
+of 1 (i.e.\ no LD structure) is assumed. If the haplotype frequencies
 are not specified, they are estimated from the parents' genotypes
 (more information on this in the following sections).  The function
 \texttt{trio()} then returns a list that contains the genotype
@@ -586,7 +639,7 @@ round(ld.out$rSquare[1:10,1:10], 2)
 
 and the pairwise LD plot for all SNPs can be generated by
 
-\begin{figure}[!b]
+\begin{figure}[!t]
 \centerline{\includegraphics[width=0.5\textwidth]{figure1}}
 \caption{Pairwise $r^2$ values for the SNPs from \texttt{LDdata}.}\label{fig:1}
 \end{figure} 
@@ -783,7 +836,7 @@ sim[[1]][1:6,]
 
 
 \section*{Acknowledgments}
-Support was provided by NIH grants R01 DK061662 and R01 HL090577, and by DFG grant SCHW 1508/1-1.
+Support was provided by NIH grants R01 DK061662 and R01 HL090577, and by DFG grant SCHW 1508/1-1 and SCHW 1508/2-1.
 
 %\clearpage
 %\bibliography{xbib_appFinal}
@@ -792,39 +845,39 @@ Support was provided by NIH grants R01 DK061662 and R01 HL090577, and by DFG gra
 \begin{thebibliography}{4}
 
 \bibitem[Cordell(2002)Cordell]{cordell2002}
-Cordell, H.~J. (2002).
+Cordell, H.J. (2002).
 \newblock Epistasis: What it means, what it doesn't mean, and statistical
   methods to detect it in humans.
 \newblock {\em Hum. Mol. Genet.}, {\bf 11}, 2463--2468.
 
-\bibitem[Cordell {\em et~al.}(2004)Cordell, Barratt, and Clayton]{cordell2004}
-Cordell, H.~J., Barratt, B.~J., and Clayton, D.~G. (2004).
+\bibitem[Cordell {\em et al.}(2004)Cordell, Barratt, and Clayton]{cordell2004}
+Cordell, H.J., Barratt, B.J., and Clayton, D.G. (2004).
 \newblock Case/pseudocontrol analysis in genetic association studies: A unified
   framework for detection of genotype and haplotype associations, gene-gene and
   gene-environment interactions, and parent-of-origin effects.
 \newblock {\em Genet. Epidemiol.}, {\bf 26}, 167--185.
 
-\bibitem[Gabriel {\em et~al.}(2002)Gabriel, Schaffner, Nguyen, Moore, Roy,
+\bibitem[Gabriel {\em et al.}(2002)Gabriel, Schaffner, Nguyen, Moore, Roy,
   Blumenstiel, Higgins, {DeFelice}, Lochner, Faggart, {Liu-Cordero}, Rotimi,
   Adeyemo, Cooper, Ward, Lander, Daly, and Altshuler]{gabriel2002}
-Gabriel, S.~B., Schaffner, S.~F., Nguyen, H., Moore, J.~M., Roy, J.,
+Gabriel, S.B., Schaffner, S.F., Nguyen, H., Moore, J.M., Roy, J.,
   Blumenstiel, B., Higgins, J., {DeFelice}, M., Lochner, A., Faggart, M.,
-  {Liu-Cordero}, S.~N., Rotimi, C., Adeyemo, A., Cooper, R., Ward, R., Lander,
-  E.~S., Daly, M.~J., and Altshuler, D. (2002).
+  {Liu-Cordero}, S.N., Rotimi, C., Adeyemo, A., Cooper, R., Ward, R., Lander,
+  E.S., Daly, M.J., and Altshuler, D. (2002).
 \newblock The structure of haplotype blocks in the human genome.
 \newblock {\em Science\/}, {\bf 296}, 2225--2229.
 
-\bibitem[Li {\em et~al.}(2010)Li, Fallin, Louis, Lasseter, {McGrath},
+\bibitem[Li {\em et al.}(2010)Li, Fallin, Louis, Lasseter, {McGrath},
   Avramopoulos, Wolyniec, Valle, Liang, Pulver, and Ruczinski]{li2010}
-Li, Q., Fallin, M.~D., Louis, T.~A., Lasseter, V.~K., {McGrath}, J.~A.,
-  Avramopoulos, D., Wolyniec, P.~S., Valle, D., Liang, K.~Y., Pulver, A.~E.,
+Li, Q., Fallin, M.D., Louis, T.A., Lasseter, V.K., {McGrath}, J.A.,
+  Avramopoulos, D., Wolyniec, P.S., Valle, D., Liang, K.Y., Pulver, A.E.,
   and Ruczinski, I. (2010).
 \newblock Detection of {SNP-SNP} interactions in trios of parents with
   schizophrenic children.
 \newblock {\em Genet. Epidemiol.}, {\bf 34}, 396--406.
 
 \bibitem[Schaid(1996)Schaid]{schaid1996}
-Schaid, D.~J. (1996).
+Schaid, D.J. (1996).
 \newblock General score tests for associations of genetic markers with disease
   using cases and their parents.
 \newblock {\em Genet. Epidemiol.}, {\bf 13}, 423--449.

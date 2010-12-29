@@ -4394,7 +4394,7 @@ function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits 
 	tryCatch({
 				
 				tmpGetObj = NULL
-				tmpGetObj = get(appVarNames$digit, env=.GlobalEnv)
+				tmpGetObj = get(appVarNames$digit, envir=.GlobalEnv)
 				
 				idx4hapDigit$digitMap1 = tmpGetObj$digitMap1[1:(2^(snpLen-1)), 1:snpLen]
 				idx4hapDigit$digitMap2 = tmpGetObj$digitMap2[1:(2^(snpLen-1)), 1:snpLen]
@@ -5085,7 +5085,7 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
   if(ifD) print(par1)
   if(ifD) print(par2)
   tryCatch({
-    maxTbl = get(appVarNames$tbl, env=.GlobalEnv)
+    maxTbl = get(appVarNames$tbl, envir=.GlobalEnv)
     maxRow = nrow(maxTbl)
   }, error=function(e){
     errTrace = paste(e, collapse=";", sep="")
@@ -5093,7 +5093,7 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
   })
   
   tryCatch({
-    maxMateTbl = get(appVarNames$mateTbl, env=.GlobalEnv)
+    maxMateTbl = get(appVarNames$mateTbl, envir=.GlobalEnv)
   }, error=function(e){
     errTrace = paste(e, collapse=";", sep="")
     stop(paste("\n", fStr, errTrace, "\nApp-wise Global Variable ", appVarNames$freqMap, " does not exisit."))
@@ -6448,8 +6448,8 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
   errorTrap = NULL
   
   tryCatchEnv = new.env(parent=baseenv())
-  assign("trapID", 0, env=tryCatchEnv)
-  assign("errorTrap", errorTrap, env=tryCatchEnv)
+  assign("trapID", 0, envir=tryCatchEnv)
+  assign("errorTrap", errorTrap, envir=tryCatchEnv)
 
   if(!is.null(get(toolname$freqMap)$hapBkOnlyMap)){
 	  all.hapIndex = get(toolname$freqMap)$hapIndex
@@ -6551,17 +6551,17 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
            },  error = function(e) {
                ##print(qTraceback())
                traceback()
-			   b = get("trapID", env=tryCatchEnv)
+			   b = get("trapID", envir=tryCatchEnv)
 			   b = b +1 
-			   assign("trapID", b, env=tryCatchEnv)
+			   assign("trapID", b, envir=tryCatchEnv)
                #trapID <<- trapID+1
 	
                ## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
 			   #errorTrap <<- rbind(errorTrap, errorInfo)
 	           errorInfo = c(trapID=b, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
-			   a = get("errorTrap", env=tryCatchEnv)
+			   a = get("errorTrap", envir=tryCatchEnv)
 			   a = rbind(a, errorInfo)
-			   assign("errorTrap", a, env=tryCatchEnv)
+			   assign("errorTrap", a, envir=tryCatchEnv)
 			   
                
                 if(!is.null(logF)){
@@ -6648,17 +6648,17 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
                ##print(qTraceback())
                traceback()
 			   
-			   b = get("trapID", env=tryCatchEnv)
+			   b = get("trapID", envir=tryCatchEnv)
 			   b = b +1 
-			   assign("trapID", b, env=tryCatchEnv)
+			   assign("trapID", b, envir=tryCatchEnv)
 			   #trapID <<- trapID+1
 			   
 	           ## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
 			   #errorTrap <<- rbind(errorTrap, errorInfo)
 			   errorInfo = c(trapID=b, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
-    		   a = get("errorTrap", env=tryCatchEnv)
+    		   a = get("errorTrap", envir=tryCatchEnv)
 			   a = rbind(a, errorInfo)
-			   assign("errorTrap", a, env=tryCatchEnv)			   
+			   assign("errorTrap", a, envir=tryCatchEnv)			   
      
                 if(!is.null(logF)){
                   logl(logF, paste("\nError trap id=(", b, ") and details for errors:", sep=""))
@@ -6689,7 +6689,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
       } ## if (is.element(unit, all.hapIndex)){
     } ## for( unit in idx){
 
-	errorTrap=get("errorTrap", env=tryCatchEnv)
+	errorTrap=get("errorTrap", envir=tryCatchEnv)
     if(!is.null(errorTrap)){
       write.table(errorTrap, file=paste(logErr, "_errorTrap.csv", sep=""), sep=",",
                  append = F, row.names = F, col.names = TRUE)
@@ -6804,8 +6804,8 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
   errorTrap = NULL
   
   tryCatchEnv = new.env(parent=baseenv())
-  assign("trapID", 0, env=tryCatchEnv)
-  assign("errorTrap", errorTrap, env=tryCatchEnv)
+  assign("trapID", 0, envir=tryCatchEnv)
+  assign("errorTrap", errorTrap, envir=tryCatchEnv)
   
   #print("Get imputBkRecord.ct")
   #print(dim(imputBkRecord))
@@ -6911,17 +6911,17 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
                ##print(qTraceback())
                traceback()
 			   
-			   b = get("trapID", env=tryCatchEnv)
+			   b = get("trapID", envir=tryCatchEnv)
 			   b = b +1 
-			   assign("trapID", b, env=tryCatchEnv)			   
+			   assign("trapID", b, envir=tryCatchEnv)			   
 			   #trapID <<- trapID+1
 		
 				## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
 				#errorTrap <<- rbind(errorTrap, errorInfo)	
 	            errorInfo = c(trapID=b, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
-				a = get("errorTrap", env=tryCatchEnv)
+				a = get("errorTrap", envir=tryCatchEnv)
 				a = rbind(a, errorInfo)
-				assign("errorTrap", a, env=tryCatchEnv)
+				assign("errorTrap", a, envir=tryCatchEnv)
 	
                 if(!is.null(logF)){
                   logl(logF, paste("\nError trap id=(", b, ") and details for errors:", sep=""))
@@ -6997,17 +6997,17 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
            },  error = function(e) {
                ##print(qTraceback())
                traceback()
-			   b = get("trapID", env=tryCatchEnv)
+			   b = get("trapID", envir=tryCatchEnv)
 			   b = b +1 
-			   assign("trapID", b, env=tryCatchEnv)			   
+			   assign("trapID", b, envir=tryCatchEnv)			   
 			   #trapID <<- trapID+1
 			
                ## HARD CODE!!!HARD CODE: trio id is assumed to the be first one
 			   #errorTrap <<- rbind(errorTrap, errorInfo)
 			   errorInfo = c(trapID=b, bkIdx=unit, pedgree=raw[y1,1], case=raw[(y1+2),2], c(y1, y2, x1, x2))
-			   a = get("errorTrap", env=tryCatchEnv)
+			   a = get("errorTrap", envir=tryCatchEnv)
 			   a = rbind(a, errorInfo)
-			   assign("errorTrap", a, env=tryCatchEnv)
+			   assign("errorTrap", a, envir=tryCatchEnv)
 			   
                 if(!is.null(logF)){
                   logl(logF, paste("\nError trap id=(", b, ") and details for errors:", sep=""))
@@ -7045,7 +7045,7 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
 #       print( imputBkRecord[1:(imputBkRecord.ct*job), 1:4])
     } ## for( unit in idx){
 
-	errorTrap=get("errorTrap", env=tryCatchEnv)
+	errorTrap=get("errorTrap", envir=tryCatchEnv)
     if(!is.null(errorTrap)){
       write.table(errorTrap, file=paste(logErr, "_errorTrap.csv", sep=""), sep=",",
                  append = F, row.names = F, col.names = TRUE)
@@ -7309,8 +7309,8 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 		colnames(MedErr)=c("y", "x", "trio", "SNP")
 		
 		tryCatchEnv = new.env(parent=baseenv())
-		assign("MedErr.ct", 0, env=tryCatchEnv)	
-		assign("MedErr", MedErr, env=tryCatchEnv)
+		assign("MedErr.ct", 0, envir=tryCatchEnv)	
+		assign("MedErr", MedErr, envir=tryCatchEnv)
 		
 		trioCt = nrow(snp1digit)/3
 		
@@ -7324,23 +7324,23 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 					}, error = function(e){
 						#print(paste("trioCt=", trioCt))
 						#print(paste("snpStartLeftIndex=", snpStartLeftIndex))
-					    a = get("MedErr.ct", env=tryCatchEnv)
+					    a = get("MedErr.ct", envir=tryCatchEnv)
 					    a = a+1
-					    assign("MedErr.ct", a, env=tryCatchEnv)
+					    assign("MedErr.ct", a, envir=tryCatchEnv)
 					    #MedErr.ct <<- MedErr.ct +1
 						#print(paste("MedErr.ct=", MedErr.ct, " i=", i))
 						tttx = ceiling(i/trioCt)
 						ttty = i%%trioCt
 						if(ttty==0) ttty = trioCt
 						## CHANGED: 2009: report the index in the trio1digit
-						b = get("MedErr", env=tryCatchEnv)
+						b = get("MedErr", envir=tryCatchEnv)
 						b[a,] = c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+3,  ttty,    tttx)
-						assign("MedErr", b, env=tryCatchEnv)
+						assign("MedErr", b, envir=tryCatchEnv)
 						#print( MedErr[MedErr.ct,,drop=F] )
 					})          
 		}
-		MedErr.ct = get("MedErr.ct", env=tryCatchEnv)
-		MedErr = get("MedErr", env=tryCatchEnv)
+		MedErr.ct = get("MedErr.ct", envir=tryCatchEnv)
+		MedErr = get("MedErr", envir=tryCatchEnv)
 		
 		if(MedErr.ct==0) {
 			MedErr=NULL
@@ -7545,12 +7545,12 @@ function(maxTbl, counter, maxMateTbl, probVec, prob1, prob2, job, logF){
 #     if(cutoff==20){
 #       bkMapStr = paste(fStr, "\nCutoffed possible dip mating table:\n",
 #                      paste(wrComTbl( cbind(maxTbl[1:cutoff, ,drop=F], prob[1:cutoff], probVec[1:cutoff]),
-#                               colName=c("f1", "f2", "m1", "m2", "c1", "c2", "prob", "probVec")), collapse="\n", sep=""),
+#                               colNames=c("f1", "f2", "m1", "m2", "c1", "c2", "prob", "probVec")), collapse="\n", sep=""),
 #                      sep="")
 #     }else{
 #       bkMapStr = paste(fStr, "\nCompleted poss dip mating table:\n",
 #                      paste(wrComTbl( cbind(maxTbl[1:cutoff, ,drop=F], prob[1:cutoff], probVec[1:cutoff]),
-#                               colName=c("f1", "f2", "m1", "m2", "c1", "c2", "prob", "probVec")), collapse="\n", sep=""),
+#                               colNames=c("f1", "f2", "m1", "m2", "c1", "c2", "prob", "probVec")), collapse="\n", sep=""),
 #                      sep="")
 # 
 #     }
@@ -7617,7 +7617,7 @@ function(appVarNames, homoHetoInfo, snpLen){
 	tryCatch({
 				
 				tmpGetObj = NULL
-				tmpGetObj = get(appVarNames$digit, env=.GlobalEnv)
+				tmpGetObj = get(appVarNames$digit, envir=.GlobalEnv)
 				idx4hapDigit$digitMap1 = tmpGetObj$digitMap1[1:(2^(snpLen-1)), 1:snpLen]
 				idx4hapDigit$digitMap2 = tmpGetObj$digitMap2[1:(2^(snpLen-1)), 1:snpLen]
 				
@@ -7860,8 +7860,8 @@ function(str, delim, re.1st = F){
 
 qTraceback <-
 function(x = NULL){
-    if (is.null(x) && (exists(".Traceback", env = .GlobalEnv))) 
-        x <- get(".Traceback", env = .GlobalEnv)
+    if (is.null(x) && (exists(".Traceback", envir = .GlobalEnv))) 
+        x <- get(".Traceback", envir = .GlobalEnv)
 
     reStr = NULL
     if (is.null(x) || length(x) == 0) 
@@ -8556,7 +8556,7 @@ function(freqMaps){
     #print(paste("Application wise global environment var with names as", paste(appVarNames, sep="", collapse=";")))
     
     lapply(1:length(appVarNames), FUN=function(item, varNames, varList){
-              assign(varNames[[item]], varList[[item]], env=.GlobalEnv); return(NULL)},
+              assign(varNames[[item]], varList[[item]], envir=.GlobalEnv); return(NULL)},
            varNames=appVarNames,
            varList = list(semiAugHapBkGenoMap, idx4hapDigitAll, exhaustHapExpAll, maxTbl, maxMateTbl))
     return(appVarNames)
@@ -8740,12 +8740,12 @@ function(caseRow, controlDf, pedCol, memCol, dadCol, momCol){
 
    if( length(dadRow)!=1 ){
      warning(paste("\n The individual is affected, but we have no data on the father. Case information::\n",
-                   paste(wrComTbl(caseRow[1:7], colName=colnames(caseRow)[1:7]), collapse="\n"), sep=""))
+                   paste(wrComTbl(caseRow[1:7], colNames=colnames(caseRow)[1:7]), collapse="\n"), sep=""))
      return(NULL)
    }
    if( length(momRow)!=1 ){
      warning(paste("\n The individual is affected, but we have no data on the mother. Case information::\n",
-                   paste(wrComTbl(caseRow[1:7], colName=colnames(caseRow)[1:7]), collapse="\n"), sep=""))
+                   paste(wrComTbl(caseRow[1:7], colNames=colnames(caseRow)[1:7]), collapse="\n"), sep=""))
      return(NULL)
    }
   
@@ -8775,7 +8775,7 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
       matingTbInfo = bkMap.HRCB.famMap(info$bkMapS, rule, newColName=info$newColName,  ifS=infoS, baseName=baseObj.name)
 
       #finalUse =  baseObj.name
-      assign(finalUse, matingTbInfo, env=.GlobalEnv)
+      assign(finalUse, matingTbInfo, envir=.GlobalEnv)
       
     }else{
       ## or not save it, just used. Not recommend.
@@ -8783,7 +8783,7 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
       matingTbInfo = bkMap.HRCB.famMap(info$bkMapS, rule, newColName=info$newColName,  ifS=infoS, baseName=NULL)
 
       #finalUse = matingTblInfo
-      assign(finalUse, matingTbInfo, env=.GlobalEnv)
+      assign(finalUse, matingTbInfo, envir=.GlobalEnv)
     }
     
   }else{
@@ -8792,11 +8792,11 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
     if( is.character(baseObj.saveFN)){
       print(qp("Stepstone object is saved before as:", baseObj.saveFN, ". Do not need to generate it."))
       tmp = load(paste(baseObj.saveFN, ".RData", sep=""))
-      assign(finalUse, get(tmp[1]), env=.GlobalEnv)
+      assign(finalUse, get(tmp[1]), envir=.GlobalEnv)
       
     }else{
       print(qp("Stepstone object is given."))
-      assign(finalUse, baseObj.saveFN, env=.GlobalEnv)
+      assign(finalUse, baseObj.saveFN, envir=.GlobalEnv)
     }
   }
 
@@ -8870,14 +8870,14 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
       if(ifD) print(qp("No stepstone object is previously saved. Generate and save the object as:", spStrata.name, ".RData"))
 
       #finalUse = spStrata.name
-      assign(finalUse, spStrata, env=.GlobalEnv)
+      assign(finalUse, spStrata, envir=.GlobalEnv)
       
     }else{
       ## or not save it, just used. Not recommend.
       spStrata = bkMap.HRCB.Esp1Rule.Base(bkMap, rule, baseName=NULL)
 
       #finalUse = spStrata
-      assign(finalUse, spStrata, env=.GlobalEnv)
+      assign(finalUse, spStrata, envir=.GlobalEnv)
       #print(qp("No stepstone object is previously saved. Generate but not save the object."))
     }
     
@@ -8888,7 +8888,7 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
       if(ifD) print(qp("Stepstone object is previously saved as:", spStrata.saveFN, ".RData. Do not need to generate it."))
 
       tryCatch({tmp = load(paste(spStrata.saveFN, ".RData", sep=""))
-               assign(finalUse, get(tmp[1]), env=.GlobalEnv)  },
+               assign(finalUse, get(tmp[1]), envir=.GlobalEnv)  },
              error = function(e){
                stop(paste("Cannot open step-stone file '", spStrata.saveFN, ".RData'.", sep=""))
              })
@@ -8896,7 +8896,7 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
     }else{
       #print(qp("Stepstone object is given."))
       #finalUse = spStrata.saveFN
-      assign(finalUse, spStrata.saveFN, env=.GlobalEnv)
+      assign(finalUse, spStrata.saveFN, envir=.GlobalEnv)
     }
   }
   
@@ -9250,8 +9250,8 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 		MedErr = matrix(NA, ncol=4, nrow=ncol(snpTrio))
 		colnames(MedErr)=c("y", "x", "trio", "SNP")
 		tryCatchEnv = new.env(parent=baseenv())
-		assign("MedErr.ct", 0, env=tryCatchEnv)	
-		assign("MedErr", MedErr, env=tryCatchEnv)
+		assign("MedErr.ct", 0, envir=tryCatchEnv)	
+		assign("MedErr", MedErr, envir=tryCatchEnv)
 
 		trioCt = nrow(snp1digit)/3
 		
@@ -9260,20 +9260,20 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 			tryCatch({
 						tt = checkMendelianError(codedSNPTrio=snpTrio[,i], snpCoding=c(0,1,2,3))
 					}, error = function(e){
-						a = get("MedErr.ct", env=tryCatchEnv)
+						a = get("MedErr.ct", envir=tryCatchEnv)
 						a = a+1
-						assign("MedErr.ct", a, env=tryCatchEnv)
+						assign("MedErr.ct", a, envir=tryCatchEnv)
 						tttx = ceiling(i/trioCt)
 						ttty = i%%trioCt
 						if(ttty==0) ttty = trioCt
-						b = get("MedErr", env=tryCatchEnv)
+						b = get("MedErr", envir=tryCatchEnv)
 						b[a,] = c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+1+snpStartLeftIndex-1,  ttty,    tttx)
-						assign("MedErr", b, env=tryCatchEnv)
+						assign("MedErr", b, envir=tryCatchEnv)
 						#print( MedErr[MedErr.ct,,drop=F] )
 					})          
 		}
-		MedErr.ct = get("MedErr.ct", env=tryCatchEnv)
-		MedErr = get("MedErr", env=tryCatchEnv)
+		MedErr.ct = get("MedErr.ct", envir=tryCatchEnv)
+		MedErr = get("MedErr", envir=tryCatchEnv)
 				
 		if(MedErr.ct==0) {
 			MedErr=NULL
@@ -9775,7 +9775,7 @@ function(nameList, varList, na.allow = T, na.replace = NULL){
   namePos = rep(0, length=exLen)
   
   tryCatchEnv = new.env(parent=baseenv())
-  assign("namePos", namePos, env=tryCatchEnv)
+  assign("namePos", namePos, envir=tryCatchEnv)
   
   ## based on this map, find the right sequence of positions to extract values
   for ( i in 1:exLen){
@@ -9784,9 +9784,9 @@ function(nameList, varList, na.allow = T, na.replace = NULL){
                if(!na.allow){
                  stop(paste("var with name=[", nameList[i], "] not found in the varList.", sep=""))
                }else{
-				 a = get("namePos", env=tryCatchEnv)
+				 a = get("namePos", envir=tryCatchEnv)
 				 a[i]=0
-				 assign("namePos", a, env=tryCatchEnv)
+				 assign("namePos", a, envir=tryCatchEnv)
                  #namePos[i] <<- 0
                }
              })
