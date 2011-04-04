@@ -9,7 +9,7 @@
   used for the imputation of missing genotypes in case-parent data,
   while taking the existing SNP block structure into account.}
 
-\usage{trio(trio.dat, freq=NULL, blocks=NULL, logic=T, \ldots)}
+\usage{trio(trio.dat, freq=NULL, blocks=NULL, logic=TRUE, \ldots)}
 
 \arguments{
 
@@ -19,9 +19,7 @@
   \item{freq}{An optional data frame specifying haplotype blocks and
     frequencies. For an example, see the data frame \code{simuBkMap}
     contained in this package.  If provided, the following argument
-    \code{blocks} will be ignored.}
-
-  \item{}{
+    \code{blocks} will be ignored.
       
     The object must have three columns in the following order: block
     identifiers (\code{key}), haplotypes (\code{hap}), and haplotype
@@ -29,8 +27,8 @@
     each block. For each block, the haplotypes must be encoded as a
     string of the integers 1 and 2, where 1 refers to the major allele
     and 2 refers to the minor allele. The respective haplotype
-    frequencies will be normalized to sum one.}
-
+    frequencies will be normalized to sum one.
+ }
   \item{blocks}{An optional vector of integers, specifying (in sequence)
     the lengths of the linkage disequilibrium blocks.  The sum of these
     integers must be equal to the total numbers of SNPs in the data set
@@ -65,7 +63,15 @@
   binary format, suitable as input for trio logic regression.  Since
   trio logic regression requires complete data, the function \code{trio}
   also performs an imputation of the missing genotypes. The imputation
-  is based on the estimated or supplied haplotype information.}
+  is based on the estimated or supplied haplotype information.
+  
+  The output of \code{trio} can be used to perform a trio logic regression
+  analysis with \code{\link[LogicReg]{logreg}}. For such an analysis, Fortran code
+  provided by the \code{trio} package must be added to the \code{LogicReg} package
+  containing \code{\link[LogicReg]{logreg}}. For a description on how a trio logic 
+  regression analysis can be performed, see the \bold{Details} section
+  of \code{\link{trio.permTest}}.
+}
 
 \value{
 
@@ -75,10 +81,10 @@
     3 for the probands followed by three zeros indicating the
     pseudo-controls). The following columns specify the (possibly
     imputed) genotypes in dominant and recessive coding, with two binary
-    variables for each SNP. This is returned only if \code{logic=TRUE}.}
+    variables for each SNP. This is returned only if \code{logic = TRUE}.}
 
   \item{trio}{A data frame with imputed SNPs in genotype format derived
-    from the input. This is returned only if \code{logic=FALSE}.}
+    from the input. This is returned only if \code{logic = FALSE}.}
 
   \item{miss}{A data frame with five columns indicating the missing genotypes in the input object. The five columns of the data frame refer to the family id (\code{famid}), the individual id (\code{pid}), the genotype (\code{snp}), the row numbers (\code{r}), and the column numbers (\code{c}). This element will be \code{NULL} if there are no missing data. }
   
@@ -87,15 +93,22 @@
 
 }
 
+\references{
+Li, Q., Fallin, M.D., Louis, T.A., Lasseter, V.K., McGrath, J.A., Avramopoulos, D., Wolyniec, P.S., Valle, D., Liang, K.Y., Pulver, A.E., 
+and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents with Schizophrenic Children. Genetic Epidemiology, 34, 396-406. 
+}
+
+\section{Acknowledgments}{Support was provided by NIH grants R01 DK061662 and HL090577.}
+
 \author{Qing Li, mail2qing@yahoo.com}
 
 \seealso{\code{\link{trio.check}}, \code{\link[haplo.stats]{haplo.em}}}
 
 \examples{\dontrun{
-data(trio.ped1)
+data(trio.data)
 trio.tmp = trio.check(dat=trio.ped1)
 trio.bin = trio(trio.dat=trio.tmp, blocks=c(1,4,2,3))
 trio.bin$bin[1:8,]
 }}
 
-\section{Acknowledgments}{Support was provided by NIH grants R01 DK061662 and HL090577.}
+\keyword{manip}

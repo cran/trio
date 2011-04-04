@@ -13,8 +13,8 @@ Computes the genotic TDT for a SNP or for each column of a matrix representing a
 
 \usage{
 tdt(snp, model = c("additive", "dominant", "recessive"))
-colTDT(mat.snp, model = c("additive", "dominant", "recessive"), fast = TRUE,
-   size = 50, warnError = TRUE)
+colTDT(mat.snp, model = c("additive", "dominant", "recessive"), 
+   fast = TRUE, size = 50, warnError = TRUE)
 
 \method{print}{tdt}(x, digits = 4, ...)
 \method{print}{colTDT}(x, top = 5, digits = 4, ...)

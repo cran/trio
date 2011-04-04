@@ -10,14 +10,12 @@ function returns an object suitable for input to the \code{\link{trio}}
 function. Otherwise, an object identifying the Mendelian errors is
 returned.}
 
-\usage{trio.check(dat, is.linkage=T, replace=F)}
+\usage{trio.check(dat, is.linkage=TRUE, replace=FALSE)}
 
 \arguments{
 
   \item{dat}{A matrix or data frame of pedigree data in linkage format,
-    or in genotype format.}
-
-  \item{}{
+    or in genotype format.
 
     If the data are in \strong{linkage format}, the file has to have the
     standard linkage/pedigree format. Each row describes an individual,
@@ -36,10 +34,8 @@ returned.}
     an error. Please see the data frames \code{trio.ped1} and
     \code{trio.ped2} contained in this package as examples for trio data
     in linkage file format (complete and with missing records,
-    respectively).}
-
-  \item{}{
-
+    respectively).
+    
     If the data are in trio \strong{genotype format}, each row in the
     object describes an individual, and each block of three consecutive
     rows describes the two parents and the affected child in a trio. The
@@ -53,7 +49,8 @@ returned.}
     2=rare homozygote, and \code{NA}=missing genotype).  Please see the
     data frames \code{trio.gen1} and \code{trio.gen2} contained in this
     package as examples for trio data in linkage file format (complete
-    and with missing records, respectively).}
+    and with missing records, respectively).
+}
     
   \item{is.linkage}{A logical value indicating if the case parent data
     are in linkage file format (\code{TRUE}) or in genotype format
@@ -114,24 +111,27 @@ returned.}
 
 }
 
+\references{
+Li, Q., Fallin, M.D., Louis, T.A., Lasseter, V.K., McGrath, J.A., Avramopoulos, D., Wolyniec, P.S., Valle, D., Liang, K.Y., Pulver, A.E., 
+and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents with Schizophrenic Children. Genetic Epidemiology, 34, 396-406. 
+}
+
 \author{Qing Li, mail2qing@yahoo.com}
 
 \seealso{\code{\link{trio}}}
 
 \examples{\dontrun{
-data(trio.ped1)
+data(trio.data)
 trio.tmp = trio.check(dat=trio.ped1)
 str(trio.tmp, max=1)
 trio.tmp$trio[1:6,]
 
-data(trio.ped.err)
 trio.tmp = trio.check(dat=trio.ped.err)
 str(trio.tmp, max=1)
 trio.tmp$errors
 trio.tmp$trio.err[1:3, c(1,2, 11:12)]
 trio.ped.err[1:3,c(1:2, 23:26)]
 
-data(trio.gen.err)
 trio.tmp = trio.check(dat=trio.gen.err, is.linkage=FALSE)
 trio.tmp$errors
 trio.tmp$trio.err[1:6, c(1,2,7), drop=FALSE]
@@ -142,9 +142,8 @@ trio.rep$trio[1:6,c(1,2,7)]
 
 \section{Acknowledgments}{Support was provided by NIH grants R01 DK061662 and HL090577.}
 
+\keyword{manip}
 
 
 
   
-
-

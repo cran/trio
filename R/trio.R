@@ -1,6 +1,6 @@
 trio <-
-function(trio.dat, freq=NULL, blocks=NULL, logic=T, ...){
-   ifD = F
+function(trio.dat, freq=NULL, blocks=NULL, logic=TRUE, ...){
+   ifD = FALSE
 
    alleleCode = 1:2
    
@@ -19,9 +19,9 @@ function(trio.dat, freq=NULL, blocks=NULL, logic=T, ...){
      freq.fromhaponly = freqbuild.haponly(hap=freq, alleleCode=alleleCode)
      
      if(logic){
-       imputed = trio.impu(triodd=trio.datIn, freq=freq.fromhaponly, impu.missingOnly=F)
+       imputed = trio.impu(triodd=trio.datIn, freq=freq.fromhaponly, impu.missingOnly=FALSE)
      }else{
-       imputed = trio.impu(triodd=trio.datIn, freq=freq.fromhaponly, impu.missingOnly=T)
+       imputed = trio.impu(triodd=trio.datIn, freq=freq.fromhaponly, impu.missingOnly=TRUE)
        imputed = cbind(trio.datIn[,1:2], imputed)
      }
    }else{
@@ -61,9 +61,9 @@ function(trio.dat, freq=NULL, blocks=NULL, logic=T, ...){
 
  
      if(logic){     
-       imputed = trio.impu(triodd=trio.datIn, freq=trio.re$freq,  impu.missingOnly=F)
+       imputed = trio.impu(triodd=trio.datIn, freq=trio.re$freq,  impu.missingOnly=FALSE)
      }else{
-       imputed = trio.impu(triodd=trio.datIn, freq=trio.re$freq,  impu.missingOnly=T)
+       imputed = trio.impu(triodd=trio.datIn, freq=trio.re$freq,  impu.missingOnly=TRUE)
        imputed = cbind(trio.datIn[,1:2], imputed)
      }
    }
@@ -135,13 +135,13 @@ function(trio.dat, freq=NULL, blocks=NULL, logic=T, ...){
          print(trio.missIdx)
   
          #return( trio = list(trio.datIn), miss=list(trio.missIdx))
-         print(dim(   trio.datIn[trio.missIdx[1:300,1], 1:2, drop=F]  ))
-         print(dim(trio.missIdx[,2:1, drop=F]))
+         print(dim(   trio.datIn[trio.missIdx[1:300,1], 1:2, drop=FALSE]  ))
+         print(dim(trio.missIdx[,2:1, drop=FALSE]))
          print(length(trio.missIdx[,2]+2))
        }
        trio.missNewInfo = data.frame(
-         trio.datIn[trio.missIdx[,1],1:2, drop=F],
-         trio.missIdx[,2:1, drop=F],
+         trio.datIn[trio.missIdx[,1],1:2, drop=FALSE],
+         trio.missIdx[,2:1, drop=FALSE],
          trio.missIdx[,2]+2)
        trio.missNewInfo = trio.missNewInfo[order(trio.missNewInfo[,1], trio.missNewInfo[,2], trio.missNewInfo[,3]),]
        colnames(trio.missNewInfo) = c("famid", "pid", "snp", "r", "c")

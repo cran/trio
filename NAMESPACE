@@ -6,7 +6,8 @@ getLD,findLDblocks, splitBlocks,
 tdt, colTDT, tdt2way, colTDT2way, colTDTinter2way, compPermTDT2way,
 ped2geno, read.pedfile, removeSNPs, removeTrios, orderSNPs, colMAFtrio,
 colTDTmaxStat, colTDTmaxTest,
-colGxE
+colGxE,
+trio.permTest
 )
 
 S3method(plot, getLD)

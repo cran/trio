@@ -56,7 +56,7 @@ function(bina.col, model.signal.cur ){
         model.signal.cur = util.str.replace(str=model.signal.cur,
                            replaced=tmp.str,
                            new=paste(substr(tmp.str, 1, nchar(tmp.str)-1), "a", sep=""),
-                           replace.all=T)
+                           replace.all=TRUE)
         ##print(model.signal.cur)
       }
       
@@ -78,7 +78,7 @@ function(binaTree,  elm.level, elm.var,  elm.bool){
   # curElmId: the index of current element, or missing(0)
   
   # when the element is a "not" element, the level has to be -1
-  ifD = F
+  ifD = FALSE
  
   if (ifD) print("binaTree.addElm")
   if (ifD) print(qp("elm.level=", elm.level))
@@ -112,7 +112,7 @@ function(binaTree,  elm.level, elm.var,  elm.bool){
 
 binaTree.addNode <-
 function(binaTree,  elm.level, elm.bool){
-  ifD = F
+  ifD = FALSE
   if (ifD) print("binaTree.addNode")
   if (ifD) print(qp("elm.level=", elm.level))
   if (ifD) print(qp("elm.bool=", elm.bool))
@@ -137,7 +137,7 @@ function(binaTree,  elm.level, elm.bool){
   ## if elm.nMa has the node open
   if (length(elm.nlist)>=1){
       fil = elm.nMa[,2]==elm.level & elm.nMa[,4]==1
-      if(sum(fil, na.rm=T)==1){
+      if(sum(fil, na.rm=TRUE)==1){
         # append to old node
         open.id = elm.nMa[,1][fil]
         
@@ -172,8 +172,8 @@ function(binaTree,  elm.level, elm.bool){
 }
 
 binaTree.apply <-
-function(binaTree, data, colnames, re.final=T){
-  ifD = F
+function(binaTree, data, colnames, re.final=TRUE){
+  ifD = FALSE
   ori.rowCt = nrow(data)
   col.idx = 1:ncol(data)
   
@@ -227,13 +227,13 @@ function(binaTree, data, colnames, re.final=T){
 
     new.order = order(nMa[,2], decreasing = TRUE)
     if(ifD) print(nMa)
-    nMa = nMa[new.order, ,drop=F]
+    nMa = nMa[new.order, ,drop=FALSE]
     if(ifD) print(nMa)
     #nlist = binaTree$elm.nlist[new.order]
     nlist = binaTree$elm.nlist
     if(ifD) print(nlist)
     for( i in 1:nCt ){
-      cur.row = nMa[i, ,drop=F]
+      cur.row = nMa[i, ,drop=FALSE]
       if(ifD) print("cur node row after sorting")
       if(ifD) print(cur.row)
       ## col seq= id, level, bool, open
@@ -319,7 +319,7 @@ function(binaTree,  elm.level){
   # curElm: whether current element is a variable only(0) or node(1), or missing(NA)
   # curElmId: the index of current element
 
-  ifD = F
+  ifD = FALSE
   if (ifD) print("binaTree.closeNode")
   if (ifD) print(qp("elm.level=", elm.level))
   if (ifD) print("binaTree::")
@@ -334,7 +334,7 @@ function(binaTree,  elm.level){
   if (nrow(elm.nMa)>=1){
       fil = (elm.nMa[,2]==elm.level) & (elm.nMa[,4]==1)
       if (ifD) print(fil)
-      if(sum(fil, na.rm=T)==1){
+      if(sum(fil, na.rm=TRUE)==1){
         # close the old node
         open.id = elm.nMa[,1][fil]
         elm.nMa[fil, 4]=0
@@ -380,7 +380,7 @@ function(){
 binaTree.merge <-
 function(treeForSearch){
  fN = "binaTree.merge:"
- ifD = F
+ ifD = FALSE
  
  searchWholeTree = TRUE
  tt = 0
@@ -403,8 +403,8 @@ function(treeForSearch){
        ## search for "and"
        filter = elm.nMa[,3]==0
        if(sum(filter)==0) {
-  #          search = F
-  #          searchWholeTree = F
+  #          search = FALSE
+  #          searchWholeTree = FALSE
            return(treeForSearch)
        }
        search = TRUE
@@ -469,7 +469,7 @@ function(treeForSearch){
        } ##  while ( j <= sum(filter) & search){
 
        if(length(remove.list)>0){
-         elm.nMa = elm.nMa[-c(remove.list),,drop=F]
+         elm.nMa = elm.nMa[-c(remove.list),,drop=FALSE]
          print(paste("removed:", paste(c(remove.list), collapse=";")))
          if(ifD) print(elm.nMa)
          treeForSearch$elm.nMa = elm.nMa
@@ -491,17 +491,17 @@ function(treeForSearch){
 binaTree.parser <-
 function(str){
 
-  ifD = F
+  ifD = FALSE
 
   ## the first character is "(", "not", "and", "or", or variable name
   b.lev=0
-  b.open = F
+  b.open = FALSE
   cur.idx = 0
   cur.str = str
 
   binaTree = binaTree.constr()
 
-  binaTree = binaTree.parser.proc(str, binaTree, curLevel=0, first.seg=T)
+  binaTree = binaTree.parser.proc(str, binaTree, curLevel=0, first.seg=TRUE)
 
   # check wether the level 0 is closed
   nMa = binaTree$elm.nMa
@@ -522,9 +522,9 @@ function(str){
 }
 
 binaTree.parser.proc <-
-function(str, binaTree, curLevel, first.seg=F){
+function(str, binaTree, curLevel, first.seg=FALSE){
   ## need to grow the list
-  ifD = F
+  ifD = FALSE
   
   str = util.str.rmSpacePadder(str, rm=c("b", "e"))
   
@@ -612,7 +612,7 @@ function(str, binaTree, curLevel, first.seg=F){
            ## subset
            if(b.level$id < nchar(str)){
              curStr = substr(str, b.level$idx+1, nchar(str))
-             binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=F)
+             binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=FALSE)
            }
            return(binaTree)
        }else{ # if(b.level$idx==1){
@@ -658,7 +658,7 @@ function(str, binaTree, curLevel, first.seg=F){
          ## subset
          if(b.level$id < nchar(str)){
              curStr = substr(str, b.level$idx+1, nchar(str))
-             binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=F)
+             binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=FALSE)
          }else{
              if( curLevel==0){
                binaTree = binaTree.closeNode(binaTree, curLevel)
@@ -675,10 +675,10 @@ function(str, binaTree, curLevel, first.seg=F){
        if(b.level$idx==1){
          ## #1: "((A and "(B and C)) and
          ## see how many levels it opens, then subset
-           add.lev = util.char.1stIdx(str, "(", match=F)
+           add.lev = util.char.1stIdx(str, "(", match=FALSE)
            curLevel = curLevel+add.lev
            curStr = substr(str, add.lev+1, nchar(str))
-           binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=F)
+           binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=FALSE)
            return(binaTree)
        }else{ # if(b.level$idx==1){
          ## #4: and (, #2: A and (
@@ -704,7 +704,7 @@ function(str, binaTree, curLevel, first.seg=F){
          ## subset
          if(b.level$id < nchar(str)){
              curStr = substr(str, b.level$idx, nchar(str))
-             binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=F)
+             binaTree = binaTree.parser.proc(curStr, binaTree, curLevel, first.seg=FALSE)
          }else{
            stop ("find ( without )")
          }
@@ -716,8 +716,8 @@ function(str, binaTree, curLevel, first.seg=F){
 }
 
 binaTree.parser.pVarElm <-
-function(str, type="un", check.format=T){
-    ifD = F
+function(str, type="un", check.format=TRUE){
+    ifD = FALSE
     fN = "binaTree.parser.pVarElm:"
 
     str = util.str.rmSpacePadder(str, rm=c("b", "e"))
@@ -868,7 +868,7 @@ function(str, type="un", check.format=T){
 
 binaTree.patternForm <-
 function(binaTree, elmMList, bkIdx.RuleOrder){
-  ifD = F
+  ifD = FALSE
   fN = "binaTree.patternForm:"
 
   if(ifD) {
@@ -945,7 +945,7 @@ function(binaTree, elmMList, bkIdx.RuleOrder){
 #           } # for(ii in 2:tmp.ct){
 #           if(sum(filter)<=0) stop (paste(fN, "no fitted hap pairs for the more than two matching elment in a block."))
 # 
-#           tmp.ma = tmp.finalSet[filter,, drop=F ]
+#           tmp.ma = tmp.finalSet[filter,, drop=FALSE ]
 #           newMList = c(newMList, list(tmp.ma))
         }else{
           newMList = c(newMList, elmMList[elm.m.ids])
@@ -997,7 +997,7 @@ function(binaTree, elmMList, bkIdx.RuleOrder){
 
 binaTree.patternFormOLD <-
 function(binaTree, elmMList, bkIdx.RuleOrder){
-  ifD = T
+  ifD = TRUE
   fN = "binaTree.patternForm:"
 
   if(ifD) {
@@ -1072,7 +1072,7 @@ function(binaTree, elmMList, bkIdx.RuleOrder){
 #           } # for(ii in 2:tmp.ct){
 #           if(sum(filter)<=0) stop (paste(fN, "no fitted hap pairs for the more than two matching elment in a block."))
 # 
-#           tmp.ma = tmp.finalSet[filter,, drop=F ]
+#           tmp.ma = tmp.finalSet[filter,, drop=FALSE ]
 #           newMList = c(newMList, list(tmp.ma))
         }else{
           newMList = c(newMList, elmMList[elm.m.ids])
@@ -1118,7 +1118,7 @@ function(binaTree, elmMList, bkIdx.RuleOrder){
 
 binaTree.setApply <-
 function(binaTree, setList){
-  ifD = F
+  ifD = FALSE
   # the setList already contain the set for each variable
 
   data.n=NULL
@@ -1131,13 +1131,13 @@ function(binaTree, setList){
 
     new.order = order(nMa[,2], decreasing = TRUE)
     if(ifD) print(nMa)
-    nMa = nMa[new.order, ,drop=F]
+    nMa = nMa[new.order, ,drop=FALSE]
     if(ifD) print(nMa)
     #nlist = binaTree$elm.nlist[new.order]
     nlist = binaTree$elm.nlist
     if(ifD) print(nlist)
     for( i in 1:nCt ){
-      cur.row = nMa[i, ,drop=F]
+      cur.row = nMa[i, ,drop=FALSE]
       if(ifD) print("cur node row after sorting")
       if(ifD) print(cur.row)
       ## col seq= id, level, bool, open
@@ -1265,7 +1265,7 @@ function(tree, id.node){
 
   posId = NULL
   ## multiple parents may have it as a child
-  search = T
+  search =TRUE
   while(i<=length(par.posiId) & search){
 
     posParId = par.posiId[i]
@@ -1274,7 +1274,7 @@ function(tree, id.node){
     childId = nodeMa[yesNode,1]
     if(sum(is.element(id.node, childId))==1){
       posId = posParId
-      search = F
+      search = FALSE
     }
     i = i +1;
   }
@@ -1286,7 +1286,7 @@ function(tree, id.node){
 binaTree.shuffleNode <-
 function(treeForSearch){
  fN = "binaTree.shuffleNode:"
- ifD = F
+ ifD = FALSE
  
  searchWholeTree = TRUE
  tt = 0
@@ -1308,8 +1308,8 @@ function(treeForSearch){
        ## search for "or"
        filter = elm.nMa[,3]==1
        if(sum(filter)==0) {
-  #          search = F
-  #          searchWholeTree = F
+  #          search = FALSE
+  #          searchWholeTree = FALSE
            return(treeForSearch)
        }
        search = TRUE
@@ -1364,9 +1364,9 @@ function(treeForSearch){
                 othNodeDup.New = length(tree$elm.nlist)+1
                 tree$elm.nlist = c(tree$elm.nlist, list(othNodeMaDup))
                 elm.nMa = rbind(elm.nMa, c(othNodeDup.New, curNode.level+1, elm.nMa[othNode.idx, 3], 0))
-                ma =  matrix(c(curNodeMa[2,1], othNodeDup.New, curNodeMa[2,2], othNode.type), ncol=2, nrow=2, byrow=F)
+                ma =  matrix(c(curNodeMa[2,1], othNodeDup.New, curNodeMa[2,2], othNode.type), ncol=2, nrow=2, byrow=FALSE)
               }else{
-                ma =  matrix(c(curNodeMa[2,1], othNode.idx, curNodeMa[2,2], othNode.type), ncol=2, nrow=2, byrow=F)
+                ma =  matrix(c(curNodeMa[2,1], othNode.idx, curNodeMa[2,2], othNode.type), ncol=2, nrow=2, byrow=FALSE)
               }
               
               ## create the new node
@@ -1395,7 +1395,7 @@ function(treeForSearch){
               
        
               ## update the parent of old node
-              parNodeMa =  matrix(c(curCh.idx, othNode.New, 1, 1), ncol=2, nrow=2, byrow=F)
+              parNodeMa =  matrix(c(curCh.idx, othNode.New, 1, 1), ncol=2, nrow=2, byrow=FALSE)
               elm.nMa[parRow, 3]=1
               tree$elm.nlist[[par.idx]]=parNodeMa
               tree$elm.nMa = elm.nMa
@@ -1427,7 +1427,7 @@ function(treeForSearch){
 binaTree.toStr <-
 function(binaTree){
   
-  ifD = F
+  ifD = FALSE
 
   ## process the variable only element first, regardless the level
   vCt = nrow(binaTree$elm.vMa)
@@ -1468,13 +1468,13 @@ function(binaTree){
 
     new.order = order(nMa[,2], decreasing = TRUE)
     if(ifD) print(nMa)
-    nMa = nMa[new.order, ,drop=F]
+    nMa = nMa[new.order, ,drop=FALSE]
     if(ifD) print(nMa)
     #nlist = binaTree$elm.nlist[new.order]
     nlist = binaTree$elm.nlist
     if(ifD) print(nlist)
     for( i in 1:nCt ){
-      cur.row = nMa[i, ,drop=F]
+      cur.row = nMa[i, ,drop=FALSE]
       if(ifD) print("cur node row after sorting")
       if(ifD) print(cur.row)
       ## col seq= id, level, bool, open
@@ -1551,7 +1551,7 @@ function (hapBkMap=NULL, genoMap)
 				blockCol = genoMap$genomeSeqCol, expCol = genoMap$expCol, 
 				probCol = genoMap$probCol, hapLenCol = genoMap$genomeSeqCol, 
 				beginCol = NULL, endCol = NULL, snpBase = genoMap$snpBase, 
-				re.bf = T, re.javaGUI = T)		
+				re.bf = TRUE, re.javaGUI = TRUE)		
 		
 		re = list(hapBkOnlyMap=NULL, genoOnlyMap = genoOnlyMap, genomeMarkerInfo = genomeMarkerInfo, genoIndex = genoIndex)
 		return(re)
@@ -1570,7 +1570,7 @@ function (hapBkMap=NULL, genoMap)
 			blockCol = genoMap$genomeSeqCol, expCol = genoMap$expCol, 
 			probCol = genoMap$probCol, hapLenCol = genoMap$genomeSeqCol, 
 			beginCol = NULL, endCol = NULL, snpBase = genoMap$snpBase, 
-			re.bf = T, re.javaGUI = T)
+			re.bf = TRUE, re.javaGUI = TRUE)
 	qu = NULL
 	qu.type = NULL
 	markers_gb = NULL
@@ -1642,7 +1642,7 @@ function (hapBkMap=NULL, genoMap)
 						markers_ge[-(sum(ibks.f))] - 1
 				tmp.pos1 = which(tmp.diff > 0)
 				if (length(tmp.pos1)>0) {
-					tmp.pos = hap.ma[tmp.pos1, c(1, 3), drop = F]
+					tmp.pos = hap.ma[tmp.pos1, c(1, 3), drop = FALSE]
 					for (tt in 1:(length(tmp.pos1))) {
 						for (tt2 in 1:(tmp.diff[tmp.pos1][tt])) {
 							tmp.ma = rbind(tmp.ma, c(rep(tmp.pos[tt, 
@@ -1810,7 +1810,7 @@ function(data, keyCol, hapLenCol=NULL, expCol, probCol, alleleCode=1:2, ...){
 
 bkMap.ESp.apply1Rule <-
 function(bkMap, signalRule){
-	ifD = F
+	ifD = FALSE
 	fN = "bkMap.ESp.apply1Rule"
 	if(ifD) print(paste(fN, "begin::"))
 	
@@ -1824,12 +1824,12 @@ function(bkMap, signalRule){
 	idx.be[,1]=c(1, cumsum(bkMap$snpCt)+1)[1:total.bkct]
 	
 	
-	causalBkUniqOrderedIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=F, unique=T)
+	causalBkUniqOrderedIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=FALSE, unique=TRUE)
 	## find out # of haplotype in each HRCB
 	HRCB.hapCt = bkMap$bkLens [causalBkUniqOrderedIdx]
 	HRCB.hapCtProd = cumprod(HRCB.hapCt)[length(causalBkUniqOrderedIdx)]
 	
-	causalBkIdx.ruleOrder = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=F, unique=F)
+	causalBkIdx.ruleOrder = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=FALSE, unique=FALSE)
 	
 	#if(length(causalBkUniqOrderedIdx)==1){
 	
@@ -1878,12 +1878,12 @@ function(bkMap, signalRule){
 		if (signalRule$signal$elm.vMa[j,3]!=-1){
 			nct = sum(treePred==1)
 			if(ifD) print("not proceed by not")
-			pairHRCB = genoMap$tb[  treePred==1, c(1,2), drop=F ]
+			pairHRCB = genoMap$tb[  treePred==1, c(1,2), drop=FALSE ]
 		}else{
 			## if the variable is proceed by "not" operator
 			nct = sum(treePred==0)
 			if(ifD) print("proceed by not")
-			pairHRCB = genoMap$tb[  treePred==0, c(1,2), drop=F ]
+			pairHRCB = genoMap$tb[  treePred==0, c(1,2), drop=FALSE ]
 		}
 		if (ifD){
 			print(paste("matching hap pairs in block ", j))
@@ -1905,11 +1905,11 @@ function(bkMap, signalRule){
 		superDipIdx = sort(superDipIdx)
 		
 		## FIX LATER!!!FIX : can further reduce the workload
-		HRCBGrp = t(sapply(superDipIdx, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=T))
+		HRCBGrp = t(sapply(superDipIdx, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=TRUE))
 		
 		# print(str(HRCBGrp))
 		
-		HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=F]
+		HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=FALSE]
 		
 		HRCBGrp.BIdx = HRCBGrp[HRCBGrp[,3]==0,1]
 		
@@ -1954,7 +1954,7 @@ function(bkMap, signalRule){
 		hap2 = hapGrids[n, (uniBkCt+1):(2*uniBkCt)]
 		m2 = filterHaps2SHaps(hap2, HRCB.hapCt2)  
 		
-		hapPairs = qExpandTable(listOfFactor =list(m1, m2), removedRowIdx=NULL, re.row=F)
+		hapPairs = qExpandTable(listOfFactor =list(m1, m2), removedRowIdx=NULL, re.row=FALSE)
 		hapPairs = t(apply(hapPairs, 1, FUN=range))
 		superDipIdx = apply(hapPairs, 1, FUN=util.it.triMatch, len=HRCB.hapCtProd)
 		superDipIdx = unique(unlist(superDipIdx))
@@ -1983,13 +1983,13 @@ function(bkMap, signalRule){
 	
 	#print(supDipAll)
 	## FIX LATER!!!FIX : can further reduce the workload
-	HRCBGrp = t(sapply(supDipAll, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=T))
+	HRCBGrp = t(sapply(supDipAll, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=TRUE))
 	
 	
 	#print(HRCBGrp)
 	# print(str(HRCBGrp))
 	
-	HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=F]
+	HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=FALSE]
 	
 	HRCBGrp.BIdx = HRCBGrp[HRCBGrp[,3]==0,1]
 	#save(HRCBGrp.A, file="HRCBGrp.A.RData")
@@ -2001,7 +2001,7 @@ function(bkMap, signalRule){
 
 bkMap.ESp.apply1Rule.stepBy <-
 function(bkMap, signalRule){
-	ifD = F
+	ifD = FALSE
 	fN = "bkMap.ESp.apply1Rule"
 	if(ifD) print(paste(fN, "begin::"))
 	
@@ -2015,12 +2015,12 @@ function(bkMap, signalRule){
 	idx.be[,1]=c(1, cumsum(bkMap$snpCt)+1)[1:total.bkct]
 	
 	
-	causalBkUniqOrderedIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=F, unique=T)
+	causalBkUniqOrderedIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=FALSE, unique=TRUE)
 	## find out # of haplotype in each HRCB
 	HRCB.hapCt = bkMap$bkLens [causalBkUniqOrderedIdx]
 	HRCB.hapCtProd = cumprod(HRCB.hapCt)[length(causalBkUniqOrderedIdx)]
 	
-	causalBkIdx.ruleOrder = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=F, unique=F)
+	causalBkIdx.ruleOrder = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=FALSE, unique=FALSE)
 	
 	#if(length(causalBkUniqOrderedIdx)==1){
 	
@@ -2069,12 +2069,12 @@ function(bkMap, signalRule){
 		if (signalRule$signal$elm.vMa[j,3]!=-1){
 			nct = sum(treePred==1)
 			if(ifD) print("not proceed by not")
-			pairHRCB = genoMap$tb[  treePred==1, c(1,2), drop=F ]
+			pairHRCB = genoMap$tb[  treePred==1, c(1,2), drop=FALSE ]
 		}else{
 			## if the variable is proceed by "not" operator
 			nct = sum(treePred==0)
 			if(ifD) print("proceed by not")
-			pairHRCB = genoMap$tb[  treePred==0, c(1,2), drop=F ]
+			pairHRCB = genoMap$tb[  treePred==0, c(1,2), drop=FALSE ]
 		}
 		
 		#print(paste("matching hap pairs in block ", bkIdx))
@@ -2097,11 +2097,11 @@ function(bkMap, signalRule){
 		superDipIdx = sort(superDipIdx)
 		
 		## FIX LATER!!!FIX : can further reduce the workload
-		HRCBGrp = t(sapply(superDipIdx, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=T))
+		HRCBGrp = t(sapply(superDipIdx, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=TRUE))
 		
 		# print(str(HRCBGrp))
 		
-		HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=F]
+		HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=FALSE]
 		
 		HRCBGrp.BIdx = HRCBGrp[HRCBGrp[,3]==0,1]
 		
@@ -2146,7 +2146,7 @@ function(bkMap, signalRule){
 		hap2 = hapGrids[n, (uniBkCt+1):(2*uniBkCt)]
 		m2 = filterHaps2SHaps(hap2, HRCB.hapCt2)  
 		
-		hapPairs = qExpandTable(listOfFactor =list(m1, m2), removedRowIdx=NULL, re.row=F)
+		hapPairs = qExpandTable(listOfFactor =list(m1, m2), removedRowIdx=NULL, re.row=FALSE)
 		hapPairs = t(apply(hapPairs, 1, FUN=range))
 		superDipIdx = apply(hapPairs, 1, FUN=util.it.triMatch, len=HRCB.hapCtProd)
 		superDipIdx = unique(unlist(superDipIdx))
@@ -2175,13 +2175,13 @@ function(bkMap, signalRule){
 	
 	#print(supDipAll)
 	## FIX LATER!!!FIX : can further reduce the workload
-	HRCBGrp = t(sapply(supDipAll, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=T))
+	HRCBGrp = t(sapply(supDipAll, FUN=util.it.triMatch2, len=HRCB.hapCtProd, re.homo=TRUE))
 	
 	
 	#print(HRCBGrp)
 	# print(str(HRCBGrp))
 	
-	HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=F]
+	HRCBGrp.A = HRCBGrp[HRCBGrp[,3]==1, c(1,2), drop=FALSE]
 	
 	HRCBGrp.BIdx = HRCBGrp[HRCBGrp[,3]==0,1]
 	#save(HRCBGrp.A, file="HRCBGrp.A.RData")
@@ -2192,11 +2192,11 @@ function(bkMap, signalRule){
 }
 
 bkMap.findHRCBIdx <-
-function(bkMap, snpIdx, re.keys=T, unique=T, complement=F){
+function(bkMap, snpIdx, re.keys=TRUE, unique=TRUE, complement=FALSE){
   if(!is.integer(snpIdx)) stop()
   # find out the bk bin the snp fall into by comparing the idx with the ending idx of block
   endIdx = cumsum(bkMap$snpCt)
-  idx.bk.belong = qing.cut(val=snpIdx, cutPt=endIdx, cutPt.ordered = T, right.include=T)
+  idx.bk.belong = qing.cut(val=snpIdx, cutPt=endIdx, cutPt.ordered = TRUE, right.include=TRUE)
 
   if ((max(idx.bk.belong<0)==1) | (max(idx.bk.belong>length(endIdx))==1)) stop("One of the SNP index in sigStr is out of range.")
 
@@ -2240,7 +2240,7 @@ function(bkMap, keys){
 
 bkMap.HRCB.Esp1Rule.Base <-
 function(bkMap, rule, baseName=NULL, dig1Code=0:3){
-  ifD = F
+  ifD = FALSE
   fn = "bkMap.HRCB.Esp1Rule.Base::"
   if(ifD) print(paste(fn, "begin"))
 
@@ -2249,8 +2249,8 @@ function(bkMap, rule, baseName=NULL, dig1Code=0:3){
   
   signalRule = rule$slist[[1]]
 
-  HRCBIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=F, unique=T)
-  superHRCBMap = bkMap.superHRCB(bkMap, uniBkIndexes=HRCBIdx, re.probOnly = T)
+  HRCBIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=FALSE, unique=TRUE)
+  superHRCBMap = bkMap.superHRCB(bkMap, uniBkIndexes=HRCBIdx, re.probOnly = TRUE)
   
   # obtain super-hap and their probabilities
   supHapProb = superHRCBMap
@@ -2339,18 +2339,18 @@ function(bkMap, rule, baseName=NULL, dig1Code=0:3){
 }
 
 bkMap.HRCB.Esp1Rule.genoSeq <-
-function(bkMap, rule, re.probOnly = T){
+function(bkMap, rule, re.probOnly = TRUE){
 
-  ifD = F
+  ifD = FALSE
   signalRule = rule$slist[[1]]
 
-  HRCBIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=F, unique=T)
+  HRCBIdx = bkMap.findHRCBIdx(bkMap, as.integer(signalRule$var.idx), re.keys=FALSE, unique=TRUE)
 
   causalInfo = bkMap.updateByRule(bkMap, rule)
   
   # after process signalRule, 
   keys.new = bkMap$keys[c(causalInfo$causalBkIdx)]
-  bkMapS = bkMap.shuffle(bkMap, bkCt=NULL, keys.new=keys.new, exclude=F)
+  bkMapS = bkMap.shuffle(bkMap, bkCt=NULL, keys.new=keys.new, exclude=FALSE)
 
   superHRCBMap = bkMap.superHRCB(bkMap, uniBkIndexes=HRCBIdx, re.probOnly=re.probOnly)
 
@@ -2379,7 +2379,7 @@ function(bkMap, rule, re.probOnly = T){
 
 bkMap.HRCB.famMap <-
 function(bkMapS, rule, newColName,  ifS="simuDirectInfo", baseName=NULL){
-     ifD = F
+     ifD = FALSE
 
      ct.shap = cumprod(bkMapS$bkLens)[length(bkMapS$bkLens)]
      ct.sdip = .5*ct.shap*(1+ct.shap)
@@ -2417,16 +2417,16 @@ function(bkMapS, rule, newColName,  ifS="simuDirectInfo", baseName=NULL){
 
      if(ifD) print(rowCt)
      matRowCt = (rowCt^2-rowCt)/2+rowCt
-     matingRowIdxCorn = util.it.smallLargeIdx(rowCt, keep.same=F)
+     matingRowIdxCorn = util.it.smallLargeIdx(rowCt, keep.same=FALSE)
      if(ifD) print(str(matingRowIdxCorn))
-     matingRowIdxDiag = matrix(rep(1:rowCt, each=2), ncol=2, byrow=T)
+     matingRowIdxDiag = matrix(rep(1:rowCt, each=2), ncol=2, byrow=TRUE)
      if(ifD) print(str(matingRowIdxDiag))
 
      matingRowIdx = rbind(matingRowIdxCorn, matingRowIdxDiag)
      if(ifD) print(matingRowIdx[1:20,])
 
      tmpProb = tb$prob
-     matingPCor = matrix(tmpProb[matingRowIdxCorn], ncol=2, byrow=F)
+     matingPCor = matrix(tmpProb[matingRowIdxCorn], ncol=2, byrow=FALSE)
      matingPCorn = 2*matingPCor[,1]*matingPCor[,2]
      matingPDiag = tmpProb^2
      matingP = c(matingPCorn, matingPDiag)
@@ -2437,7 +2437,7 @@ function(bkMapS, rule, newColName,  ifS="simuDirectInfo", baseName=NULL){
 ##****  matingRowIdx = matingRowIdx[subs,]
 ##****  matingP = matingP[subs]
 
-     tmpTb = matrix(unlist(tb[,c(1,2)]), ncol=2, byrow=F)
+     tmpTb = matrix(unlist(tb[,c(1,2)]), ncol=2, byrow=FALSE)
      if(ifD) print(str(tmpTb))
     
      fa.hapIdx = tmpTb[matingRowIdx[,1], ]
@@ -2464,7 +2464,7 @@ function(bkMapS, rule, newColName,  ifS="simuDirectInfo", baseName=NULL){
      if(ifD) print(fam.map[1:10,])
 
      ## obtain the disease prob given the hap idx
-     kids.hapIdx = matrix(t(fam.map[,5:12]), nrow=2, byrow=F, ncol=4*matRowCt)
+     kids.hapIdx = matrix(t(fam.map[,5:12]), nrow=2, byrow=FALSE, ncol=4*matRowCt)
      if(ifD) print(kids.hapIdx[,1:10])
      kids.hapIdx = t(kids.hapIdx)
      if(ifD) print(kids.hapIdx[1:10,])
@@ -2476,7 +2476,7 @@ function(bkMapS, rule, newColName,  ifS="simuDirectInfo", baseName=NULL){
      kids.matchedRow = unlist(apply(kids.hapIdx, 1, util.it.triMatch, len=hapCt))
 
      if(ifD) print(kids.matchedRow[1:20])
-     # kids.p = matrix(  rep(.25*matingP, each=4), ncol=4, byrow=T)
+     # kids.p = matrix(  rep(.25*matingP, each=4), ncol=4, byrow=TRUE)
      # print( paste("Check:: kids p sum (before standardization)=", sum(kids.p)))
      kids.p = matingP/sum(matingP)
   
@@ -2485,8 +2485,8 @@ function(bkMapS, rule, newColName,  ifS="simuDirectInfo", baseName=NULL){
      #fam.map = data.frame(fa.hapIdx, ma.hapIdx, ch1.h, ch2.h, ch3.h, ch4.h, rowProb = matingP, kids.p)
      #if(ifD) print(fam.map[1:10,])
   
-     kids.risk = matrix( risk$riskProb [kids.matchedRow], ncol=4, byrow=T)
-     kids.matchedRow = matrix(kids.matchedRow, ncol=4, byrow=T)
+     kids.risk = matrix( risk$riskProb [kids.matchedRow], ncol=4, byrow=TRUE)
+     kids.matchedRow = matrix(kids.matchedRow, ncol=4, byrow=TRUE)
      if(ifD) {
        print("kids risk")
        print(str(kids.risk))
@@ -2532,7 +2532,7 @@ function (bkMap, rule){
   causalInfo = bkMap.updateByRule(bkMap=bkMap, rule=rule)
   col.shuffled=causalInfo$new.colname
 
-  nocausalInfo = bkMap.updateByRule(bkMap=bkMap, rule=rule,  complement=T )
+  nocausalInfo = bkMap.updateByRule(bkMap=bkMap, rule=rule,  complement=TRUE )
   col.shuffled.nocausal =nocausalInfo$new.colname
 
   
@@ -2540,18 +2540,18 @@ function (bkMap, rule){
   keys.new = bkMap$keys[c(causalInfo$causalBkIdx)]
   
   # one map for associated blocks
-  bkMapS  = bkMap.shuffle(bkMap, bkCt=NULL, keys.new=keys.new, exclude=F)
+  bkMapS  = bkMap.shuffle(bkMap, bkCt=NULL, keys.new=keys.new, exclude=FALSE)
 
 
-  bkMapNS = bkMap.shuffle(bkMap, bkCt=NULL, keys.new=keys.new, exclude=T)
+  bkMapNS = bkMap.shuffle(bkMap, bkCt=NULL, keys.new=keys.new, exclude=TRUE)
         
   return(bkMaps = list(bkMapS=bkMapS,  bkMapNS=bkMapNS, newColName=col.shuffled, noCausalColName=col.shuffled.nocausal))
 }
 
 bkMap.LRCB.spTrio <-
-function(bkMap, caseNo, ifS = NULL, reControl=F){
+function(bkMap, caseNo, ifS = NULL, reControl=FALSE){
 
-   ifD = F
+   ifD = FALSE
    # first sample parents
    f.samples = bkMap.spHap(bkMap, caseNo)
    f.samples2 = bkMap.spHap(bkMap, caseNo)
@@ -2575,9 +2575,9 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
    
    ## shuffle the random kid
    ## get index, !!!take the same happair combination for all blocks and all trio
-   baseIdx =  matrix(c(1,3,2,3,1,4,2,4), nrow=2, byrow=F)
+   baseIdx =  matrix(c(1,3,2,3,1,4,2,4), nrow=2, byrow=FALSE)
 
-   randomRowIdx = sample(1:4, size=1, replace=F)
+   randomRowIdx = sample(1:4, size=1, replace=FALSE)
    newchild = baseIdx[,randomRowIdx]
 
    chExp = par[, newchild]
@@ -2589,15 +2589,15 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
    #print(dim(chIn))
    #print(dim(newchild))
 
-   child1 = matrix(chExp[,1], nrow=caseNo, byrow=F)
-   child2 = matrix(chExp[,2], nrow=caseNo, byrow=F)
+   child1 = matrix(chExp[,1], nrow=caseNo, byrow=FALSE)
+   child2 = matrix(chExp[,2], nrow=caseNo, byrow=FALSE)
 
    affChild = covDipStr2CodedGeno(child1, child2, subjectCt=caseNo, snpLen=bkMap$snpLen, snpCoding=0:3, snpBase=c(0, bkMap$alleleCode))
    trioSetts = rbind(fa, ma, affChild)
    #print(paste("!reControl: trioSetts dim:", paste(dim(trioSetts), collapse=" by ", sep="")))
 
    if(!reControl){     
-     rowNewSeq = t(matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=F))
+     rowNewSeq = t(matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=FALSE))
      geno.FMCMa = trioSetts[rowNewSeq,]
    }else{
 
@@ -2605,7 +2605,7 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
      
      exHapIdx = baseIdx[,othRowIdx]
 
-     tt = F
+     tt = FALSE
      if(tt) print(paste("othRowIdx=", paste(othRowIdx, collapse=";")))
      if(tt) print(paste("expHapIdx=", paste(exHapIdx, collapse=";")))
 
@@ -2614,8 +2614,8 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
           #print(childExpIdx)
           othChildExp = par[,childExpIdx]
           #print(paste("!reControl: othChildExp dim:", paste(dim(othChildExp), collapse=" by ", sep="")))
-          childOth1 = matrix(othChildExp[,1], nrow=caseNo, byrow=F)
-          childOth2 = matrix(othChildExp[,2], nrow=caseNo, byrow=F)
+          childOth1 = matrix(othChildExp[,1], nrow=caseNo, byrow=FALSE)
+          childOth2 = matrix(othChildExp[,2], nrow=caseNo, byrow=FALSE)
 
           affChild =
             covDipStr2CodedGeno(childOth1, childOth2, subjectCt=caseNo, snpLen=bkMap$snpLen, snpCoding=0:3, snpBase=c(0, bkMap$alleleCode))
@@ -2623,7 +2623,7 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
      }
      #print(paste("!reControl: trioSetts dim:", paste(dim(trioSetts), collapse=" by ", sep="")))
      
-     rowNewSeq = t(matrix(1:(caseNo*6), ncol=6, nrow=caseNo, byrow=F))
+     rowNewSeq = t(matrix(1:(caseNo*6), ncol=6, nrow=caseNo, byrow=FALSE))
      #print(trioSetts)
      geno.FMCMa = trioSetts[rowNewSeq,]
      
@@ -2633,12 +2633,12 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
      ## rearrange the data, so the three subject in a family goes together.
    if(!is.null(ifS)){
        ## retain trio Index
-       childIn1 = matrix(chIn[,1], nrow=caseNo, byrow=F)
-       childIn2 = matrix(chIn[,2], nrow=caseNo, byrow=F)
-       faIn1 = matrix(parIn[,1],  nrow=caseNo, byrow=F)
-       faIn2 = matrix(parIn[,2],  nrow=caseNo, byrow=F)
-       maIn1 = matrix(parIn[,3],  nrow=caseNo, byrow=F)
-       maIn2 = matrix(parIn[,4],  nrow=caseNo, byrow=F)
+       childIn1 = matrix(chIn[,1], nrow=caseNo, byrow=FALSE)
+       childIn2 = matrix(chIn[,2], nrow=caseNo, byrow=FALSE)
+       faIn1 = matrix(parIn[,1],  nrow=caseNo, byrow=FALSE)
+       faIn2 = matrix(parIn[,2],  nrow=caseNo, byrow=FALSE)
+       maIn1 = matrix(parIn[,3],  nrow=caseNo, byrow=FALSE)
+       maIn2 = matrix(parIn[,4],  nrow=caseNo, byrow=FALSE)
   
        childIn = util.matrix.col.shuffle2(childIn1, childIn2)
        faIn = util.matrix.col.shuffle2(faIn1, faIn2)
@@ -2646,33 +2646,33 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
   
        allIn = rbind(faIn, maIn, childIn)
 
-       rowNewSeq = t(matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=F))
+       rowNewSeq = t(matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=FALSE))
        allIn = allIn[rowNewSeq,]
 
-       write.table(allIn,  file=paste(ifS, "supHap.csv", sep=""), col.names=F, row.names=F, sep=",")         
+       write.table(allIn,  file=paste(ifS, "supHap.csv", sep=""), col.names=FALSE, row.names=FALSE, sep=",")         
    }
    return(geno.FMCMa)
    
 #      ## not implemented
 #      ## shuffle the random kid
 #      child = apply(par, 1, FUN=function(row){
-#        idx = matrix(c(1,3,2,3,1,4,2,4), nrow=2, byrow=F)
-#        randomChildIdx = sample(1:4, size=4, replace=F)
+#        idx = matrix(c(1,3,2,3,1,4,2,4), nrow=2, byrow=FALSE)
+#        randomChildIdx = sample(1:4, size=4, replace=FALSE)
 #        idx = idx[,randomChildIdx]
 #   
 #        newchild = row[idx]
 #      })
-#      child1.1 = matrix(child[1,], nrow=caseNo, byrow=F)
-#      child1.2 = matrix(child[2,], nrow=caseNo, byrow=F)
+#      child1.1 = matrix(child[1,], nrow=caseNo, byrow=FALSE)
+#      child1.2 = matrix(child[2,], nrow=caseNo, byrow=FALSE)
 # 
-#      child2.1 = matrix(child[3,], nrow=caseNo, byrow=F)
-#      child2.2 = matrix(child[4,], nrow=caseNo, byrow=F)
+#      child2.1 = matrix(child[3,], nrow=caseNo, byrow=FALSE)
+#      child2.2 = matrix(child[4,], nrow=caseNo, byrow=FALSE)
 # 
-#      child3.1 = matrix(child[5,], nrow=caseNo, byrow=F)
-#      child3.2 = matrix(child[6,], nrow=caseNo, byrow=F)
+#      child3.1 = matrix(child[5,], nrow=caseNo, byrow=FALSE)
+#      child3.2 = matrix(child[6,], nrow=caseNo, byrow=FALSE)
 # 
-#      child4.1 = matrix(child[7,], nrow=caseNo, byrow=F)
-#      child4.2 = matrix(child[8,], nrow=caseNo, byrow=F)
+#      child4.1 = matrix(child[7,], nrow=caseNo, byrow=FALSE)
+#      child4.2 = matrix(child[8,], nrow=caseNo, byrow=FALSE)
 # 
 #      affChild1 = covDipStr2CodedGeno(child1.1, child1.2, subjectCt=caseNo, snpLen=bkMap$snpLen, snpCoding=0:3, snpBase=c(0, bkMap$alleleCode))
 #      affChild2 = covDipStr2CodedGeno(child2.1, child2.2, subjectCt=caseNo, snpLen=bkMap$snpLen, snpCoding=0:3, snpBase=c(0, bkMap$alleleCode))
@@ -2682,11 +2682,11 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
 #      allChild = rbind(affChild1, affChild2, affChild3, affChild4)
 # 
 #      # child is SNPct*4 by caseNo matrix
-#      newSeq = matrix(1:(4*caseNo), ncol=caseNo, byrow=T)
+#      newSeq = matrix(1:(4*caseNo), ncol=caseNo, byrow=TRUE)
 #      newChild = allChild[newSeq,]
 # 
 #      trioSetts = rbind(fa, ma, affChild1)
-#      rowNewSeq = t(matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=F))
+#      rowNewSeq = t(matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=FALSE))
 # 
 #      geno.FMCMa = trioSetts[rowNewSeq,]
 #      return(trio=list(geno.FMCMa=geno.FMCMa, cc = newChild))
@@ -2694,10 +2694,10 @@ function(bkMap, caseNo, ifS = NULL, reControl=F){
 }
 
 bkMap.shuffle <-
-function(bkMap, bkCt=1, keys.new=NULL, exclude=F){
+function(bkMap, bkCt=1, keys.new=NULL, exclude=FALSE){
   keys.ori = bkMap$keys
   if(is.null(keys.new)){
-    keys.new =  resample(keys.ori, size=bkCt, replace=F)
+    keys.new =  resample(keys.ori, size=bkCt, replace=FALSE)
   }
 
   # order are index in the keys.ori
@@ -2770,7 +2770,7 @@ function(bkMap, subjectCt){
   people = NULL
   people.in = NULL
   for( i.bk in 1:len ){
-    curIn = sample(bkMap$bkLens[i.bk], size = subjectCt, replace = T, prob = bkMap$bks[[i.bk]][,bkMap$probCol])
+    curIn = sample(bkMap$bkLens[i.bk], size = subjectCt, replace = TRUE, prob = bkMap$bks[[i.bk]][,bkMap$probCol])
 
     curExp = lapply(curIn, FUN=function(item, bkMap, i.bk){
                               as.character(bkMap$bks[[i.bk]][item,bkMap$expCol])
@@ -2778,17 +2778,17 @@ function(bkMap, subjectCt){
     people = c(people, list(unlist(curExp)))
     people.in = c(people.in, list(curIn))
   }
-  subjects = matrix(unlist(people), ncol=length(people), byrow=F)
-  subjects.in = matrix(unlist(people.in), ncol=length(people.in), byrow=F)
+  subjects = matrix(unlist(people), ncol=length(people), byrow=FALSE)
+  subjects.in = matrix(unlist(people.in), ncol=length(people.in), byrow=FALSE)
 
   re = list(subjects=subjects, subjectsIn=subjects.in)
   return(re)
 }
 
 bkMap.superHRCB <-
-function(bkMap, uniBkIndexes=c(1:length(bkMap$keys)), re.probOnly = F){
+function(bkMap, uniBkIndexes=c(1:length(bkMap$keys)), re.probOnly = FALSE){
 
-  ifD = F
+  ifD = FALSE
   ## find every block expression for every block
   linked = lapply(uniBkIndexes, FUN=function(index, bkMap){
                                             bkMap$bks[[index]]}, bkMap=bkMap)
@@ -2849,7 +2849,7 @@ function(bkMap, uniBkIndexes=c(1:length(bkMap$keys)), re.probOnly = F){
 }
 
 bkMap.updateByRule <-
-function(bkMap, rule, complement=F, is.hapGenoMap = F){
+function(bkMap, rule, complement=FALSE, is.hapGenoMap = FALSE){
 
   # shuffle the genotype blocks, but keep the columns
   # so need to shuffle the column names
@@ -2858,7 +2858,7 @@ function(bkMap, rule, complement=F, is.hapGenoMap = F){
 
   # based on the snp idx, map them with block idx
   if(!is.hapGenoMap){
-    causalBkIdx.new = bkMap.findHRCBIdx(bkMap, as.integer(rule$snpIdx), re.keys=F, unique=T, complement=complement)
+    causalBkIdx.new = bkMap.findHRCBIdx(bkMap, as.integer(rule$snpIdx), re.keys=FALSE, unique=TRUE, complement=complement)
     total.bkct = length(bkMap$keys)
   
     # construct the beginning/ending index of snp in original map
@@ -2866,7 +2866,7 @@ function(bkMap, rule, complement=F, is.hapGenoMap = F){
     idx.be[,2]=cumsum(bkMap$snpCt)
     idx.be[,1]=c(1, cumsum(bkMap$snpCt)+1)[1:total.bkct]
   
-    id.be.shuffled = idx.be[ c(causalBkIdx.new,  (1:total.bkct)[!is.element(causalBkIdx.new, 1:total.bkct)]),, drop=F ]
+    id.be.shuffled = idx.be[ c(causalBkIdx.new,  (1:total.bkct)[!is.element(causalBkIdx.new, 1:total.bkct)]),, drop=FALSE ]
   
     newData.col = apply(id.be.shuffled, 1, FUN= function(item){
       ## use recycling rules
@@ -2876,9 +2876,9 @@ function(bkMap, rule, complement=F, is.hapGenoMap = F){
 
   }else{
     ## not implemented. Because later we added the argu, complement. 
-    ## causalBkIdx.new = hapBkGenoMap.findHRCBIdx(allmap=bkMap, snpIdx=as.integer(rule$snpIdx), re.key=F, unique=T)
+    ## causalBkIdx.new = hapBkGenoMap.findHRCBIdx(allmap=bkMap, snpIdx=as.integer(rule$snpIdx), re.key=FALSE, unique=TRUE)
 
-    ## snp.idxSeq = hapBkGenoMap.findHRCBSnpIdx(allmap=bkMap, snpIdx=as.integer(rule$snpIdx), re.1digit=T)
+    ## snp.idxSeq = hapBkGenoMap.findHRCBSnpIdx(allmap=bkMap, snpIdx=as.integer(rule$snpIdx), re.1digit=TRUE)
     ## newData.col = t( paste( "v", rep(snp.idxSeq, each=2), c("a", "b"), sep=""))
 
   }
@@ -2929,7 +2929,7 @@ function(hapIdxes, hapCts){
 calHapIdx2SHapSet <-
 function( bkIdx, hapIdx, hapCts){
 
-  ifD = F
+  ifD = FALSE
   
   ## find the number of row for each stratum
   cumRows = c(1, hapCts[1:bkIdx])
@@ -2953,18 +2953,18 @@ function(codedSNPTrio, snpCoding=c(0,1,2,3)){
 
   # is the child homo with 1?
   if(codedSNPTrio[3]==snpCoding[2]){
-    onePHaveNone = F
-    if(codedSNPTrio[1]==snpCoding[3]) onePHaveNone = T
-    othPHaveNone = F
-    if(codedSNPTrio[2]==snpCoding[3]) othPHaveNone = T
+    onePHaveNone = FALSE
+    if(codedSNPTrio[1]==snpCoding[3]) onePHaveNone = TRUE
+    othPHaveNone = FALSE
+    if(codedSNPTrio[2]==snpCoding[3]) othPHaveNone = TRUE
     if(onePHaveNone | othPHaveNone)
       stop("Medelian error for homozygous (1) child with at least one parent homozygous (2)")
   # is the child homo with 2?
   }else if(codedSNPTrio[3]==snpCoding[3]){
-    onePHaveNone = F
-    if(codedSNPTrio[1]==snpCoding[2]) onePHaveNone = T
-    othPHaveNone = F
-    if(codedSNPTrio[2]==snpCoding[2]) othPHaveNone = T
+    onePHaveNone = FALSE
+    if(codedSNPTrio[1]==snpCoding[2]) onePHaveNone = TRUE
+    othPHaveNone = FALSE
+    if(codedSNPTrio[2]==snpCoding[2]) othPHaveNone = TRUE
     if(onePHaveNone | othPHaveNone)
       stop("Medelian error for homozygous (2) child with at least one parent homozygous (1)")
   # is the child hetero
@@ -3023,8 +3023,8 @@ function(dip1, dip2, subjectCt, snpCoding=c(0,1,2,3), snpBase=c(0,1,2)){
 
 covDipStr2CodedGeno <-
 function(dipStr1, dipStr2, subjectCt, snpLen, snpCoding=c(0,1,2,3), snpBase=c(0,1,2)){
-  dip1 =  hapBk2AlleleSeq(dipStr1, subjectCt, snpLen, markdownOne = F)
-  dip2 =  hapBk2AlleleSeq(dipStr2, subjectCt, snpLen, markdownOne = F)
+  dip1 =  hapBk2AlleleSeq(dipStr1, subjectCt, snpLen, markdownOne = FALSE)
+  dip2 =  hapBk2AlleleSeq(dipStr2, subjectCt, snpLen, markdownOne = FALSE)
   re = covDipBinaMa2CodedGeno(dip1, dip2, subjectCt, snpCoding=snpCoding, snpBase=snpBase)
   return(re)
 }
@@ -3083,7 +3083,7 @@ function(df, dataHeaders=NULL, genotype=c("11", "12", "22"), snpBase=1){
 }
 
 dfToHapBkMap <-
-function(data, keyCol=NULL, chCol, blockCol, expCol, probCol, hapLenCol, beginCol=NULL, endCol=NULL, snpBase=1, re.bf = T, re.javaGUI = T){
+function(data, keyCol=NULL, chCol, blockCol, expCol, probCol, hapLenCol, beginCol=NULL, endCol=NULL, snpBase=1, re.bf = TRUE, re.javaGUI = TRUE){
 	
 	if(is.null(keyCol)){
 		data = cbind(data, key=paste(data[,chCol], data[,blockCol], sep="-"))
@@ -3162,8 +3162,8 @@ function(data, keyCol=NULL, chCol, blockCol, expCol, probCol, hapLenCol, beginCo
 }
 
 ESp.impu1Par <-
-function(othParPairs, childPairs,  semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen, reType=F, job=1 ){
-  ifD = F
+function(othParPairs, childPairs,  semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen, reType=FALSE, job=1 ){
+  ifD = FALSE
   fStr = "[ESp.impu1Par]"
   if(ifD) {
     print(fStr)
@@ -3189,7 +3189,7 @@ function(othParPairs, childPairs,  semiMapFrame, resiProbCol, augIdxCol, probCol
     resiProbCol=resiProbCol,
     augIdxCol=augIdxCol,
     probCol= probCol,
-    snpLen, restandard=T)
+    snpLen, restandard=TRUE)
   if(ifD) {
     print(prob.ps)
   }
@@ -3284,7 +3284,7 @@ function(othParPairs, childPairs,  semiMapFrame, resiProbCol, augIdxCol, probCol
             } ## D vs. A::if(ch[1]!=ch[2]){
     
           } ## B/E/C vs D/A if (par[1]!=par[2]){
-          ch.colA = matrix(rep(ch, length(sp.prob)), ncol=2, byrow=T)
+          ch.colA = matrix(rep(ch, length(sp.prob)), ncol=2, byrow=TRUE)
           
           rows = cbind(rep(type, length(sp.prob)), 1:length(sp.prob), sp.prob, add.col, ch.colA)
           if(ifD) print(rows)
@@ -3337,7 +3337,7 @@ function(othParPairs, childPairs,  semiMapFrame, resiProbCol, augIdxCol, probCol
   if(reType){
     return(hap6idx )
   }else{
-    return(hap6idx[,1:6,drop=F])
+    return(hap6idx[,1:6,drop=FALSE])
   }
 }
 
@@ -3348,7 +3348,7 @@ function(hap, prob.p, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen ){
 			resiProbCol=resiProbCol,
 			augIdxCol=augIdxCol,
 			probCol=probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	stra.1 = (prob.c^2)*(prob.p^2)
 	
 	stra.2 = (prob.c)*(1-prob.c)*(prob.p^2)
@@ -3383,12 +3383,12 @@ function(hap, prob.p, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen){
 			resiProbCol=resiProbCol,
 			augIdxCol=augIdxCol,
 			probCol=probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	prob.c2 = getHapProb2(selIdx=hap[2], semiMapFrame,
 			resiProbCol=resiProbCol,
 			augIdxCol=augIdxCol,
 			probCol=probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	
 	stra.1 = (prob.c1^2)*(prob.p[1]*prob.p[2])
 	stra.2 = (prob.c1)*(1-prob.c1-prob.c2)*(prob.p[1]*prob.p[2])
@@ -3440,12 +3440,12 @@ function(hap, prob.p, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen ){
 			resiProbCol=resiProbCol,
 			augIdxCol=augIdxCol,
 			probCol= probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	prob.c2 = getHapProb2(selIdx=hap[2], semiMapFrame,
 			resiProbCol= resiProbCol,
 			augIdxCol= augIdxCol,
 			probCol=  probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	
 	stra.1 = (prob.c1^2)*(prob.p[1]*prob.p[2])
 	stra.2 = (prob.c1)*(1-prob.c1-prob.c2)*(prob.p[1]*prob.p[2])
@@ -3486,7 +3486,7 @@ function(hap, prob.p, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen ){
 			resiProbCol=resiProbCol,
 			augIdxCol=augIdxCol,
 			probCol= probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	
 	
 	stra.1 = (prob.c^2)*(prob.p^2)
@@ -3522,7 +3522,7 @@ function(hap, prob.p, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen ){
 			resiProbCol=resiProbCol,
 			augIdxCol=augIdxCol,
 			probCol=probCol,
-			snpLen, restandard=F)
+			snpLen, restandard=FALSE)
 	
 	
 	stra.1 = (prob.c^2)*(prob.p[1]*prob.p[2])
@@ -3554,8 +3554,8 @@ function(hap, hap.p, straSeq, semiMapFrame, resiProbCol, augIdxCol, probCol, snp
 }
 
 ESp.impuParent.heterKid <-
-function(hapPair, hapProb, test=F){
-	ifD = F
+function(hapPair, hapProb, test=FALSE){
+	ifD = FALSE
 	fN = "ESp.impuParent.heterKid"
 	hapCt = length(hapProb)
 	
@@ -3603,7 +3603,7 @@ function(hapPair, hapProb, test=F){
 		return(hap4idx)
 	}else{
 		hapProb[ hapPair ]=0
-		sample.idx =  sample(1:hapCt, size=2, replace=T, prob=hapProb)
+		sample.idx =  sample(1:hapCt, size=2, replace=TRUE, prob=hapProb)
 		# need to resampling A:A2
 		if (chooseRow==1){
 			hap4idx[ c(1,3) ] = hapPair
@@ -3651,7 +3651,7 @@ function(hapPair, hapProb, test=F){
 }
 
 ESp.impuParent.homoKid <-
-function(hapPair, hapProb, test=F){
+function(hapPair, hapProb, test=FALSE){
 	
 	hapCt = length(hapProb)
 	
@@ -3689,7 +3689,7 @@ function(hapPair, hapProb, test=F){
 	}else{
 		
 		hapProb[ hapPair ]=0
-		sample.idx =  sample(1:hapCt, size=2, replace=T, prob=hapProb)
+		sample.idx =  sample(1:hapCt, size=2, replace=TRUE, prob=hapProb)
 		# need to resampling A:A2
 		if (chooseRow==1){
 			hap4idx[ c(1,3) ] = rep(hapPair, 2)
@@ -3709,11 +3709,11 @@ function(hapPair, hapProb, test=F){
 }
 
 ESp.imputBlock <-
-function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCoding, snpBase, reType=F, logF=NULL,  hapBkOnlyMap.vars){
+function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCoding, snpBase, reType=FALSE, logF=NULL,  hapBkOnlyMap.vars){
 
   ## TODO!!! making missed only disappear
   fStr ="[ESp.imputBlock:]"
-  ifD = F
+  ifD = FALSE
   # inside the function, assume snpCoding as c( 0, 1, 2, 3 )for NA, homo, homo, heter and snpBase as c(0, 1, 2) for NA, allele1, allele2
 
   
@@ -3780,7 +3780,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
          tmpMother = mDipTb[chooseRow,]
    
          tmpChild = matrix( c(tmpFather[1], tmpMother[1], tmpFather[1], tmpMother[2],
-                              tmpFather[2], tmpMother[1], tmpFather[2], tmpMother[2]), nrow=2, byrow=F)
+                              tmpFather[2], tmpMother[1], tmpFather[2], tmpMother[2]), nrow=2, byrow=FALSE)
          t.choice = sample(4, size=1)
    
          trioHapIdx[ss,1:12] =  c(tmpFather, tmpMother, as.vector(tmpChild[, c(t.choice, (1:4)[-t.choice])]))
@@ -3789,7 +3789,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
       if(reType){
         return(trioHapIdx)
       }else{
-        return(trioHapIdx[,1:12, drop=F])
+        return(trioHapIdx[,1:12, drop=FALSE])
       }
       
     }else{
@@ -3856,7 +3856,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
 
       othChildtt = apply(mating6hap, 1, FUN=find.PsudoControlHap)
       
-      trioHapIdx =  cbind(mating6hap[ ,1:4, drop=F],  t(othChildtt))
+      trioHapIdx =  cbind(mating6hap[ ,1:4, drop=FALSE],  t(othChildtt))
 
       #if (ifD) print("@@@@@ return obj@@@@@")
       if(reType){
@@ -3885,7 +3885,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
         tmpMother = sampleDipSemiAugMap(semiMapFrame, hapBkOnlyMap.vars$resiProbCol, hapBkOnlyMap.vars$augIdxCol, hapBkOnlyMap.vars$probCol, snpLen)
   
         tmpChild = matrix( c(tmpFather[1], tmpMother[1], tmpFather[1], tmpMother[2],
-                             tmpFather[2], tmpMother[1], tmpFather[2], tmpMother[2]), nrow=2, byrow=F)
+                             tmpFather[2], tmpMother[1], tmpFather[2], tmpMother[2]), nrow=2, byrow=FALSE)
         t.choice = sample(1:4, size=1)
   
         trioHapIdx[ss,1:12] =  c(tmpFather, tmpMother, as.vector(tmpChild[, c(t.choice, (1:4)[-t.choice]) ]))
@@ -3896,7 +3896,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
       if(reType){
         return(trioHapIdx)
       }else{
-        return(trioHapIdx[, 1:12, drop=F])
+        return(trioHapIdx[, 1:12, drop=FALSE])
       }
       
     }else{
@@ -3938,7 +3938,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
       if(reType){
         return(trioHapIdx)
       }else{
-        return(trioHapIdx[,1:12,drop=F])
+        return(trioHapIdx[,1:12,drop=FALSE])
       }
     }
   }
@@ -3949,7 +3949,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
     if(ifD) print( "only one parent is completely missing, need to sample the non-comp-missing parents from a restricted list")
     
     ## need to sample the non-comp-missing parents from a restricted list
-    nonMparent = trioBlock[!compMissing.trio, ,drop=F][1, ]
+    nonMparent = trioBlock[!compMissing.trio, ,drop=FALSE][1, ]
     pHapBkInfoMap = hapGenoBlockProc(nonMparent,  snpCoding=snpCoding)
     pHapFiltered = procSemiAugMap(appVarNames, pHapBkInfoMap, snpLen)
 
@@ -3989,7 +3989,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
         }
   
         tmpChild = matrix(  c(tmpFather[1], tmpMother[1], tmpFather[1], tmpMother[2],
-                              tmpFather[2], tmpMother[1], tmpFather[2], tmpMother[2]), nrow=2, byrow=F)
+                              tmpFather[2], tmpMother[1], tmpFather[2], tmpMother[2]), nrow=2, byrow=FALSE)
         
         t.choice = sample(4, size=1)
   
@@ -3999,7 +3999,7 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
       if(reType){
         return(trioHapIdx)
       }else{
-        return(trioHapIdx[,1:12,drop=F])
+        return(trioHapIdx[,1:12,drop=FALSE])
       }
       
     }else{
@@ -4028,10 +4028,10 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
       ## need to know switch parents if the mom is missing
       if( compMissing.trio[1] ){
         othChildtt = apply(trioHapIdx.f, 1, FUN=find.PsudoControlHap)      
-        trioHapIdx =  cbind(trioHapIdx.f[, 1:4, drop=F],  t(othChildtt))
+        trioHapIdx =  cbind(trioHapIdx.f[, 1:4, drop=FALSE],  t(othChildtt))
       }else{
         othChildtt = apply(trioHapIdx.f, 1, FUN=find.PsudoControlHap)
-        trioHapIdx =  cbind(trioHapIdx.f[, c(3,4, 1,2), drop=F],  t(othChildtt))
+        trioHapIdx =  cbind(trioHapIdx.f[, c(3,4, 1,2), drop=FALSE],  t(othChildtt))
       }
 
       if(reType){
@@ -4047,18 +4047,18 @@ function(appVarNames,  trioBlock, snpLen=ncol(trioBlock),  bkIdx, job=1, snpCodi
 
 exchangeDigit <-
 function(ma, cols=NULL, dig1Code=c(0, 1, 3, 2), dig2Code = c(0, 1, 2), action=c("1to2", "2to1")){
-	ifD = F
+	ifD = FALSE
 	
 	if(is.null(cols)){
 		cols = c(1, ncol(ma))
 	}
 	
-	fun.error = F
-	if(length(cols)!=2) fun.error=T
-	if(cols[2]>ncol(ma)) fun.error=T
+	fun.error = FALSE
+	if(length(cols)!=2) fun.error=TRUE
+	if(cols[2]>ncol(ma)) fun.error=TRUE
 	
 	outputColCt = cols[2]-cols[1]
-	if( outputColCt <=0) fun.error=T
+	if( outputColCt <=0) fun.error=TRUE
 	
 	if(length(action)>=2) {
 		
@@ -4069,7 +4069,7 @@ function(ma, cols=NULL, dig1Code=c(0, 1, 3, 2), dig2Code = c(0, 1, 2), action=c(
 		if ((action!="1to2") & (action!="2to1"))
 			stop(paste("Requested action, (",  action, "), is not implemented.", sep="" ))
 	}
-	ma.change = ma[, cols[1]:cols[2], drop=F]
+	ma.change = ma[, cols[1]:cols[2], drop=FALSE]
 	## internally, do not use NA to represent missing,
 	code.0 = 0
 	code.012 = dig2Code
@@ -4104,7 +4104,7 @@ function(ma, cols=NULL, dig1Code=c(0, 1, 3, 2), dig2Code = c(0, 1, 2), action=c(
 		sumBase = matrix(c(2, 0, 0,
 						0, 2, 0,
 						0, 1, 1,
-						0, 0, 2), byrow=F, nrow=3)
+						0, 0, 2), byrow=FALSE, nrow=3)
 		sumCode = as.vector(matrix(code.012, ncol=3)%*%sumBase)
 		if(ifD) print(paste("sumCode:", paste(sumCode, collapse=";")))
 	}
@@ -4146,7 +4146,7 @@ function(ma, cols=NULL, dig1Code=c(0, 1, 3, 2), dig2Code = c(0, 1, 2), action=c(
 		
 		seq1 = seq.int(from=1, to=ncol(ma.change), by=2)
 		
-		ma.sum = matrix(ma.change[, seq1]+ma.change[,seq1+1], ncol=length(seq1), byrow=F)
+		ma.sum = matrix(ma.change[, seq1]+ma.change[,seq1+1], ncol=length(seq1), byrow=FALSE)
 		
 		## convert to Qing's 1-digit coding system. 3 is for hetero
 		
@@ -4170,7 +4170,7 @@ function(dipMap, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen){
 	## SemiAugMap only have the major haplotypes' expression and prob,
 	## only a number for prob for each of the other haplotypes 
 	## SemiAugMap also has a column showing the index of the haplotype in the fixed AugMap
-	ifD = F
+	ifD = FALSE
 	
 	dipProb = as.vector(dipMap)
 	
@@ -4222,7 +4222,7 @@ function(dipMap, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen){
 }
 
 exhaustHapExp <-
-function(lociCt=3, re.str=T,  snpCoding=c(1,2)){
+function(lociCt=3, re.str=TRUE,  snpCoding=c(1,2)){
 
   ma = matrix(snpCoding, ncol=1)
 
@@ -4307,13 +4307,13 @@ function(childTb, parTb, pHapBkInfoMap, snpLen){
 		## print(paste("childTb:\n", childTb, "parTb:\n", parTb, "\n Cannot find the pair matched"))
 		stop(paste("\n childTb:\n", childTb, "parTb:\n", parTb, "\n Cannot find the pair matched"))
 	}
-	return(list(childTb=childTb[childIdx,, drop=F], parTb=parTb[parIdx,,drop=F]))
+	return(list(childTb=childTb[childIdx,, drop=FALSE], parTb=parTb[parIdx,,drop=FALSE]))
 	
 }
 
 fHapBkIdx2DipTb <-
 function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits = NULL, expression, snpLen=nchar(expression)){
-	ifD = F
+	ifD = FALSE
 	fStr = "[fHapBkIdx2DipTb]:"
 	if(ifD) {
 		print(qp(fStr, "start"))
@@ -4342,7 +4342,7 @@ function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits 
 	
 	## if no heto digit and no requirment posed by child, just return the all possible dip pair
 	if(is.null(reqIn) & is.null(hetoIn) ){
-		dipMap = util.it.upTriCombIdx(idxList, diag=T, re.ordered=T)
+		dipMap = util.it.upTriCombIdx(idxList, diag=TRUE, re.ordered=TRUE)
 		#print(dipMap)
 		return(dipMap)
 	}
@@ -4361,7 +4361,7 @@ function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits 
 				othBkIdx = idxList[j]
 				
 				## check the required digits
-				meetReq = T
+				meetReq = TRUE
 				tmpReq = 1
 				while( tmpReq <= length(reqIn)){
 					curDigitReq = reqDigits[tmpReq]
@@ -4425,14 +4425,14 @@ function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits 
 			if(ifD) print(paste("i=", i, "; j=", j, sep=""))
 			
 			## suppose cur bk contribute a digit 1
-			curLociMatch1 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap1[, hetoSeq, drop=F], val=curBkIdx)
+			curLociMatch1 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap1[, hetoSeq, drop=FALSE], val=curBkIdx)
 			## suppose oth bk contribute a digit 2
-			othLociMatch2 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap2[, hetoSeq, drop=F], val=othBkIdx)
+			othLociMatch2 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap2[, hetoSeq, drop=FALSE], val=othBkIdx)
 			
 			## suppose oth bk contribute a digit 1
-			othLociMatch1 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap1[, hetoSeq, drop=F], val=othBkIdx)
+			othLociMatch1 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap1[, hetoSeq, drop=FALSE], val=othBkIdx)
 			## suppose cur bk contribute a digit 2
-			curLociMatch2 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap2[, hetoSeq, drop=F], val=curBkIdx)               
+			curLociMatch2 = util.matrix.colIdx4Match(ma=idx4hapDigit$digitMap2[, hetoSeq, drop=FALSE], val=curBkIdx)               
 			
 			#print(curLociMatch1)
 			#print(othLociMatch2)
@@ -4476,7 +4476,7 @@ function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits 
 						if(ifD) print(paste("curBkIdx=", curBkIdx, ": othBkIdx=", othBkIdx, sep=""))
 					}else{
 						## check the required digits
-						meetReq = T
+						meetReq = TRUE
 						tmpReq = 1
 						while( tmpReq <= length(reqIn)){
 							curDigitReq = reqDigits[tmpReq]
@@ -4520,7 +4520,7 @@ function( bkIdxes, hapIdxes, hapCts){
 
   it = lapply(hapCts, 1, FUN=seq, from=1)
   # first build the whole list
-  idxComb = qExpandTable(listOfFactor = it, removedRowIdx=NULL, re.row=F )
+  idxComb = qExpandTable(listOfFactor = it, removedRowIdx=NULL, re.row=FALSE )
   
   # eliminate the impossible rows.
   left = 1: (cumprod(hapCts)[length(hapCts)]  )
@@ -4536,7 +4536,7 @@ function( bkIdxes, hapIdxes, hapCts){
 
 filterHaps2SHaps <-
 function(hapForBk, hapCts){
-  ifD = F
+  ifD = FALSE
   fN = "filterHaps2SHaps:"
   if(ifD) {
     print(paste(fN, "begin"))
@@ -4676,7 +4676,7 @@ function(hapForBk, hapCts){
       grp.idx = segSeq + offset.q
     }else{
       oth.idx = segSeq + offset.q
-      all.idx = qExpandTable(listOfFactor =list(grp.idx, oth.idx), removedRowIdx=NULL, re.row=F)
+      all.idx = qExpandTable(listOfFactor =list(grp.idx, oth.idx), removedRowIdx=NULL, re.row=FALSE)
       if(ifD) print(all.idx)
       grp.idx = all.idx[,1]+all.idx[,2]
     }
@@ -4689,10 +4689,10 @@ function(hapForBk, hapCts){
 
 filterHaps2SHaps.check <-
 function(hapForBk, hapCts){
-  ifD = F
+  ifD = FALSE
   fN = "filterHaps2SHaps.check::"
   hapList = lapply(hapCts, FUN=function(i) {1:i})
-  aa = qExpandTable(listOfFactor =hapList, removedRowIdx=NULL, re.row=F)
+  aa = qExpandTable(listOfFactor =hapList, removedRowIdx=NULL, re.row=FALSE)
 
   filter = !is.na(hapForBk)
   comp = rep(TRUE, times=nrow(aa))
@@ -4725,7 +4725,7 @@ function(trioHap6){
   
   child.sort = sort(trioHap6[5:6])
   
-  othChild = matrix(trioHap6[1:4][c(1, 3, 1, 4, 2, 3, 2, 4)], ncol=2, byrow=T)
+  othChild = matrix(trioHap6[1:4][c(1, 3, 1, 4, 2, 3, 2, 4)], ncol=2, byrow=TRUE)
   othChild = apply(othChild, 1, sort)
   
   child.m = NULL
@@ -4753,7 +4753,7 @@ function(timeVec, probVec, cutoff){
 }
 
 findMissing <-
-function(df, is.1digit=F, snpStartLeftIndex, snpEndRightIndex, dig1Code=c(0, 1, 2, 3), dig2Code=c(0, 1, 2) ){
+function(df, is.1digit=FALSE, snpStartLeftIndex, snpEndRightIndex, dig1Code=c(0, 1, 2, 3), dig2Code=c(0, 1, 2) ){
   ## use c(0,1,3,2) as the 1-digit coding, if not, exchange it
   snpEndLeftIndex = ncol(df)-snpEndRightIndex+1
 
@@ -4808,13 +4808,13 @@ function(hap=NULL, geno){
 	## make it can take .csv file
 	if(!is.null(hap)){
 		if(is.character(hap)){
-			hap = read.csv(hap, header=T, sep=",", as.is=T)
+			hap = read.csv(hap, header=TRUE, sep=",", as.is=TRUE)
 		}
 	}
 	
 	## make it can take .csv file
 	if(is.character(geno)){
-		geno = read.csv(geno, header=T, sep=",", as.is=T)
+		geno = read.csv(geno, header=TRUE, sep=",", as.is=TRUE)
 	}
 	
 	## check input data
@@ -4836,7 +4836,7 @@ freqbuild.haponly <-
 function(hap, alleleCode = 1:2){
 	## only hap is provided.
 	## need to find out the hap with 1 loci, and get the geno freq from the 1 loci
-	ifD = F
+	ifD = FALSE
 	
 	## check the maximum length for imputation
 	bkMap = bkMap.constr(data=hap, keyCol=1, hapLenCol=NULL, expCol=2, probCol=3, alleleCode=alleleCode )
@@ -4859,7 +4859,7 @@ function(hap, alleleCode = 1:2){
 	for( dd in others){
 		others.ma = rbind(others.ma, dd)
 	}
-	others = matrix(others, nrow=nrow(hap), ncol=3, byrow=T)
+	others = matrix(others, nrow=nrow(hap), ncol=3, byrow=TRUE)
 	
 	hapFrame = cbind(prekey, hap, others.ma)
 	colnames(hapFrame)=c("prekey", "block", "hap", "freq", "hapLen", "markers_b", "markers_e")
@@ -4901,8 +4901,8 @@ function(hap, alleleCode = 1:2){
 }
 
 freqmap.reconstruct <-
-function(data, cols=NULL, loci.ct, is.1digit=F, dig1Code=c(0, 1, 2, 3), dig2Code = c(0, 1, 2), key.prefix="", start.base=1, ...){
-   ifD = F
+function(data, cols=NULL, loci.ct, is.1digit=FALSE, dig1Code=c(0, 1, 2, 3), dig2Code = c(0, 1, 2), key.prefix="", start.base=1, ...){
+   ifD = FALSE
 
    ## is NA is error used to represent the missing, change it to 0, or the max(allele code)+1
    
@@ -4920,7 +4920,7 @@ function(data, cols=NULL, loci.ct, is.1digit=F, dig1Code=c(0, 1, 2, 3), dig2Code
    ## need to construct the haplotype freq file
    ## with hap key, haplotype, haplotype prob 
    ct = length(loci.ct)
-   geno.code = as.vector(matrix(dig2Code[2:3], ncol=2) %*% matrix(c(2,0, 1,1, 0,2), ncol=3, byrow=F))
+   geno.code = as.vector(matrix(dig2Code[2:3], ncol=2) %*% matrix(c(2,0, 1,1, 0,2), ncol=3, byrow=FALSE))
 
    #if(sum(loci.ct>7)>=1) stop("Cannot process haplotype block with 8 or more loci.")
    if(sum(loci.ct)!=(ncol(data)/2)) {
@@ -4988,14 +4988,14 @@ function(data, cols=NULL, loci.ct, is.1digit=F, dig1Code=c(0, 1, 2, 3), dig2Code
    snp.e = startId-1
    tmp1 = 1
    
-   allsnp = T
+   allsnp = TRUE
    for( i in 1:ct){
       keys =NULL
       oth=NULL
       snp.b = snp.e+1
       snp.e = snp.b+loci.ct[i]-1
       if(loci.ct[i]!=1){
-		  allsnp = F
+		  allsnp = FALSE
           ## for Hap
           hap.re = haplo.em(geno=data[, ((cut.rg[i,1]):(cut.rg[i,2]))], ...)
 
@@ -5034,13 +5034,13 @@ function(data, cols=NULL, loci.ct, is.1digit=F, dig1Code=c(0, 1, 2, 3), dig2Code
     ## gen one genomap for every SNP
     dd.t = data[, (min(cut.rg)):(max(cut.rg))]
     # convert into two columns
-    dd.ma = matrix(unlist(dd.t), ncol=2, byrow=F)
+    dd.ma = matrix(unlist(dd.t), ncol=2, byrow=FALSE)
     dd = dd.ma[,1]+dd.ma[,2]
 
     ## remove NA first
     #print(table(dd))
     ## convert into n columns each column is for one SNP
-    dd = matrix(dd, nrow=nrow(data), byrow=F)
+    dd = matrix(dd, nrow=nrow(data), byrow=FALSE)
     tb = apply(dd, 2, FUN= function(col, geno.code){
       tt = table(factor(unlist(col), levels=geno.code))
       tt.freq = tt/sum(tt)
@@ -5069,7 +5069,7 @@ function(){
                        3,2, 0,.5,.5,
                        1,3,.5, 0,.5,
                        2,3, 0,.5,.5,
-                       3,3,.25,.25, .5), ncol=5, byrow=T)
+                       3,3,.25,.25, .5), ncol=5, byrow=TRUE)
    ## test
    ## apply(genoProb[,3:5], 1, sum)
    ## apply(genoProb[,3:5], 2, sum)
@@ -5080,7 +5080,7 @@ genMatingTBCondOnChild3 <-
 function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
 
   fStr ="[genMatingTBCondOnChild3]:"
-  ifD = F
+  ifD = FALSE
   maxTbl = NULL
   if(ifD) print(par1)
   if(ifD) print(par2)
@@ -5118,11 +5118,11 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
   #print(par2)
   
   ## get the most probable ones, order the pair by their prob
-  par1 = par1[order(prob1,decreasing=T),,drop=F]
-  par2 = par2[order(prob2,decreasing=T),,drop=F]
+  par1 = par1[order(prob1,decreasing=TRUE),,drop=FALSE]
+  par2 = par2[order(prob2,decreasing=TRUE),,drop=FALSE]
 
-  prob1 = sort(prob1,decreasing=T)
-  prob2 = sort(prob2,decreasing=T)
+  prob1 = sort(prob1,decreasing=TRUE)
+  prob2 = sort(prob2,decreasing=TRUE)
   
   #print(par1)
   #print(par2)
@@ -5227,7 +5227,7 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
                     ## 2nd rule, hapPairs for base parent are not the same
                     ## 3nd rule, hapPairs for child are not the same 
                     tmpMaRow = (1:addedRow)[!othSameHap]
-                    othPairMa = othPair[par2SelRowIdx[tmpMaRow],,drop=F]
+                    othPairMa = othPair[par2SelRowIdx[tmpMaRow],,drop=FALSE]
 
                     ## compare the hapPairs for the other parents with the hapPairs for the base parents.
                     rowTmpMeet = apply(othPairMa, 1, FUN = function(rowItem, bench){
@@ -5238,12 +5238,12 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
                   
                   probVec[(counter+1):(counter+addedRow)]= tmpPrb
                   
-                  ##print(matrix(.Internal(rep(par1[i,], addedRow)), ncol=2, byrow=T))
+                  ##print(matrix(.Internal(rep(par1[i,], addedRow)), ncol=2, byrow=TRUE))
                   ##print( matrix(par2[par2Meet, ], ncol=2))
-                  maxTbl[(counter+1):(counter+addedRow), baseCol] = matrix(rep(basePair[i,], addedRow), ncol=2, byrow=T)
-                  maxTbl[(counter+1):(counter+addedRow), othCol] = othPair[par2SelRowIdx, , drop=F]
+                  maxTbl[(counter+1):(counter+addedRow), baseCol] = matrix(rep(basePair[i,], addedRow), ncol=2, byrow=TRUE)
+                  maxTbl[(counter+1):(counter+addedRow), othCol] = othPair[par2SelRowIdx, , drop=FALSE]
                   ## newly added
-                  maxTbl[(counter+1):(counter+addedRow), 5:6] = matrix(rep(child[j,], addedRow), ncol=2, byrow=T)
+                  maxTbl[(counter+1):(counter+addedRow), 5:6] = matrix(rep(child[j,], addedRow), ncol=2, byrow=TRUE)
 
                   if(ifD) print(maxTbl[(counter+1):(counter+addedRow),])
                   maxMateTbl[(counter+1):(counter+addedRow), mateCol] = rep(i, addedRow)
@@ -5266,8 +5266,8 @@ geno.2dStr2BinaMa <-
 function(expStr, subjectCt=length(expStr), snpLen){
 
   samplesBina = hapBk2AlleleSeq(subjects=expStr, subjectCt=subjectCt, snpLen=snpLen*2)
-  bina1= samplesBina[, seq.int(from=1,to=snpLen*2, by=2), drop=F]
-  bina2 = samplesBina[, seq.int(from=2,to=snpLen*2, by=2), drop=F]
+  bina1= samplesBina[, seq.int(from=1,to=snpLen*2, by=2), drop=FALSE]
+  bina2 = samplesBina[, seq.int(from=2,to=snpLen*2, by=2), drop=FALSE]
    binaNew1 = pmin(bina1, bina2)
    binaNew2 = pmax(bina1, bina2)
    bina = util.matrix.col.shuffle2(binaNew1, binaNew2)
@@ -5292,7 +5292,7 @@ function(prekey, block, genoFreq, snpBase=1, snpSeq){
 }
 
 getBackParentGeno <-
-function(trioDf, famCol=1, memCol=2, snpIdx=NULL, prefix=NULL, re.child=F){
+function(trioDf, famCol=1, memCol=2, snpIdx=NULL, prefix=NULL, re.child=FALSE){
 
     if(is.null(snpIdx)){
       snpIdx = (1:ncol(trioDf))[-c(famCol, memCol)]
@@ -5308,7 +5308,7 @@ function(trioDf, famCol=1, memCol=2, snpIdx=NULL, prefix=NULL, re.child=F){
        ## we know the first two rows in every three rows are parents
        selSeq = seq.int(from=1, to=rowCt, by = 3)
        selSeq2 = selSeq + 1
-       selMa = matrix(c(selSeq, selSeq2), ncol=2, byrow = F)
+       selMa = matrix(c(selSeq, selSeq2), ncol=2, byrow = FALSE)
        selMa = as.vector(t(selMa))
      }
 
@@ -5331,10 +5331,10 @@ function(trioDf, famCol=1, memCol=2, snpIdx=NULL, prefix=NULL, re.child=F){
      
      if(re.child) {
        write.table(trioSNP[unique.par.idx,], file=paste(prefix, "_child.txt", sep=""), sep=" ",
-                   append = FALSE, row.names = F, col.names = F)
+                   append = FALSE, row.names = FALSE, col.names = FALSE)
      }else{
        write.table(trioSNP[unique.par.idx,], file=paste(prefix, "_parent.txt", sep=""), sep=" ",
-                   append = FALSE, row.names = F, col.names = F)
+                   append = FALSE, row.names = FALSE, col.names = FALSE)
      }
      return(NULL)
 }
@@ -5344,7 +5344,7 @@ function( semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen){
 	## SemiAugMap only have the major haplotypes' expression and prob,
 	## only a number for prob for each of the other haplotypes 
 	## SemiAugMap also has a column showing the index of the haplotype in the fixed AugMap
-	ifD = F
+	ifD = FALSE
 	
 	leftOverProb = semiMapFrame[1, resiProbCol]
 	mapProb = semiMapFrame[ , probCol]
@@ -5361,11 +5361,11 @@ function( semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen){
 }
 
 getHapProb2 <-
-function(selIdx, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen, restandard=F){
+function(selIdx, semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen, restandard=FALSE){
 	## SemiAugMap only have the major haplotypes' expression and prob,
 	## only a number for prob for each of the other haplotypes 
 	## SemiAugMap also has a column showing the index of the haplotype in the fixed AugMap
-	ifD = F
+	ifD = FALSE
 	
 	leftOverProb = semiMapFrame[1, resiProbCol]
 	mapProb = semiMapFrame[ , probCol]
@@ -5437,7 +5437,7 @@ function (maUp, maLow, position, barLen, col=NULL,...)
 }
 
 grp.kmStep <-
-function(timeVec, probVec, lty=1, lwd=1,  col ="black", plot.dot=F){
+function(timeVec, probVec, lty=1, lwd=1,  col ="black", plot.dot=FALSE){
 
   len = length(timeVec)
 
@@ -5457,11 +5457,11 @@ function(name, width = 500, height =500){
      
      
      recL = 1
-     colMa = matrix(colors(), ncol = 25, nrow = 27, byrow = T)
+     colMa = matrix(colors(), ncol = 25, nrow = 27, byrow = TRUE)
      
      my.xlim = c(0, 25)
      my.ylim = c(0, 27)
-     plot(my.xlim, my.ylim, type = "n", xlab="", ylab="", axes=F)
+     plot(my.xlim, my.ylim, type = "n", xlab="", ylab="", axes=FALSE)
      
      
      for(row in 1:27){
@@ -5488,7 +5488,7 @@ function(hapExp, hapProb, snpBIdx=NA){
     if(is.na(snpBIdx)) snpBIdx = 0
     bina1 = hapBk2AlleleSeq(subjects=hapExp,
                             subjectCt=length(hapExp),
-                            snpLen=nchar(hapExp[1]), markdownOne = F)
+                            snpLen=nchar(hapExp[1]), markdownOne = FALSE)
     
     geno1dFreq = lapply(1:ncol(bina1), FUN=function(col, prob, snpMa){
       snpF = factor(snpMa[,col],levels=1:2)
@@ -5502,7 +5502,7 @@ function(hapExp, hapProb, snpBIdx=NA){
       #print(re)
     }, prob=hapProb  , snpMa = bina1)
     
-    genoFreq = util.list.2matrix(list=geno1dFreq, byRow = T)
+    genoFreq = util.list.2matrix(list=geno1dFreq, byRow = TRUE)
     colnames(genoFreq)=c("11","22","12")
     rownames(genoFreq)=paste("snp", snpBIdx+1:ncol(bina1), sep="")
     return(genoFreq)
@@ -5523,18 +5523,18 @@ function(hapExp = c("11", "12", "21", "22"), hapProb = rep(1/length(hapExp), len
 #      }
 #      
 # 
-     ifD = F
+     ifD = FALSE
      if(ifD) print(paste("hapLen:", ct))
-     hapIdxCorner = util.it.smallLargeIdx(ct, keep.same=F)
-     hapIdxDiag = matrix(rep(1:ct, times=2), ncol=2, byrow=F)
+     hapIdxCorner = util.it.smallLargeIdx(ct, keep.same=FALSE)
+     hapIdxDiag = matrix(rep(1:ct, times=2), ncol=2, byrow=FALSE)
   
-     probCorner = matrix(as.vector(hapProb)[as.vector(hapIdxCorner)], ncol=2, byrow=F)
-     probDiag = matrix(as.vector(hapProb)[as.vector(hapIdxDiag)], ncol=2, byrow=F)
+     probCorner = matrix(as.vector(hapProb)[as.vector(hapIdxCorner)], ncol=2, byrow=FALSE)
+     probDiag = matrix(as.vector(hapProb)[as.vector(hapIdxDiag)], ncol=2, byrow=FALSE)
      joinCorner = 2*probCorner[,1]*probCorner[,2]
      joinDiag = probDiag[,1]*probDiag[,2]
      
-     expCorner = matrix(hapExp[hapIdxCorner], ncol=2, byrow=F)
-     expDiag = matrix(hapExp[hapIdxDiag], ncol=2, byrow=F)
+     expCorner = matrix(hapExp[hapIdxCorner], ncol=2, byrow=FALSE)
+     expDiag = matrix(hapExp[hapIdxDiag], ncol=2, byrow=FALSE)
      
      hapIdx = rbind(hapIdxCorner, hapIdxDiag)
      colnames(hapIdx) = c("id1", "id2")
@@ -5545,8 +5545,8 @@ function(hapExp = c("11", "12", "21", "22"), hapProb = rep(1/length(hapExp), len
      # get the one-digit coding
      # when add to digit, get c(2,3,4)-1=c(1,2,3) the common SNP coding
      # HARD CODE!!!HARD CODE
-     bina1 = hapBk2AlleleSeq(hapExp[,1], subjectCt=dim(hapExp)[1], snpLen=snpCt, markdownOne = F)
-     bina2 = hapBk2AlleleSeq(hapExp[,2], subjectCt=dim(hapExp)[1], snpLen=snpCt, markdownOne = F)
+     bina1 = hapBk2AlleleSeq(hapExp[,1], subjectCt=dim(hapExp)[1], snpLen=snpCt, markdownOne = FALSE)
+     bina2 = hapBk2AlleleSeq(hapExp[,2], subjectCt=dim(hapExp)[1], snpLen=snpCt, markdownOne = FALSE)
       if(ifD) print(bina1)
      
      ##  20Dec08Change!!!: straighten coding: output must be of digit 1, 2, 3 for 1-digitCoding, and 1, 2 for 2-digit
@@ -5620,8 +5620,8 @@ function(bkDframe, chCol, blockCol, keyCol, expCol, probCol, hapLenCol){
 
 hap2genotype.m <-
 function(hapMa1, hapMa2, subjectCt, snpLen){
-  bina1 = hapBk2AlleleSeq(hapMa1, subjectCt, snpLen, markdownOne = F)
-  bina2 = hapBk2AlleleSeq(hapMa2, subjectCt, snpLen, markdownOne = F)
+  bina1 = hapBk2AlleleSeq(hapMa1, subjectCt, snpLen, markdownOne = FALSE)
+  bina2 = hapBk2AlleleSeq(hapMa2, subjectCt, snpLen, markdownOne = FALSE)
   
   binaNew1 = pmin(bina1, bina2)
   binaNew2 = pmax(bina1, bina2)
@@ -5631,7 +5631,7 @@ function(hapMa1, hapMa2, subjectCt, snpLen){
 }
 
 hapBk2AlleleSeq <-
-function(subjects, subjectCt, snpLen, markdownOne=T){
+function(subjects, subjectCt, snpLen, markdownOne=TRUE){
 
   if(is.null(dim(subjects))){
      subjects.snp = lapply(subjects, FUN=util.str.2CharArray,  len=snpLen)    
@@ -5643,16 +5643,16 @@ function(subjects, subjectCt, snpLen, markdownOne=T){
    }
   
   if(markdownOne){
-    subjects.snp = matrix(as.numeric(unlist(subjects.snp))-1, ncol = snpLen, byrow = T)
+    subjects.snp = matrix(as.numeric(unlist(subjects.snp))-1, ncol = snpLen, byrow = TRUE)
   }else{
-    subjects.snp = matrix(as.numeric(unlist(subjects.snp)), ncol = snpLen, byrow = T)
+    subjects.snp = matrix(as.numeric(unlist(subjects.snp)), ncol = snpLen, byrow = TRUE)
   }
   return(subjects.snp)
   
 }
 
 hapBkGenoMap2HapMap <-
-function(hapBkGenoMap, reSimuMap=T){
+function(hapBkGenoMap, reSimuMap=TRUE){
 	
 	singleton = hapBkGenoMap$genomeMarkerInfo[hapBkGenoMap$genomeMarkerInfo$qu.type==1, 2 ]
 	singletonGeno = hapBkGenoMap$genoOnlyMap$bks[ singleton ]
@@ -5700,7 +5700,7 @@ function(hapBkGenoMap, reSimuMap=T){
 
 hapGenoBlockProc <-
 function(hapGenoSub,  snpCoding=c(0, 1, 2, 3)){
-	ifD = F
+	ifD = FALSE
 	if(ifD) print(hapGenoSub)
 	
 	snpCt = length(hapGenoSub)
@@ -5726,7 +5726,7 @@ function(hapGenoSub,  snpCoding=c(0, 1, 2, 3)){
 
 hapPair.match <-
 function(listNewOrder, bkMax, pairList){
-  ifD=F
+  ifD=FALSE
   fN = "hapPair.match:"
   if (ifD)   print(paste(fN, " start"))
   if (ifD)   print(listNewOrder)
@@ -5751,7 +5751,7 @@ function(listNewOrder, bkMax, pairList){
 
   # map of index for which hap to pull: each column for each index in bkIds,
   idx.map = exhaustHapExp(lociCt=bkCt)$hap
-  idx.map = idx.map[1:(nrow(idx.map)/2),,drop=F]
+  idx.map = idx.map[1:(nrow(idx.map)/2),,drop=FALSE]
 
   if(ifD) print(paste("map.row=", map.row, " row.ct=", row.ct))
   
@@ -5767,7 +5767,7 @@ function(listNewOrder, bkMax, pairList){
       re = ma[,maps[ii]]
       return(re)
     }, maps=grab.hapSet, pList = pairList)
-    ex.grid = qExpandTable(listOfFactor =ex.list, removedRowIdx=NULL, re.row=F)
+    ex.grid = qExpandTable(listOfFactor =ex.list, removedRowIdx=NULL, re.row=FALSE)
     if(ifD) print(ex.grid)
     
     row.seq = ((i-1)*row.ct+1) : (i*row.ct) 
@@ -5780,7 +5780,7 @@ function(listNewOrder, bkMax, pairList){
       return(re)
     }, maps=grab.hapSet, pList = pairList)
     if(ifD) print(ex.list)
-    ex.grid = qExpandTable(listOfFactor =ex.list, removedRowIdx=NULL, re.row=F)
+    ex.grid = qExpandTable(listOfFactor =ex.list, removedRowIdx=NULL, re.row=FALSE)
     if(ifD) print(ex.grid)
     
     mgrid2[ row.seq,listNewOrder ] = ex.grid
@@ -5793,7 +5793,7 @@ function(listNewOrder, bkMax, pairList){
 
 HRCB.applyRule <-
 function(subjectsExpMa, rule, col.shuffled){
-  ifD = F
+  ifD = FALSE
   len = length(rule)
   if(is.null(dim(subjectsExpMa))){
     nsub = length(subjectsExpMa)
@@ -5804,7 +5804,7 @@ function(subjectsExpMa, rule, col.shuffled){
 
   if(ifD) print("subjectsExpMa:")
   if(ifD) print(subjectsExpMa[1:10])
-  subjectListMa = hapBk2AlleleSeq(subjectsExpMa, nsub, varCt, markdownOne=T)
+  subjectListMa = hapBk2AlleleSeq(subjectsExpMa, nsub, varCt, markdownOne=TRUE)
   print(str(subjectListMa))
 
   subjectList = util.matrix.2list(subjectListMa)
@@ -5814,7 +5814,7 @@ function(subjectsExpMa, rule, col.shuffled){
   
   for ( i in 1:length(slist)){
     curRule = slist[[i]]
-    treePred = binaTree.apply(binaTree=curRule$signal, data=subjectListMa, colnames=col.shuffled, re.final=T)
+    treePred = binaTree.apply(binaTree=curRule$signal, data=subjectListMa, colnames=col.shuffled, re.final=TRUE)
     #print(treePred)
     linear = linear + treePred * unlist(rep(curRule$coef, nsub))
   }
@@ -5833,7 +5833,7 @@ function(subjectsExpMa, rule, col.shuffled){
 
 HRCB.Esp1Rule.sampleKid <-
 function(rule, caseNo, spStrata, supHapProb){
-	ifD =F
+	ifD =FALSE
 	fn = "HRCB.Esp1Rule.sampleKid::"
 	
 	tmpObj = NULL
@@ -5924,13 +5924,13 @@ function(rule, caseNo, spStrata, supHapProb){
 }
 
 HRCB.Esp1Rule.spTrioOnBase <-
-function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reControl=F){
+function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reControl=FALSE){
   FN = "HRCB.Esp1Rule.spTrioOnBase"
   if(is.null(preObj)){
     if(is.null(bkMap)) stop(" No object is passed as bkMap nor as preObj. The function need at least one to work.")
     warning( "No object is passed as preObj. The function will need to generate the preObj.")
     
-    preObj = bkMap.HRCB.Esp1Rule.genoSeq(bkMap, rule, re.probOnly = F)
+    preObj = bkMap.HRCB.Esp1Rule.genoSeq(bkMap, rule, re.probOnly = FALSE)
   }
 
   #print(FN)
@@ -5960,12 +5960,12 @@ function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reCon
    }
 
     ## shuffle the trio, so risk groups are mixed
-    tmpRandomShu = sample(1:caseNo, size=caseNo, replace=F)
+    tmpRandomShu = sample(1:caseNo, size=caseNo, replace=FALSE)
 
    if(!reControl){
      ## need to combine family and run.
      fam.hapIdx.unsort = rbind(parIdx[,1:2], parIdx[,3:4], kids)
-     fam.hapIdx = fam.hapIdx.unsort[t( matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=F)), ]
+     fam.hapIdx = fam.hapIdx.unsort[t( matrix(1:(caseNo*3), ncol=3, nrow=caseNo, byrow=FALSE)), ]
   
      ## find out the exact string expression
      hap.str1 = supHapExp[fam.hapIdx[,1]]
@@ -5975,14 +5975,14 @@ function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reCon
      geno.FMCMa = covDipStr2CodedGeno(hap.str1, hap.str2, subjectCt=caseNo*3, snpLen=bkMapS$snpLen, snpCoding=0:3, snpBase=c(0, bkMapS$alleleCode))
 
      ## shuffle the trio, so risk groups are mixed
-     allRowIdx = matrix(1:(3*caseNo), nrow=3, byrow=F) 
+     allRowIdx = matrix(1:(3*caseNo), nrow=3, byrow=FALSE) 
      trioShuffledIdx = allRowIdx[,tmpRandomShu]
      geno.FMCMa=geno.FMCMa[trioShuffledIdx,]
 
      if(!is.null(ifS)) {
        ## check!!!
        supDipIdx = matrix(unlist(apply(fam.hapIdx.unsort, 1, FUN=util.it.triMatch, len=length(supHapProb))),
-                    ncol=3, nrow=caseNo, byrow=F)
+                    ncol=3, nrow=caseNo, byrow=FALSE)
   
        sample.idx = data.frame(parIdx, kids, supDipIdx)[tmpRandomShu,]
        colnames(sample.idx) = c("hapIdx_f1", "hapIdx_f2", "hapIdx_m1", "hapIdx_m2",
@@ -6046,7 +6046,7 @@ function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reCon
 
      ## need to combine family and run.
      fam.hapIdx.unsort = rbind(parIdx[,1:2], parIdx[,3:4], kids, othKids[,1:2], othKids[,3:4], othKids[,5:6])
-     fam.hapIdx = fam.hapIdx.unsort[t( matrix(1:(caseNo*6), ncol=6, nrow=caseNo, byrow=F)), ]
+     fam.hapIdx = fam.hapIdx.unsort[t( matrix(1:(caseNo*6), ncol=6, nrow=caseNo, byrow=FALSE)), ]
   
      ## find out the exact string expression
      hap.str1 = supHapExp[fam.hapIdx[,1]]
@@ -6056,14 +6056,14 @@ function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reCon
      geno.FMCMa = covDipStr2CodedGeno(hap.str1, hap.str2, subjectCt=caseNo*6, snpLen=bkMapS$snpLen, snpCoding=0:3, snpBase=c(0, bkMapS$alleleCode))
 
      ## shuffle the trio, so risk groups are mixed
-     allRowIdx = matrix(1:(6*caseNo), nrow=6, byrow=F) 
+     allRowIdx = matrix(1:(6*caseNo), nrow=6, byrow=FALSE) 
      trioShuffledIdx = allRowIdx[,tmpRandomShu]
      geno.FMCMa=geno.FMCMa[trioShuffledIdx,]
 
      if(!is.null(ifS)) {
        ## check!!!
        supDipIdx = matrix(unlist(apply(fam.hapIdx.unsort, 1, FUN=util.it.triMatch, len=length(supHapProb))),
-                    ncol=6, nrow=caseNo, byrow=F)
+                    ncol=6, nrow=caseNo, byrow=FALSE)
   
        sample.idx = data.frame(parIdx, kids, supDipIdx)[tmpRandomShu,]
        colnames(sample.idx) = c("hapIdx_f1", "hapIdx_f2", "hapIdx_m1", "hapIdx_m2",
@@ -6078,8 +6078,8 @@ function(bkMap=NULL, preObj=NULL, spStrata, rule, caseNo, ifS="simuInfo",  reCon
 }
 
 HRCB.famMap.spTrio <-
-function(caseNo, matingTbName, ifS="simuDirectInfo", reControl =F ){
-     ifD = F
+function(caseNo, matingTbName, ifS="simuDirectInfo", reControl =FALSE ){
+     ifD = FALSE
 
      FN = "HRCB.famMap.spTrio" 
      #print(FN)
@@ -6099,7 +6099,7 @@ function(caseNo, matingTbName, ifS="simuDirectInfo", reControl =F ){
 
      ## sample row
      ##caseNo = 5
-     kid.idx.sample = sample( 1:(matRowCt*4), size = caseNo, prob=kids.risk, replace=T)
+     kid.idx.sample = sample( 1:(matRowCt*4), size = caseNo, prob=kids.risk, replace=TRUE)
 
      ## find the matrix idx for the kids
      row.sample = kid.idx.sample%%matRowCt
@@ -6114,9 +6114,9 @@ function(caseNo, matingTbName, ifS="simuDirectInfo", reControl =F ){
              leftControl = childIDX[ childIDX!=cIdx[i] ]
            }, totalRow = matRowCt, rowIdx=row.sample, cIdx=kid.idx.sample))
 
-       tt.newIdxSeq = cbind( case.idx.matchedRow, matrix( kids.matchedRow[controlIdx], ncol=3, byrow=T))
+       tt.newIdxSeq = cbind( case.idx.matchedRow, matrix( kids.matchedRow[controlIdx], ncol=3, byrow=TRUE))
        genoOth = genoMap[,6][ tt.newIdxSeq  ]
-       geno.CC = genoOth[t( matrix(1:(caseNo*4), ncol=4, byrow=F) )   ]
+       geno.CC = genoOth[t( matrix(1:(caseNo*4), ncol=4, byrow=FALSE) )   ]
        geno.CCMa = t(sapply(geno.CC, FUN=geno.2dStr2BinaMa, subjectCt=caseNo*4, snpLen=snpLen))
        
      }
@@ -6142,7 +6142,7 @@ function(caseNo, matingTbName, ifS="simuDirectInfo", reControl =F ){
 
      #geno = genoMap[,6][c(fa.idx.matchedRow, ma.idx.matchedRow, case.idx.matchedRow)]
 
-     geno.FMCMa = geno[ t( matrix(1:(caseNo*3), ncol=3, byrow=F) ),   ]
+     geno.FMCMa = geno[ t( matrix(1:(caseNo*3), ncol=3, byrow=FALSE) ),   ]
      if(ifD) print(matrix(geno.FMCMa, ncol=1)[1:10,])
      ## convert string into digits
      # geno.FMCMa = t(sapply(geno.FMC, FUN=geno.2dStr2BinaMa, subjectCt=caseNo*3, snpLen=snpLen))
@@ -6159,7 +6159,7 @@ function(caseNo, matingTbName, ifS="simuDirectInfo", reControl =F ){
 
 HRCBSpGrp.cons <-
 function(hapProb, ids, type="A"){
-	ifD = F
+	ifD = FALSE
 	## contain the first index and the haplotype probabilities for hap1, hap2 and joint
 	idProb = NULL
 	id2 = NULL
@@ -6267,7 +6267,7 @@ function(hapProb, ids, type="A"){
 
 HRCBSpGrp.sp <-
 function(grp, size, hapProb, riskProb=NULL, grpA=NULL){
-	ifD = F
+	ifD = FALSE
 	samMa = matrix(NA, nrow=size, ncol=2)
 	#print(grp)
 	#print(hapProb)
@@ -6287,7 +6287,7 @@ function(grp, size, hapProb, riskProb=NULL, grpA=NULL){
 	
 	#print("sampled")
 	tmp.ma = cbind(1:straCt, stra.sampled)
-	tmp.ma = tmp.ma[tmp.ma[,2]>0, ,drop=F]
+	tmp.ma = tmp.ma[tmp.ma[,2]>0, ,drop=FALSE]
 	#print(tmp.ma)
 	
 	samMa[,1] =  unlist(apply(tmp.ma, 1, FUN = function(row, ma){
@@ -6307,7 +6307,7 @@ function(grp, size, hapProb, riskProb=NULL, grpA=NULL){
 							}
 							tmp.sam = id2 [tmp.range]
 							
-							id2.sel = resample(tmp.sam, size=row[2], prob = hapProb[tmp.sam], replace=T)
+							id2.sel = resample(tmp.sam, size=row[2], prob = hapProb[tmp.sam], replace=TRUE)
 							#print(id2.sel)
 							if(length(id2.sel)==1) id2.sel = rep(id2.sel, times=row[2])
 							#print(id2.sel)
@@ -6357,10 +6357,10 @@ function(grp, size, hapProb, riskProb=NULL, grpA=NULL){
 }
 
 impuBk.scheduler <-
-function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig1Code, dig2Code, reType=F, reHap=NULL, logF=NULL, logErr=""){
+function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=TRUE, dig1Code, dig2Code, reType=FALSE, reHap=NULL, logF=NULL, logErr=""){
 
   fStr ="[impuBk.scheduler:]"
-  ifD = F
+  ifD = FALSE
 
   if(!is.null(dir)){
     if(dir==""){
@@ -6408,21 +6408,21 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 
   all.genomeMarkerInfo = get(toolname$freqMap)$genomeMarkerInfo
 
-  bd.start = all.genomeMarkerInfo[idx[1], 2, drop=T]
-  bd.end   = all.genomeMarkerInfo[idx[ length(idx) ], 3, drop=T]
+  bd.start = all.genomeMarkerInfo[idx[1], 2, drop=TRUE]
+  bd.end   = all.genomeMarkerInfo[idx[ length(idx) ], 3, drop=TRUE]
 
   snpOffset =bd.start-1
 
   ## change digit to 1 digit coding using Qing's coding scheme
   if(!is.1digit){
       ## excluding the parents cols
-      genos  = raw[, 2+( ((bd.start-1)*2+1):(bd.end*2) ),drop=F  ]
+      genos  = raw[, 2+( ((bd.start-1)*2+1):(bd.end*2) ),drop=FALSE  ]
       snpNum = ncol(genos)/2
       snp1digit = exchangeDigit(ma=genos,
         cols=c(1,snpNum*2), dig1Code=c(0, 1, 3, 2), dig2Code =dig2Code, action=c("2to1"))
   }else{
       ## excluding the parents cols
-      genos  = raw[, 2+(bd.start:bd.end), drop=F]
+      genos  = raw[, 2+(bd.start:bd.end), drop=FALSE]
       snpNum = ncol(genos)
       snp1digit = genos
       #dig1Code.inside = dig1Code[c(1, 2, 4, 3)]
@@ -6481,7 +6481,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
         exhaustHap = exhaustHap[1:2^snpCt, 1:snpCt]
 
         bk.genoRowComp = rowSums(bk.geno!=0) == snpCt 
-        bk.genoTrioComp = matrix(bk.genoRowComp, ncol=3, byrow=T)
+        bk.genoTrioComp = matrix(bk.genoRowComp, ncol=3, byrow=TRUE)
         bk.missTrioIdx = (1:trioCt) [ rowSums(bk.genoTrioComp) < 3 ]
     
         for (famId in bk.missTrioIdx){
@@ -6502,7 +6502,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 
             imputBkRecord.ct = imputBkRecord.ct + 1
             imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job) , 1:6 ] = matrix(
-                           rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=T)
+                           rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=TRUE)
             
             imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job) ,
                           7:ncol( imputBkRecord ) ] = replace
@@ -6542,9 +6542,9 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 #            if( (imputBkRecord.ct!=0) & (imputBkRecord.ct %%cutpt==0) & (!is.null(reHap)) ){  
 #                  ## if there is record and upto certain number, need to be outputed
 #                  ## evaluated after each trio
-#                  write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=F],
+#                  write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=FALSE],
 #                              file=paste(reHap, "_imputBkRecord.csv", sep=""), sep=",",
-#                              append = T, row.names = F, col.names=F)
+#                              append = TRUE, row.names = FALSE, col.names=FALSE)
 #                  imputBkRecord.ct = 0
 #                  imputBkRecord = impuDummy
 #             }                       
@@ -6588,9 +6588,9 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
          if( (imputBkRecord.ct!=0) & (!is.null(reHap)) ){  
                   ## if there is record and upto certain number, need to be outputed
                   ## evaluated when the block is over
-                 write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=F],
+                 write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=FALSE],
                              file=paste(reHap, "_imputBkRecord.csv", sep=""), sep=",",
-                             append = T, row.names = F, col.names=F)
+                             append = TRUE, row.names = FALSE, col.names=FALSE)
          }
          imputBkRecord.ct = 0
          imputBkRecord = impuDummy
@@ -6604,7 +6604,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 
         bk.geno = snp1digit[,bk.bd -  snpOffset]        
         bk.genoRowComp = as.integer(bk.geno!=0) 
-        bk.genoTrioComp = matrix(bk.genoRowComp, ncol=3, byrow=T)
+        bk.genoTrioComp = matrix(bk.genoRowComp, ncol=3, byrow=TRUE)
         bk.missTrioIdx = (1:trioCt) [ rowSums(bk.genoTrioComp) < 3 ]
 
         for (famId in bk.missTrioIdx){
@@ -6624,7 +6624,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
              #print(replace)
              imputBkRecord.ct = imputBkRecord.ct + 1
              imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job) , 1:6 ]  =  matrix(
-                            rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=T)
+                            rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=TRUE)
 
              imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job),
                            c(7, 9, 11, 13, 15, 17) ] = replace
@@ -6637,9 +6637,9 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 #              if( (imputBkRecord.ct!=0) & (imputBkRecord.ct %%cutpt==0) & (!is.null(reHap)) ){  
 #                   ## if there is record and upto certain number, need to be outputed
 #                   ## evaluated after each trio                
-#                 write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=F],
+#                 write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=FALSE],
 #                             file=paste(reHap, "_imputBkRecord.csv", sep=""), sep=",",
-#                             append = T, row.names = F, col.names=F)
+#                             append = TRUE, row.names = FALSE, col.names=FALSE)
 #                 imputBkRecord.ct = 0
 #                 imputBkRecord = impuDummy
 #              }
@@ -6679,9 +6679,9 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
          } ## for (famId in bk.missTrioIdx){
          if( (imputBkRecord.ct!=0) & (!is.null(reHap)) ){  
                 ## if there is record, write out after each singletonn SNP 
-                write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=F],
+                write.table(imputBkRecord[1:(imputBkRecord.ct*job) ,,drop=FALSE],
                             file=paste(reHap, "_imputBkRecord.csv", sep=""), sep=",",
-                            append = T, row.names = F, col.names=F)
+                            append = TRUE, row.names = FALSE, col.names=FALSE)
          }
          imputBkRecord.ct = 0
          imputBkRecord = impuDummy
@@ -6692,7 +6692,7 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 	errorTrap=get("errorTrap", envir=tryCatchEnv)
     if(!is.null(errorTrap)){
       write.table(errorTrap, file=paste(logErr, "_errorTrap.csv", sep=""), sep=",",
-                 append = F, row.names = F, col.names = TRUE)
+                 append = FALSE, row.names = FALSE, col.names = TRUE)
      
     }
     
@@ -6700,10 +6700,10 @@ function(raw, idx, job=1, toolname=NULL, freqMaps=NULL, dir="", is.1digit=T, dig
 }
 
 impuBkTDT.scheduler <-
-function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit=T, dig1Code, dig2Code, reType=F, reHap=NULL, logF=NULL, logErr=""){
+function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit=TRUE, dig1Code, dig2Code, reType=FALSE, reHap=NULL, logF=NULL, logErr=""){
 
   fStr ="[impuBkTDT.scheduler:]"
-  ifD = F
+  ifD = FALSE
   #logF = "test"
   if(ifD) print(fStr)
 
@@ -6762,21 +6762,21 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
 
   all.genomeMarkerInfo = get(toolname$freqMap)$genomeMarkerInfo
 
-  bd.start = all.genomeMarkerInfo[idx[1], 2, drop=T]
-  bd.end   = all.genomeMarkerInfo[idx[ length(idx) ], 3, drop=T]
+  bd.start = all.genomeMarkerInfo[idx[1], 2, drop=TRUE]
+  bd.end   = all.genomeMarkerInfo[idx[ length(idx) ], 3, drop=TRUE]
 
   snpOffset =bd.start-1
   #print("Get here")
   ## change digit to 1 digit coding using Qing's coding scheme
   if(!is.1digit){
       ## excluding the parents cols
-      genos  = raw[, 2+( ((bd.start-1)*2+1):(bd.end*2) ), drop=F  ]
+      genos  = raw[, 2+( ((bd.start-1)*2+1):(bd.end*2) ), drop=FALSE  ]
       snpNum = ncol(genos)/2
       snp1digit = exchangeDigit(ma=genos,
         cols=c(1,snpNum*2), dig1Code=c(0, 1, 3, 2), dig2Code =dig2Code, action=c("2to1"))
   }else{
       ## excluding the parents cols
-      genos  = raw[, 2+(bd.start:bd.end), drop=F]
+      genos  = raw[, 2+(bd.start:bd.end), drop=FALSE]
       snpNum = ncol(genos)
       snp1digit = genos
       ## change to inside Qing's coding scheme
@@ -6864,12 +6864,12 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
             
             imputBkRecord.ct = imputBkRecord.ct + 1
             imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job), 1:6 ] = matrix(
-                           rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=T)
+                           rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=TRUE)
 
 #             print(raw[, 1:4])
 #             print(y1)
 #             print(raw[y1, 1])
-#             print(      matrix(rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=T)[,1:4]
+#             print(      matrix(rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=TRUE)[,1:4]
 #                   )
 
             imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job), 7:ncol( imputBkRecord ) ] = replace
@@ -6887,7 +6887,7 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
             if( sum(abs(geno.FMCMa[1:3,] - trioBlock)[ trioBlock!=0 ])!=0 ) stop("No matching")
 
             snp1digitTDT[ ((famId-1)*6+1) :( famId*6  ), x1:x2-  snpOffset] =
-              geno.FMCMa[ c(1,2,3, sample(1:3, size=3, replace=F)+3), ]
+              geno.FMCMa[ c(1,2,3, sample(1:3, size=3, replace=FALSE)+3), ]
             
             if(!is.null(logF)){
       
@@ -6947,9 +6947,9 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
 
         if( (imputBkRecord.ct!=0) & (!is.null(reHap)) ){
           #print("Write")
-          write.table(imputBkRecord[1:(imputBkRecord.ct*job) , , drop=F],
+          write.table(imputBkRecord[1:(imputBkRecord.ct*job) , , drop=FALSE],
                       file=paste(reHap, "_imputBkRecord.csv", sep=""), sep=",",
-                      append = T, row.names = F, col.names=F)
+                      append = TRUE, row.names = FALSE, col.names=FALSE)
         }
         imputBkRecord.ct  = 0
         imputBkRecord = impuDummy
@@ -6983,7 +6983,7 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
              #print(replace)
              imputBkRecord.ct = imputBkRecord.ct + 1
              imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job) ,
-                           1:6 ] = matrix(rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=T)
+                           1:6 ] = matrix(rep(c(unit, raw[y1, 1], y1, y2, x1, x2), times=job), ncol=6, byrow=TRUE)
 
              imputBkRecord[((imputBkRecord.ct-1)*job+1):(imputBkRecord.ct*job) ,
                            c(7, 9, 11, 13, 15, 17) ] = replace
@@ -6992,7 +6992,7 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
              if( sum(abs(geno.FMCMa[1:3] - trioBlock)[ trioBlock!=0 ])!=0 ) stop("No matching")
 
              snp1digitTDT[ ((famId-1)*6+1):( famId*6  ), x1:x2-  snpOffset] =
-               geno.FMCMa [ c(1,2,3, sample(1:3, size=3, replace=F)+3)]
+               geno.FMCMa [ c(1,2,3, sample(1:3, size=3, replace=FALSE)+3)]
                      
            },  error = function(e) {
                ##print(qTraceback())
@@ -7032,9 +7032,9 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
 
          if( (imputBkRecord.ct!=0) & (!is.null(reHap)) ){
           #print("Write")
-          write.table(imputBkRecord[1:(imputBkRecord.ct*job) , , drop=F],
+          write.table(imputBkRecord[1:(imputBkRecord.ct*job) , , drop=FALSE],
                       file=paste(reHap, "_imputBkRecord.csv", sep=""), sep=",",
-                      append = T, row.names = F, col.names=F)
+                      append = TRUE, row.names = FALSE, col.names=FALSE)
         }
         imputBkRecord.ct  = 0
         imputBkRecord = impuDummy
@@ -7048,7 +7048,7 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
 	errorTrap=get("errorTrap", envir=tryCatchEnv)
     if(!is.null(errorTrap)){
       write.table(errorTrap, file=paste(logErr, "_errorTrap.csv", sep=""), sep=",",
-                 append = F, row.names = F, col.names = TRUE)
+                 append = FALSE, row.names = FALSE, col.names = TRUE)
      
     }
     return (snp1digitTDT)
@@ -7057,7 +7057,7 @@ function(raw=data, idx, job=1, toolname=NULL, freqMaps=NULL, dir=NULL, is.1digit
 imputGeno <-
 function(trioBlock, job=1, genoProb, popuProb, data.order, snpCoding){
   fStr = "[imputGeno]:"
-  ifD = F
+  ifD = FALSE
   if(ifD) print(qp(fStr, "start"))
   if( min( c(snpCoding==c(0,1,2,3),data.order=="FMC")) <1 )
      stop (paste(fStr, "Data configuration is not right:\n", "snpCoding=[", paste(snpCoding, collapse=";", sep=""),
@@ -7101,7 +7101,7 @@ function(trioBlock, job=1, genoProb, popuProb, data.order, snpCoding){
   
       newlyM = match(trioBlock[3], kid)
   
-      allKid = kid[ c(newlyM[1], kid[-newlyM][sample(1:3, size=3, replace=F)])  ]
+      allKid = kid[ c(newlyM[1], kid[-newlyM][sample(1:3, size=3, replace=FALSE)])  ]
 
       famRe[i, 3:6]=allKid      
     }
@@ -7197,7 +7197,7 @@ function(trioBlock, job=1, genoProb, popuProb, data.order, snpCoding){
 isDigitAtLociIdx <-
 function(hapIdx, digit=1, lociCt, lociIdx, intVec=seq.int(from=1, to=2^(lociIdx-1), by=1)){
 
-  ifD = F
+  ifD = FALSE
   
   if(digit!=1 & digit!=2) stop(paste("Invalide digit imput: ", digit, sep=""))
   
@@ -7248,7 +7248,7 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 	txt.affect=2
 	
 	sep=""
-	header=F
+	header=FALSE
 	
 	
 	trioTwoDigit = snpPREFileMatchTrio(txtF=data, sep=sep, header=header,
@@ -7296,14 +7296,14 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 		if( is.element(snpStartLeftIndex, c(pedCol, memCol, affectCol, dadCol, momCol))){
 			warning("Cannot report missing information. The argument, snpIdxRange, includes one of the special column for linkage file.")
 		}else{
-			missSNPPos = findMissing(df=trioTwoDigit, is.1digit=F, snpStartLeftIndex=snpStartLeftIndex,
+			missSNPPos = findMissing(df=trioTwoDigit, is.1digit=FALSE, snpStartLeftIndex=snpStartLeftIndex,
 					snpEndRightIndex=snpEndRightIndex, dig1Code=NULL, dig2Code=dig2Code )
 			re = c(re, missIdx = list(missSNPPos))
 		}
 	}
 	
 	if(is.element("Mendelian check", action)){
-		snpTrio = matrix(snp1digit.inside, nrow=3, byrow=F)
+		snpTrio = matrix(snp1digit.inside, nrow=3, byrow=FALSE)
 		
 		MedErr = matrix(NA, ncol=4, nrow=ncol(snpTrio))
 		colnames(MedErr)=c("y", "x", "trio", "SNP")
@@ -7336,7 +7336,7 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 						b = get("MedErr", envir=tryCatchEnv)
 						b[a,] = c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+3,  ttty,    tttx)
 						assign("MedErr", b, envir=tryCatchEnv)
-						#print( MedErr[MedErr.ct,,drop=F] )
+						#print( MedErr[MedErr.ct,,drop=FALSE] )
 					})          
 		}
 		MedErr.ct = get("MedErr.ct", envir=tryCatchEnv)
@@ -7345,10 +7345,10 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 		if(MedErr.ct==0) {
 			MedErr=NULL
 			#print("No Mendelian error.")
-			re = c(trio=list(trio1digit), MedErr=list(MedErr[1:MedErr.ct,,drop=F]))
+			re = c(trio=list(trio1digit), MedErr=list(MedErr[1:MedErr.ct,,drop=FALSE]))
 		}else{
 			#print("Found Mendelian error(s).")
-			re = c(MedErr=list(MedErr[1:MedErr.ct,,drop=F]), trio.err=list(trio1digit))
+			re = c(MedErr=list(MedErr[1:MedErr.ct,,drop=FALSE]), trio.err=list(trio1digit))
 		}
 	}
 	
@@ -7360,7 +7360,7 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 			
 			tmp = ncol(trioTwoDigit)
 			parTwoDigit = getBackParentGeno(trioDf=trioTwoDigit, famCol=pedCol, memCol=memCol,
-					snpIdx=snpStartLeftIndex:(tmp-snpEndRightIndex+1), re.child=F, prefix=NULL)
+					snpIdx=snpStartLeftIndex:(tmp-snpEndRightIndex+1), re.child=FALSE, prefix=NULL)
 			#print("###")
 			#print(dim(parTwoDigit))
 			
@@ -7368,7 +7368,7 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 				warning("Cannot provide frequencies estimation. The argument, bk.sizes, is not provided for user-specify option.")
 			}else{
 				
-				map=freqmap.reconstruct(data=parTwoDigit, cols=c(3, ncol(parTwoDigit)), loci.ct=bk.sizes, is.1digit=F,
+				map=freqmap.reconstruct(data=parTwoDigit, cols=c(3, ncol(parTwoDigit)), loci.ct=bk.sizes, is.1digit=FALSE,
 						dig1Code=NULL, dig2Code = dig2Code, key.prefix=key.prefix, start.base=1, ...)
 				
 				re = c(re, freq=list(map))
@@ -7384,7 +7384,7 @@ function(data, snpIdxRange=NULL, key.prefix="", bk.sizes=NULL, action = c("outpu
 
 listExtractor <-
 function(nameList, varList, na.replace = NULL){
-  ifD = F
+  ifD = FALSE
 
   varNames = names(varList)
   varLen = length(varList)
@@ -7408,43 +7408,43 @@ function(nameList, varList, na.replace = NULL){
 
 logBe <-
 function (fileName, str=NULL){
-       cat(paste("\n\n=============Begin of the Script::" , Sys.time(), "==================") , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
-       if(!is.null(str)) cat(str , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
+       cat(paste("\n\n=============Begin of the Script::" , Sys.time(), "==================") , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
+       if(!is.null(str)) cat(str , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
        return(NULL)
 }
 
 loge <-
 function (fileName, str=NULL){
-       if(!is.null(str)) cat(str , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
-       cat(paste("-------------End of the Script::" , Sys.time(), "--------------------") , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
+       if(!is.null(str)) cat(str , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
+       cat(paste("-------------End of the Script::" , Sys.time(), "--------------------") , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
        return(NULL)
 }
 
 logErr <-
 function (fileName, str){
-       cat("!!!!!!!!!!!! ERROR !!!!!!!!!!!!!!!!!!! ERROR !!!!!!!!!!!!" , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
-       cat(str , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
-       cat("!!!!!!!!!!!! ERROR ------------------- ERROR !!!!!!!!!!!" , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
+       cat("!!!!!!!!!!!! ERROR !!!!!!!!!!!!!!!!!!! ERROR !!!!!!!!!!!!" , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
+       cat(str , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
+       cat("!!!!!!!!!!!! ERROR ------------------- ERROR !!!!!!!!!!!" , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
        return(NULL)
 }
 
 logl <-
 function (fileName, str){
-       cat(str , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
+       cat(str , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
        return(NULL)
 }
 
 logs <-
 function (fileName, str){
-       cat(str , file = fileName, sep = " ", fill = F, labels = NULL, append = T)
+       cat(str , file = fileName, sep = " ", fill = FALSE, labels = NULL, append = TRUE)
        return(NULL)
 }
 
 logWarn <-
 function (fileName, str){
-       cat("************ WARNING ***************** WARNING ***********" , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
-       cat(str , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
-       cat("************ WARNING ----------------- WARNING ***********" , file = fileName, sep = " ", fill = T, labels = NULL, append = T)
+       cat("************ WARNING ***************** WARNING ***********" , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
+       cat(str , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
+       cat("************ WARNING ----------------- WARNING ***********" , file = fileName, sep = " ", fill = TRUE, labels = NULL, append = TRUE)
        return(NULL)
 }
 
@@ -7504,7 +7504,7 @@ function(path=NULL, objname,  exam.ext = .3){
 matTBCondOnChild3.finalProc <-
 function(maxTbl, counter, maxMateTbl, probVec, prob1, prob2, job, logF){
   #print("Run finalProc")
-  ifD = F
+  ifD = FALSE
 
   cutoff = min(counter, 20)
   ## in the maxMateTbl, the first column is index within par1 and the second column is index within par2
@@ -7537,19 +7537,19 @@ function(maxTbl, counter, maxMateTbl, probVec, prob1, prob2, job, logF){
   for(ss in 1:job){
     chooseRow = sample(1:counter, size=1, prob=prob)
     #print(chooseRow)
-    hap6idx[ss,] = maxTbl[chooseRow, , drop=F]
+    hap6idx[ss,] = maxTbl[chooseRow, , drop=FALSE]
     #print(hap6idx)
   }
 
 #   if(!is.null(logF)){
 #     if(cutoff==20){
 #       bkMapStr = paste(fStr, "\nCutoffed possible dip mating table:\n",
-#                      paste(wrComTbl( cbind(maxTbl[1:cutoff, ,drop=F], prob[1:cutoff], probVec[1:cutoff]),
+#                      paste(wrComTbl( cbind(maxTbl[1:cutoff, ,drop=FALSE], prob[1:cutoff], probVec[1:cutoff]),
 #                               colNames=c("f1", "f2", "m1", "m2", "c1", "c2", "prob", "probVec")), collapse="\n", sep=""),
 #                      sep="")
 #     }else{
 #       bkMapStr = paste(fStr, "\nCompleted poss dip mating table:\n",
-#                      paste(wrComTbl( cbind(maxTbl[1:cutoff, ,drop=F], prob[1:cutoff], probVec[1:cutoff]),
+#                      paste(wrComTbl( cbind(maxTbl[1:cutoff, ,drop=FALSE], prob[1:cutoff], probVec[1:cutoff]),
 #                               colNames=c("f1", "f2", "m1", "m2", "c1", "c2", "prob", "probVec")), collapse="\n", sep=""),
 #                      sep="")
 # 
@@ -7560,7 +7560,7 @@ function(maxTbl, counter, maxMateTbl, probVec, prob1, prob2, job, logF){
 #   }
 
   if(ifD) {
-    tttt = cbind(maxTbl[1:cutoff, ,drop=F], prob[1:cutoff])
+    tttt = cbind(maxTbl[1:cutoff, ,drop=FALSE], prob[1:cutoff])
     print(tttt)
     print(hap6idx)
   }
@@ -7587,15 +7587,15 @@ function(par=getwd(), fromRoot, toRoot, subDir=NULL){
   if(!is.null(subDir))
     dir.create(path=file.path(par, toRoot, subDir[1], subDir[2]), showWarnings = TRUE)
   
-  fList = list.files(path = file.path(par, fromRoot), all.files = T,
-           full.names = F, recursive = T)
+  fList = list.files(path = file.path(par, fromRoot), all.files = TRUE,
+           full.names = FALSE, recursive = TRUE)
 
   for( i in fList){
     f1 = file.path( par, fromRoot, i)
     f2 = file.path( par, toRoot, i)
     print(f1)
     print(f2)
-    file.copy(from=f1, to=f2, overwrite=T )
+    file.copy(from=f1, to=f2, overwrite=TRUE )
 
   }
 }
@@ -7640,7 +7640,7 @@ function(appVarNames, homoHetoInfo, snpLen){
 		curDigit =  homoHetoInfo$homoDigit[i]
 		tmpPos = homoHetoInfo$homoIn[i]
 		if(curDigit == 1) {
-			matchedIdx = idx4hapDigit$digitMap1[, tmpPos, drop=F]
+			matchedIdx = idx4hapDigit$digitMap1[, tmpPos, drop=FALSE]
 			if(is.null(retainList)){
 				retainList = matchedIdx
 			}else{
@@ -7648,7 +7648,7 @@ function(appVarNames, homoHetoInfo, snpLen){
 			}
 			## print(retainList)
 		}else{
-			matchedIdx = idx4hapDigit$digitMap2[, tmpPos, drop=F]
+			matchedIdx = idx4hapDigit$digitMap2[, tmpPos, drop=FALSE]
 			if(is.null(retainList)){
 				retainList = matchedIdx
 			}else{
@@ -7668,7 +7668,7 @@ function(appVarNames, homoHetoInfo, snpLen){
 }
 
 qExpandTable <-
-function(listOfFactor =  list( 1:3, 10:13), removedRowIdx=NULL, re.row=F ){
+function(listOfFactor =  list( 1:3, 10:13), removedRowIdx=NULL, re.row=FALSE ){
    tblDim = length(listOfFactor)
    tblDimSeq = unlist(lapply(listOfFactor, FUN=length))
 
@@ -7697,14 +7697,14 @@ function(listOfFactor =  list( 1:3, 10:13), removedRowIdx=NULL, re.row=F ){
      return(list(ma=recyMa, rowNum = rowIdx))
    }else{
      if(!is.null(removedRowIdx)){
-       recyMa = recyMa[-rowIdx, , drop=F]
+       recyMa = recyMa[-rowIdx, , drop=FALSE]
      }
      return(recyMa)
    }
 }
 
 qing.cut <-
-function(val, cutPt, cutPt.ordered = T, right.include=T){
+function(val, cutPt, cutPt.ordered = TRUE, right.include=TRUE){
 
   ## !!! HARD CODE !!! -1 means the val >/>= the maximum value in the cutPt
   ## return the matched index
@@ -7770,7 +7770,7 @@ function(objList,  exam.ext = .3){
   len.last = NULL
   names.last = NULL
   i = 1
-  search=T
+  search=TRUE
   while( i <= min((round(l.len*exam.ext, 0)+1), l.len) & search ){
     #print(i)
     elm = objList[[i]]
@@ -7782,21 +7782,21 @@ function(objList,  exam.ext = .3){
       ## see if the names matched
       if(length(names.last)==length(names)){
         all.m = names.last==names
-        if(sum(all.m)!=length(names)) search=F
+        if(sum(all.m)!=length(names)) search=FALSE
       }else{
-        search=F  
+        search=FALSE  
       }
       if(length(class.last)==length(class)){
         all.m = class.last==class
-        if(sum(all.m)!=length(class)) search=F
+        if(sum(all.m)!=length(class)) search=FALSE
       }else{
-        search=F  
+        search=FALSE  
       }
       if(length(len.last)==length(len)){
         all.m = len.last==len
-        if(sum(all.m)!=length(len)) search=F  
+        if(sum(all.m)!=length(len)) search=FALSE  
       }else{
-         search=F  
+         search=FALSE  
       }      
       
     }
@@ -7826,7 +7826,7 @@ function(objList,  exam.ext = .3){
 }
 
 qstrsplit <-
-function(str, delim, re.1st = F){
+function(str, delim, re.1st = FALSE){
   re = unlist(strsplit(str, delim))
   if (length(re)==1){
     # possible not find the delim
@@ -7903,7 +7903,7 @@ function(exp, prob, subjectCt){
 	if(length(exp)==1){
 		reExp = rep(exp, subjectCt)
 	}else{
-		reExp = sample(exp, size=subjectCt, prob=prob, replace=T)
+		reExp = sample(exp, size=subjectCt, prob=prob, replace=TRUE)
 	}
 	
 	return(reExp)
@@ -7927,7 +7927,7 @@ function(allIdx=NULL, idxProb=NULL, rejectIdx, size=1){
 	
 	meet = match(rejectIdx, allIdx)
 	idxProb[meet]=0
-	idx = resample(allIdx, size=size, prob=idxProb, replace=T)
+	idx = resample(allIdx, size=size, prob=idxProb, replace=TRUE)
 	
 	return(idx)
 }
@@ -7937,7 +7937,7 @@ function(semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen){
 	## SemiAugMap only have the major haplotypes' expression and prob,
 	## only a number for prob for each of the other haplotypes 
 	## SemiAugMap also has a column showing the index of the haplotype in the fixed AugMap
-	ifD = F
+	ifD = FALSE
 	
 	leftOverProb = semiMapFrame[1, resiProbCol]
 	mapProb = semiMapFrame[ , probCol]
@@ -7994,7 +7994,7 @@ function(semiMapFrame, resiProbCol, augIdxCol, probCol, snpLen, exHapIdx=NULL){
 	## SemiAugMap only have the major haplotypes' expression and prob,
 	## only a number for prob for each of the other haplotypes 
 	## SemiAugMap also has a column showing the index of the haplotype in the fixed AugMap
-	ifD = F
+	ifD = FALSE
 	fStr = "[sampleHapSemiAugMap2]:"
 	if(ifD) print(fStr)
 	
@@ -8159,13 +8159,13 @@ function(allList, listVec, maxIt = 1000){
 	length = length(allList)
 	if(length<=0) stop(paste("Invalid input value for allList with length=[", length, "]", sep=""))
 	
-	keepSearch = T
+	keepSearch = TRUE
 	idx = NULL
 	count = 1 
 	while(keepSearch & count<= maxIt){
 		idx = sample(1:length, size=1)
 		if(!is.element(allList[idx], listVec)){
-			keepSearch = F
+			keepSearch = FALSE
 			return(allList[idx])
 		}   
 		count = count+1
@@ -8181,7 +8181,7 @@ function(allList, listVec, maxIt = 1000){
 semiAugBkFrame <-
 function(hapBkMap, key, probLeftOver = .01){
 	
-	ifD = F
+	ifD = FALSE
 	
 	keyIndex = which(hapBkMap$keys==key)
 	bk = hapBkMap$bks[[keyIndex]]
@@ -8216,10 +8216,10 @@ function(hapBkMap, key, probLeftOver = .01){
 }
 
 setTrioMissingSNP <-
-function(trioDf, cord, snp1digit=F, missingDigit = 0){
+function(trioDf, cord, snp1digit=FALSE, missingDigit = 0){
   ## cord has the beginning row number and col numbers for the trio with missing data
 
-  cord = matrix(cord, ncol=4, byrow=F)
+  cord = matrix(cord, ncol=4, byrow=FALSE)
   rowCt = nrow(cord)
 
   dataNew = trioDf
@@ -8251,13 +8251,13 @@ function(coef, type, signalStr){
   # var used internally
   dig2Code=c("00", "11", "12", "22")
   
-  ifD = F
+  ifD = FALSE
   vars = NULL
   segReplace = NULL
 
   
   signal=binaTree.parser(str=signalStr)
-  #signal =binaTree.parser.proc(str=signalStr, binaTree=binaTree, curLevel=0, first.seg=T)
+  #signal =binaTree.parser.proc(str=signalStr, binaTree=binaTree, curLevel=0, first.seg=TRUE)
   vars = unique(unlist(signal$elm.vlist))
   #boolOp = signal$elm.vMa[,3]
 
@@ -8337,7 +8337,7 @@ function(coef, type, signalStr){
         changedStr = util.str.replace(str=changedStr,
                            replaced=vars[i],
                            new=segReplace[i],
-                           replace.all=T)
+                           replace.all=TRUE)
         ##print(model.signal.cur)
       }
     }
@@ -8347,7 +8347,7 @@ function(coef, type, signalStr){
     changedStr = substr(changedStr, 2, nchar(changedStr)-1)
   
   ## reconstruct the single
-  #signal =binaTree.parser.proc(str=changedStr, binaTree=binaTree, curLevel=0, first.seg=T)
+  #signal =binaTree.parser.proc(str=changedStr, binaTree=binaTree, curLevel=0, first.seg=TRUE)
   signal = binaTree.parser(str=changedStr)
   
   ## also return the snpIdx so reshuffle the column can be done later
@@ -8404,13 +8404,13 @@ function(hapInfoFrame=NULL, genoInfoFrame){
 	## make it can take .csv file
 	if(!is.null(hapInfoFrame)){
 		if(is.character(hapInfoFrame)){
-			hapInfoFrame = read.csv(hapInfoFrame, header=T, sep=",", as.is=T)
+			hapInfoFrame = read.csv(hapInfoFrame, header=TRUE, sep=",", as.is=TRUE)
 		}
 	}
 	
 	## make it can take .csv file
 	if(is.character(genoInfoFrame)){
-		genoInfoFrame = read.csv(genoInfoFrame, header=T, sep=",", as.is=T)
+		genoInfoFrame = read.csv(genoInfoFrame, header=TRUE, sep=",", as.is=TRUE)
 	}
 	
 	## check input data
@@ -8458,9 +8458,9 @@ function(hapInfoFrame=NULL, genoInfoFrame){
 		hapBkMap = dfToHapBkMap(data = bkFrame, keyCol = ncol(bkFrame), 
 				chCol = 1, blockCol = 2, expCol = 3, probCol = 4, 
 				hapLenCol = 5, beginCol = 6, endCol = 7, snpBase = 1, 
-				re.bf = T, re.javaGUI = T)
+				re.bf = TRUE, re.javaGUI = TRUE)
 		hapBkGenoMap = bindHapBkGenoMaps(hapBkMap = hapBkMap, genoMap = genoMap)
-		simuSetup = hapBkGenoMap2HapMap(hapBkGenoMap=hapBkGenoMap, reSimuMap=T)
+		simuSetup = hapBkGenoMap2HapMap(hapBkGenoMap=hapBkGenoMap, reSimuMap=TRUE)
 	}
 	return(simuSetup)
 }
@@ -8520,7 +8520,7 @@ function(freqMaps){
       bkFrame$key = paste(bkFrame[,1], bkFrame[,2], sep="-") 
 
       hapBkMap = dfToHapBkMap(data=bkFrame,  keyCol=ncol(bkFrame),
-                   chCol=1, blockCol=2,  expCol=3, probCol=4, hapLenCol=5, beginCol=6, endCol=7, snpBase=1, re.bf = T, re.javaGUI = T)
+                   chCol=1, blockCol=2,  expCol=3, probCol=4, hapLenCol=5, beginCol=6, endCol=7, snpBase=1, re.bf = TRUE, re.javaGUI = TRUE)
       
 	  hapBkGenoMap = bindHapBkGenoMaps(hapBkMap=hapBkMap, genoMap=genoMap)
 		   
@@ -8541,7 +8541,7 @@ function(freqMaps){
     ## HARD CODE!!!HARD CODE
     maxSNP=7
     idx4hapDigitAll = exIdxFromHap(maxSNP)
-    exhaustHapExpAll = exhaustHapExp(maxSNP, re.str=F)[[1]]
+    exhaustHapExpAll = exhaustHapExp(maxSNP, re.str=FALSE)[[1]]
     
     maxRow = 4000
     maxTbl = matrix(NA, ncol =6, nrow = maxRow)
@@ -8563,7 +8563,7 @@ function(freqMaps){
 }
 
 trio.impu <-
-function(triodd, freq,  impu.missingOnly=T){
+function(triodd, freq,  impu.missingOnly=TRUE){
   dir=NULL
 
   dig1Code=c(NA,0,1,2)
@@ -8577,7 +8577,7 @@ function(triodd, freq,  impu.missingOnly=T){
   #if( subInF!="PPC" ) stop("Subject in the data should follow Father, Mother and child sequence.")
   
   if(is.character(triodd) ) {
-    data = read.csv(triodd, header=F)
+    data = read.csv(triodd, header=FALSE)
   }else{
     data = triodd
   }
@@ -8617,10 +8617,10 @@ function(triodd, freq,  impu.missingOnly=T){
 
   if (is.na(dig1Code[1])){
     ttt = data[,c(-1,-2)]
-    ttt[is.na(ttt)]=max(dig1Code, na.rm=T)+1
+    ttt[is.na(ttt)]=max(dig1Code, na.rm=TRUE)+1
 
     data[,c(-1,-2)]=ttt
-    dig1Code[1]=max(dig1Code, na.rm=T)+1
+    dig1Code[1]=max(dig1Code, na.rm=TRUE)+1
   }
 
   
@@ -8639,8 +8639,8 @@ function(triodd, freq,  impu.missingOnly=T){
     imputed = impuBk.scheduler(raw=data, idx=1:bkCt, job=1,
                 toolname=toolboxNames,
                 freqMaps=NULL, dir=dir,
-                is.1digit=T, dig1Code=dig1Default, dig2Code=0:2,
-                reType=F, reHap=NULL, logF=NULL, logErr="")
+                is.1digit=TRUE, dig1Code=dig1Default, dig2Code=0:2,
+                reType=FALSE, reHap=NULL, logF=NULL, logErr="")
     if( sum(dig1Default == dig1Code)!=4 ){
       imputed = apply(imputed, 1:2, FUN= util.vec.replace, orignal = dig1Default, replaceBy=dig1Code)
     }
@@ -8652,8 +8652,8 @@ function(triodd, freq,  impu.missingOnly=T){
   imputed = impuBkTDT.scheduler(raw=data, idx=1:bkCt, job=1,
                 toolname=toolboxNames,
                 freqMaps=NULL, dir=dir,
-                is.1digit=T, dig1Code=dig1Default, dig2Code=0:2,
-                reType=F, reHap=NULL, logF=NULL, logErr="")
+                is.1digit=TRUE, dig1Code=dig1Default, dig2Code=0:2,
+                reType=FALSE, reHap=NULL, logF=NULL, logErr="")
 
   if( sum(dig1Default == dig1Code)!=4 ){
      imputed = apply(imputed, 1:2, FUN= util.vec.replace, orignal = dig1Default, replaceBy=dig1Code)
@@ -8663,12 +8663,12 @@ function(triodd, freq,  impu.missingOnly=T){
 }
 
 trio.impuDev <-
-function(trio1digit, freqMaps, bk.seq=NULL, dig1Code=0:3, subInF = "PPC", dir=NULL, job=1, prefix="", impu.missingOnly=T){
+function(trio1digit, freqMaps, bk.seq=NULL, dig1Code=0:3, subInF = "PPC", dir=NULL, job=1, prefix="", impu.missingOnly=TRUE){
 
   if( subInF!="PPC" ) stop("Subject in the data should follow Father, Mother and child sequence.")
   
   if(is.character(trio1digit) ) {
-    data = read.csv(trio1digit, header=F)
+    data = read.csv(trio1digit, header=FALSE)
   }else{
     data = trio1digit
   }
@@ -8703,8 +8703,8 @@ function(trio1digit, freqMaps, bk.seq=NULL, dig1Code=0:3, subInF = "PPC", dir=NU
     imputed = impuBk.scheduler(raw=data, idx=bk.seq, job=job,
                 toolname=toolboxNames,
                 freqMaps=NULL, dir=dir,
-                is.1digit=T, dig1Code=dig1Default, dig2Code=0:2,
-                reType=F,
+                is.1digit=TRUE, dig1Code=dig1Default, dig2Code=0:2,
+                reType=FALSE,
                 reHap=qp(prefix, "impuHap_bk", bk.seq[1]),
                 logF=NULL,
                 logErr=qp(prefix, "impuErr_bk", bk.seq[1])
@@ -8719,8 +8719,8 @@ function(trio1digit, freqMaps, bk.seq=NULL, dig1Code=0:3, subInF = "PPC", dir=NU
   imputed = impuBkTDT.scheduler(raw=data, idx=bk.seq, job=job,
                 toolname=toolboxNames,
                 freqMaps=NULL, dir=dir,
-                is.1digit=T, dig1Code=dig1Default, dig2Code=0:2,
-                reType=F,
+                is.1digit=TRUE, dig1Code=dig1Default, dig2Code=0:2,
+                reType=FALSE,
                 reHap=qp(prefix, "impuHap_bk", bk.seq[1]),
                 logF=NULL,
                 logErr=qp(prefix, "impuErr_bk", bk.seq[1])
@@ -8754,7 +8754,7 @@ function(caseRow, controlDf, pedCol, memCol, dadCol, momCol){
  }
 
 trio.simu.direct <-
-function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, baseObj.saveFN=NULL, baseObj.name=NULL,  reControl=F, dig1Code=0:3 ){
+function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, baseObj.saveFN=NULL, baseObj.name=NULL,  reControl=FALSE, dig1Code=0:3 ){
 
   info = bkMap.HRCB.LRCB.split(bkMap, rule)
 
@@ -8845,13 +8845,13 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
 }
 
 trio.simu.proposed <-
-function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimuPropInfo", ddir=NULL, startIdx=NULL, spStrata.saveFN = NULL,  spStrata.name=NULL, reControl =F, dig1Code=0:3 ){
+function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimuPropInfo", ddir=NULL, startIdx=NULL, spStrata.saveFN = NULL,  spStrata.name=NULL, reControl =FALSE, dig1Code=0:3 ){
 
   if (is.null(ddir)) {
     infoS=NULL
     exInfoS = NULL
   }
-  ifD = F
+  ifD = FALSE
   
   info = bkMap.HRCB.LRCB.split(bkMap, rule)
 
@@ -8900,7 +8900,7 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
     }
   }
   
-  preObj = bkMap.HRCB.Esp1Rule.genoSeq(bkMap, rule, re.probOnly = F)
+  preObj = bkMap.HRCB.Esp1Rule.genoSeq(bkMap, rule, re.probOnly = FALSE)
 
   
   simuTrio = rep(list(NA), length=datasetCt)
@@ -8974,7 +8974,7 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
 }
 
 trio.simuDev <-
-function(bkMap=NULL,  sigStr="g9=11 and g13=11", sigType, para=c(-1, .5),  caseNo=10, datasetCt=1,  dig1Code=0:3, ddF=NULL, startIdx=NULL, stepstone.saveFN=NULL, stepstone.name=NULL, spSupHap.namePrefix=NULL, verbose=T, reControl=F){
+function(bkMap=NULL,  sigStr="g9=11 and g13=11", sigType, para=c(-1, .5),  caseNo=10, datasetCt=1,  dig1Code=0:3, ddF=NULL, startIdx=NULL, stepstone.saveFN=NULL, stepstone.name=NULL, spSupHap.namePrefix=NULL, verbose=TRUE, reControl=FALSE){
 
   print(paste("Try to simulated trio data: # datasets=", datasetCt, "; # trio =", caseNo, sep=""))
 
@@ -9060,7 +9060,7 @@ function(bkMap=NULL,  sigStr="g9=11 and g13=11", sigType, para=c(-1, .5),  caseN
 }
 
 trio.simuOLD <-
-function(bkMap=NULL,  interaction="9R and 13R", alpha, beta, n=10, rep=1,  stepstone.saveFN=NULL, stepstone.name=NULL, verbose=T){
+function(bkMap=NULL,  interaction="9R and 13R", alpha, beta, n=10, rep=1,  stepstone.saveFN=NULL, stepstone.name=NULL, verbose=TRUE){
 
   sigType="D/R"
   para = c(alpha, beta)
@@ -9113,7 +9113,7 @@ function(bkMap=NULL,  interaction="9R and 13R", alpha, beta, n=10, rep=1,  steps
                     ddir=ddF,
                     spStrata.saveFN = stepstone.saveFN,
                     spStrata.name = stepstone.name,
-                    reControl =F,  dig1Code=dig1Code 
+                    reControl =FALSE,  dig1Code=dig1Code 
                     )
   
   if(verbose) print(paste("Time used to generate ", rep,  " dataset(s).", sep=""))
@@ -9134,11 +9134,11 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 	
 	
 	sep=""
-	header =F
+	header =FALSE
 	pedCol=1
 	memCol=2
 	snpIdxRange = c(3, ncol(data))
-	is.1digit=T
+	is.1digit=TRUE
 	
 #   if(!is.null(txtF)){
 #     if(is.character(txtF)){
@@ -9158,7 +9158,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 	
 	if(!is.1digit){
 		genos  = trioTwoDigit[, snpStartLeftIndex:(ncol(trioTwoDigit)-snpEndRightIndex+1)]
-		## check input, if is.1digit=T, dig2Code must be c(0,1,2), if is.1digit=F, dig1Code must be c(NA, 0,1,2,)
+		## check input, if is.1digit=TRUE, dig2Code must be c(0,1,2), if is.1digit=FALSE, dig1Code must be c(NA, 0,1,2,)
 		code.Factor = apply( genos, 2, FUN=is.factor)
 		if(max(code.Factor)==1) stop("Genotypes cannot be factors.")
 		
@@ -9179,7 +9179,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 	}else{
 		genos  = trioTwoDigit[, snpStartLeftIndex:(ncol(trioTwoDigit)-snpEndRightIndex+1)]
 		
-		## check input, if is.1digit=T, dig2Code must be c(0,1,2), if is.1digit=F, dig1Code must be c(NA, 0,1,2,)
+		## check input, if is.1digit=TRUE, dig2Code must be c(0,1,2), if is.1digit=FALSE, dig1Code must be c(NA, 0,1,2,)
 		code.Factor = apply( genos, 2, FUN=is.factor)
 		if(max(code.Factor)==1) stop("Genotypes cannot be factors.")
 		
@@ -9226,10 +9226,10 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 				#print(snp1digit.inside)
 				#print(snpStartLeftIndex)
 				#print(snpEndRightIddex)
-				missSNPPos = findMissing(df=snp1digit.inside, is.1digit=T, snpStartLeftIndex=snpStartLeftIndex-2,
+				missSNPPos = findMissing(df=snp1digit.inside, is.1digit=TRUE, snpStartLeftIndex=snpStartLeftIndex-2,
 						snpEndRightIndex=snpEndRightIndex, dig1Code=c(0,1,3,2), dig2Code=dig2Code)
 			}else{
-				missSNPPos = findMissing(df=trioTwoDigit, is.1digit=F, snpStartLeftIndex=snpStartLeftIndex,
+				missSNPPos = findMissing(df=trioTwoDigit, is.1digit=FALSE, snpStartLeftIndex=snpStartLeftIndex,
 						snpEndRightIndex=snpEndRightIndex, dig1Code=NULL, dig2Code=dig2Code )
 			}
 			
@@ -9245,7 +9245,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 	if(is.element("Mendelian check", action)){
 		tmpDigit=2
 		if(is.1digit) tmpDigit = 1
-		snpTrio = matrix(snp1digit.inside, nrow=3, byrow=F)
+		snpTrio = matrix(snp1digit.inside, nrow=3, byrow=FALSE)
 		
 		MedErr = matrix(NA, ncol=4, nrow=ncol(snpTrio))
 		colnames(MedErr)=c("y", "x", "trio", "SNP")
@@ -9269,7 +9269,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 						b = get("MedErr", envir=tryCatchEnv)
 						b[a,] = c( (ttty-1)*3+1,  (tttx-1)*tmpDigit+1+snpStartLeftIndex-1,  ttty,    tttx)
 						assign("MedErr", b, envir=tryCatchEnv)
-						#print( MedErr[MedErr.ct,,drop=F] )
+						#print( MedErr[MedErr.ct,,drop=FALSE] )
 					})          
 		}
 		MedErr.ct = get("MedErr.ct", envir=tryCatchEnv)
@@ -9281,7 +9281,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 		}else{
 			#print("Found Mendelian error(s).")
 		}
-		re = c(re, MedErr=list(MedErr[1:MedErr.ct,,drop=F]))
+		re = c(re, MedErr=list(MedErr[1:MedErr.ct,,drop=FALSE]))
 		
 	}
 	
@@ -9296,7 +9296,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 			
 			tmp = ncol(trioTwoDigit)
 			parTwoDigit = getBackParentGeno(trioDf=trioTwoDigit, famCol=pedCol, memCol=memCol,
-					snpIdx=snpStartLeftIndex:(tmp-snpEndRightIndex+1), re.child=F, prefix=NULL)
+					snpIdx=snpStartLeftIndex:(tmp-snpEndRightIndex+1), re.child=FALSE, prefix=NULL)
 			#print(dim(parTwoDigit))
 			
 			if( is.null(bk.sizes) ){
@@ -9320,7 +9320,7 @@ function(data, key.prefix="", bk.sizes=NULL, dig2Code=0:2, dig1Code=c(0,1,3,2),
 trioMerge <-
 function(trioData1, trioData2, colName1, colName2,snpCoding=0:3){
 
-  ifD = F
+  ifD = FALSE
 
   if( sum(snpCoding == (0:3))!=4)
     stop ("Function use 1-digit coding for genotypes as the following, integer 1 to 3 to
@@ -9359,10 +9359,10 @@ function(txtF, delim=",", dataHeaders=NULL, genotype=c("11", "12", "22"), snpBas
 	
 	if(is.null(dataHeaders)){
 		## assume that txtF has the first row as column names
-		data = read.csv(file=txtF, header = T, sep=delim, as.is=T)
+		data = read.csv(file=txtF, header = TRUE, sep=delim, as.is=TRUE)
 	}else{
 		## assume that column names of the data is passed from outside
-		data = read.csv(file=txtF, header = F, sep=delim, as.is=T)
+		data = read.csv(file=txtF, header = FALSE, sep=delim, as.is=TRUE)
 		colnames(data) = dataHeaders
 	}
 	
@@ -9373,16 +9373,16 @@ function(txtF, delim=",", dataHeaders=NULL, genotype=c("11", "12", "22"), snpBas
 }
 
 txtToHapBkMap <-
-function(txtF, delim=",", dataHeaders=NULL, sorted=F, ...){
+function(txtF, delim=",", dataHeaders=NULL, sorted=FALSE, ...){
 	##txtF = "tblBlock.csv"
 	##dataHeaders = NULL
 	
 	if(is.null(dataHeaders)){
 		## assume that txtF has the first row as column names
-		data = read.csv(file=txtF, header = T, sep=delim, na="missing")
+		data = read.csv(file=txtF, header = TRUE, sep=delim, na="missing")
 	}else{
 		## assume that column names of the data is passed from outside
-		data = read.csv(file=txtF, header = F, sep=delim, na="missing")
+		data = read.csv(file=txtF, header = FALSE, sep=delim, na="missing")
 		colnames(data) = dataHeaders
 	}
 	
@@ -9427,7 +9427,7 @@ function(vec){
 }
 
 util.array3d.2matrix <-
-function(arr, dimLevel=dimnames(arr)[[3]], showDim3 = F, re.num=T, appAsRow = F){
+function(arr, dimLevel=dimnames(arr)[[3]], showDim3 = FALSE, re.num=TRUE, appAsRow = FALSE){
   re = NULL   
   for( i in 1:length(dimLevel)){
     ma = arr[,,i]
@@ -9450,7 +9450,7 @@ function(arr, dimLevel=dimnames(arr)[[3]], showDim3 = F, re.num=T, appAsRow = F)
 }
 
 util.char.1stIdx <-
-function(str, find, match=T, is.array=F){
+function(str, find, match=TRUE, is.array=FALSE){
    
    if(!is.array){
      charArray = util.str.2CharArray(str, len=nchar(str))
@@ -9478,7 +9478,7 @@ function(str, find, match=T, is.array=F){
 util.char.1stStrIdx <-
 function(str, find){
 
-   result = qstrsplit(str, find, re.1st=T)
+   result = qstrsplit(str, find, re.1st=TRUE)
    if(length(result)==1){
      # NA==not found it
      if(is.na(result)) return(0)
@@ -9497,7 +9497,7 @@ function(data, colNameSearched){
 }
 
 util.dataframe.merge <-
-function(list, vertical=T){
+function(list, vertical=TRUE){
 
   len = length(list)
   data = NULL
@@ -9513,7 +9513,7 @@ function(list, vertical=T){
 }
 
 util.dataframe.round <-
-function(vecData, keepZero=F, na.replace=NULL, digits=getOption("digits"), ...){
+function(vecData, keepZero=FALSE, na.replace=NULL, digits=getOption("digits"), ...){
 
   re = sapply(vecData, FUN=function(x, na.rep, digits, ...){
                                 num = x
@@ -9558,8 +9558,8 @@ function(str){
   idx=0
   
   arr = util.str.2CharArray(str, len=nchar(str))
-  l.find =util.char.1stIdx(arr, "(", match=T, is.array=T)
-  r.find =util.char.1stIdx(arr, ")", match=T, is.array=T)
+  l.find =util.char.1stIdx(arr, "(", match=TRUE, is.array=TRUE)
+  r.find =util.char.1stIdx(arr, ")", match=TRUE, is.array=TRUE)
 
   if(l.find==0){
     if(r.find!=0)
@@ -9579,7 +9579,7 @@ function(str){
 }
 
 util.it.smallLargeIdx <-
-function(len, keep.same=F){
+function(len, keep.same=FALSE){
 
       if(keep.same){
                init = 1:len
@@ -9611,7 +9611,7 @@ function(len, keep.same=F){
     }
 
 util.it.smallLargeIdxOOLD <-
-function(idx, keep.same=F){
+function(idx, keep.same=FALSE){
     ct = length(idx)
     idxPair=NULL
     if(keep.same){
@@ -9656,7 +9656,7 @@ function(idxPair, len){
 }
 
 util.it.triMatch2 <-
-function(dipIdx, len, re.homo=F){
+function(dipIdx, len, re.homo=FALSE){
        ## rely on the structure of tri idx pair
        ## rely on the order to the pair
 
@@ -9672,7 +9672,7 @@ function(dipIdx, len, re.homo=F){
        cutoff = (len-1):1
        cutoff = cumsum(cutoff)
 
-       block = qing.cut(dipIdx, cutPt=cutoff, cutPt.ordered = T, right.include=T)
+       block = qing.cut(dipIdx, cutPt=cutoff, cutPt.ordered = TRUE, right.include=TRUE)
        if(re.homo){
          return(c(block, dipIdx - c(0, cutoff)[block] + block, 1))
        }else{
@@ -9687,7 +9687,7 @@ function(dipIdx, len, re.homo=F){
 }
 
 util.it.upTriCombIdx <-
-function(idx, diag=T, re.ordered = F){
+function(idx, diag=TRUE, re.ordered = FALSE){
      ct = length(idx)
      reRow = (ct^2 - ct)/2
 
@@ -9745,11 +9745,11 @@ function(idx, diag=T, re.ordered = F){
 }
 
 util.list.2matrix <-
-function(list, byRow = T, add.dimnames=F) 
+function(list, byRow = TRUE, add.dimnames=FALSE) 
 {
     colCt = length(list)
     rowCt = length(list[[1]])
-    re = matrix(unlist(list), ncol = colCt, nrow = rowCt, byrow = F)
+    re = matrix(unlist(list), ncol = colCt, nrow = rowCt, byrow = FALSE)
     if(add.dimnames){
       header = dimnames( list[[1]] )[[1]]
       if(is.null(header)) header = paste("v", 1:colCt, sep="")
@@ -9761,8 +9761,8 @@ function(list, byRow = T, add.dimnames=F)
 }
 
 util.list.ex <-
-function(nameList, varList, na.allow = T, na.replace = NULL){
-  ifD = F
+function(nameList, varList, na.allow = TRUE, na.replace = NULL){
+  ifD = FALSE
 
   varNames = names(varList)
   varLen = length(varList)
@@ -9816,7 +9816,7 @@ function(dataList, keys, keyRemoved){
 }
 
 util.listMatrix.2matrix <-
-function(list, rbind=T){
+function(list, rbind=TRUE){
 
   rowCt = length(list)
 
@@ -9835,7 +9835,7 @@ function(list, rbind=T){
 }
 
 util.matrix.2list <-
-function(ma, byRow=T){
+function(ma, byRow=TRUE){
 
   if(byRow){
     colNum = dim(ma)[2]
@@ -9926,16 +9926,16 @@ function(data, cols, sep ="-"){
 }
 
 util.matrix.clone <-
-function(ma, n, rowAppend=T){
+function(ma, n, rowAppend=TRUE){
   rnm = dim(ma)[1]
   cnm = dim(ma)[2]
   if(rowAppend){
     t1 = replicate(n, t(ma))
-    re = t(matrix(t1, nrow=cnm, byrow=F))
+    re = t(matrix(t1, nrow=cnm, byrow=FALSE))
     re
   }else{
     t1 = replicate(n, ma)
-    re = matrix(t1, nrow=rnm, byrow=F)
+    re = matrix(t1, nrow=rnm, byrow=FALSE)
     re
   }
   return(re)
@@ -9975,7 +9975,7 @@ function(ma1, ma2){
 
 util.matrix.colComp <-
 function(ma, values, operator="and"){
-  ifD = F
+  ifD = FALSE
   vCt = length(values)
 
   ## if "and" operator is chosen, the original list will decrease to speed up the comparison
@@ -10011,10 +10011,10 @@ function(ma, val){
     
     re = qing.cut(matchIdx,
                   cutPt = seq.int(from=rowCt, to=rowCt*ncol(ma), by=rowCt), 
-                  cutPt.ordered = T, right.include=T)
+                  cutPt.ordered = TRUE, right.include=TRUE)
 
     ##  remove because it cause memeory problems
-    ##  as.numeric(cut(matchIdx, breaks = c(0, seq(rowCt, rowCt*ncol(ma), by=rowCt)), include.lowest=T, right=T))
+    ##  as.numeric(cut(matchIdx, breaks = c(0, seq(rowCt, rowCt*ncol(ma), by=rowCt)), include.lowest=TRUE, right=TRUE))
     
   }else{
     
@@ -10025,7 +10025,7 @@ function(ma, val){
 }
 
 util.matrix.csvText <-
-function(numericMa, fileName=NULL, colNames=NULL, rowNames=NULL, digit = NULL,  keepZero=F){
+function(numericMa, fileName=NULL, colNames=NULL, rowNames=NULL, digit = NULL,  keepZero=FALSE){
      mRow = dim(numericMa)[1]
      mCol = dim(numericMa)[2]
      i = 0
@@ -10165,7 +10165,7 @@ function(ma, ma2){
 util.matrix.rmSparseRow <-
 function(ma, colChecked, minNumInCol=1){
 
-  ifD = F
+  ifD = FALSE
   checked = ma[,colChecked]
   if(ifD) print(checked)
 
@@ -10251,7 +10251,7 @@ function(str, len=nchar(str)){
 }
 
 util.str.replace <-
-function(str, replaced, new, replace.all=F){
+function(str, replaced, new, replace.all=FALSE){
 
   pos = util.char.1stStrIdx(str, find=replaced)
   if(pos==0){
@@ -10300,7 +10300,7 @@ util.str.seqCutter <-
 function(str, delims){
    i = 1
    j = 1
-   stopS = F
+   stopS = FALSE
    re = NULL
    len = length(delims)
    curStr = str
@@ -10308,7 +10308,7 @@ function(str, delims){
    while (i<=len & !stopS){
      idx.f = util.char.1stStrIdx(curStr, delims[i])
      if (idx.f==0){
-       stopS = T
+       stopS = TRUE
        return(NA)
      }else{
        # find the current one
@@ -10327,7 +10327,7 @@ function(str, delims){
  }
 
 util.str.splitAndOrNot <-
-function(str, split="and", check.space=F){
+function(str, split="and", check.space=FALSE){
   split.ex = util.str.splitEx(str, split)
   ## for example "and"
   if(length(split.ex)==1){
@@ -10343,11 +10343,11 @@ function(str, split="and", check.space=F){
 
   ## if check.space, return NULL if any of the item contains space in it
   if(check.space){
-    found=F
+    found=FALSE
     i=1
     while(i<=length(items) & !found){
       tmp.idx = util.char.1stIdx(items[i], " ")
-      if(tmp.idx>0) found=T
+      if(tmp.idx>0) found=TRUE
       i = i + 1
     }
     if(found) return(NULL)
@@ -10359,7 +10359,7 @@ function(str, split="and", check.space=F){
 }
 
 util.str.splitEx <-
-function(str, split, case.sen=T){
+function(str, split, case.sen=TRUE){
 
   if(!case.sen){
     str = tolower(str)

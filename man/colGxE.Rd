@@ -9,7 +9,8 @@ Performs a genotypic TDT for gene-environment interactions for each SNP represen
 and a binary environmental factor.
 }
 \usage{
-colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"), size = 50)
+colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"), 
+   size = 50)
 
 \method{print}{colGxE}(x, top = 5, digits = 4, onlyGxE = FALSE, ...)
 }

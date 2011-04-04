@@ -23,10 +23,12 @@ tdt2way(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessi
 	 add = FALSE, warnError = TRUE)
 	 
 colTDT2way(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
-   model = c("additive", "dominant", "recessive"), add = FALSE, warnError = TRUE)
+   model = c("additive", "dominant", "recessive"), add = FALSE, 
+   warnError = TRUE)
    
-colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE, maf = FALSE,
-	 model = c("additive", "dominant", "recessive"), add = FALSE, warnError = TRUE)
+colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE, 
+   maf = FALSE, model = c("additive", "dominant", "recessive"), 
+   add = FALSE, warnError = TRUE)
 }
 
 \arguments{

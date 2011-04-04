@@ -1,5 +1,5 @@
 trio.check <-
-function(dat, is.linkage = T, replace=F){
+function(dat, is.linkage = TRUE, replace=FALSE){
   re=NULL
   snpIdxRange=NULL
   minor = 2
@@ -33,7 +33,7 @@ function(dat, is.linkage = T, replace=F){
     if(!is.null(re$MedErr)){
       # err
       repdd = setTrioMissingSNP(trioDf=trio1digit, cord=re$MedErr,
-                 snp1digit=T, missingDigit = NA)
+                 snp1digit=TRUE, missingDigit = NA)
       reo = c(trio=list(repdd), errors=list(NULL))
     }else{
       # no err
@@ -48,9 +48,9 @@ function(dat, is.linkage = T, replace=F){
 
       # reformat the error
       #trio, FamID, SNP, r and c
-      newMedErr = data.frame(re$MedErr[,3, drop=F],
-                        trio1digit[re$MedErr[,1],1, drop=F],
-                        re$MedErr[,c(4,1,2), drop=F])
+      newMedErr = data.frame(re$MedErr[,3, drop=FALSE],
+                        trio1digit[re$MedErr[,1],1, drop=FALSE],
+                        re$MedErr[,c(4,1,2), drop=FALSE])
       newMedErr = newMedErr[order(newMedErr[,1], newMedErr[,2], newMedErr[,3]),]
       colnames(newMedErr) = c("trio", "famid", "snp", "r", "c")
       rownames(newMedErr) = NULL

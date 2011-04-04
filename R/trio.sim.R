@@ -1,5 +1,5 @@
 trio.sim <-
-function(freq,  interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1,  step.save=NULL, step.load=NULL,  verbose=F){
+function(freq,  interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1,  step.save=NULL, step.load=NULL,  verbose=FALSE){
 
   sigType="D/R"
 
@@ -37,7 +37,7 @@ function(freq,  interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1,  step.sa
                     ddir=ddF,
                     spStrata.saveFN = step.load,
                     spStrata.name = step.save,
-                    reControl =F,  dig1Code=dig1Code 
+                    reControl =FALSE,  dig1Code=dig1Code 
                     )
   
   if(verbose) print(paste("Time used to generate ", rep,  " dataset(s).", sep=""))

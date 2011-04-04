@@ -11,16 +11,17 @@
   specified by the user, as are the parameters in the logistic model
   that describes the disease risk.}
 
-\usage{trio.sim(freq, interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1, step.save=NULL, step.load=NULL, verbose=F)}
+\usage{
+trio.sim(freq, interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1, 
+   step.save=NULL, step.load=NULL, verbose=FALSE)
+}
 
 \arguments{
 
  \item{freq}{A data frame specifying haplotype blocks and
     frequencies. For an example, see the data frame \code{simuBkMap}
     contained in this package.  If provided, the following argument
-    \code{blocks} will be ignored.}
-
-  \item{}{
+    \code{blocks} will be ignored.
       
     The object must have three columns in the following order: block
     identifiers (\code{key}), haplotypes (\code{hap}), and haplotype
@@ -28,7 +29,8 @@
     each block. For each block, the haplotypes must be encoded as a
     string of the integers 1 and 2, where 1 refers to the major allele
     and 2 refers to the minor allele. The respective haplotype
-    frequencies will be normalized to sum one.}
+    frequencies will be normalized to sum one.
+}
 
   \item{interaction}{ A string that specifies the risk altering genotype
     interaction as a Boolean term, such as \emph{"7D or 19R"}, or
@@ -117,13 +119,18 @@
   family and subject identifiers.
 }  
 
+\references{
+Li, Q., Fallin, M.D., Louis, T.A., Lasseter, V.K., McGrath, J.A., Avramopoulos, D., Wolyniec, P.S., Valle, D., Liang, K.Y., Pulver, A.E., 
+and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents with Schizophrenic Children. Genetic Epidemiology, 34, 396-406. 
+}
+
 \author{Qing Li, mail2qing@yahoo.com}
 
 \seealso{\code{\link{trio}}}
 
 
 \examples{\dontrun{
-data(simuBkMap)
+data(trio.data)
 sim = trio.sim(freq=simuBkMap, interaction="1R and 5R", prev=.001, OR=2, n=20, rep=1)
 sim[[1]][1:6, 1:12]
 }}
@@ -132,5 +139,5 @@ sim[[1]][1:6, 1:12]
 \section{Acknowledgments}{Support was provided by NIH grants R01
   DK061662 and HL090577.}
 
-
+\keyword{datagen}
 

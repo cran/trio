@@ -12,7 +12,8 @@ Computes the maximum over the gTDT statistics for an additive, dominant, and rec
 \code{colTDTmaxTest} additionally computes permutation-based p-values.
 }
 \usage{
-colTDTmaxTest(geno, perm = 10000, size = 50, chunk = 10000, minimum = 0.001, verbose = FALSE)
+colTDTmaxTest(geno, perm = 10000, size = 50, chunk = 10000, 
+    minimum = 0.001, verbose = FALSE)
 colTDTmaxStat(geno, size = 50)
 
 \method{print}{maxTestTrio}(x, top = 5, digits = 4, ...)
