@@ -636,15 +636,15 @@ as in a typical logic regression analysis. One restriction is that in trio logic
 can be grown, and therefore, \texttt{ntrees} needs to be set to \texttt{1}. 
 
 Adding the trio logic regression plug-in to \texttt{LogicReg} allows making use of almost all the features implemented
-in \texttt{logreg}. The only exceptions are the two permutation tests provided by \texttt{logreg}. The standard implementation
-for performing these null-model and conditional permutation tests cannot be applied to case-parent trio data, as the
-special structure of these data must be taken into account by the permutation method. Therefore, the \texttt{R} package
-\texttt{trio} provides a function called \texttt{trio.permTest} that can be used to apply null-model test with, for example, 20 permutations 
+in \texttt{logreg}. The only exceptions are the model selection procedures provided by \texttt{logreg}.
+The standard implementation cannot be applied to case-parent trio data, as the special structure of these data must
+be taken into account. Therefore, the \texttt{R} package \texttt{trio} provides special permutation tests via a
+function called \texttt{trio.permTest} that can be used to apply a null-model test with, for example, 20 permutations 
 to the case-parent trio data in \texttt{trio.bin} by calling
 \begin{verbatim}
    > trio.permTest(triolr.out, n.perm=20)
 \end{verbatim}
-and the conditional permutation test can be performed by
+and a conditional permutation test can be performed by
 \begin{verbatim}
    > trio.permTest(triolr.out, conditional=TRUE, n.perm=20)
 \end{verbatim}

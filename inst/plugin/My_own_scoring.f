@@ -1,9 +1,8 @@
-      ! this subroutine calculates the partial likelihood for the 
-      ! proportional hazards model
-      ! last modification 06/20/01
+      ! this subroutine is used for trio logic regression
 
       SUBROUTINE My_own_scoring(prtr,rsp,dchp,ordrs,weight,n1,
-     #                        ntr,nop,wh,nsep,seps,score,betas)
+     #                        ntr,nop,wh,nsep,seps,
+     #                        score,betas)
 
       IMPLICIT NONE
         ! parameters
@@ -154,8 +153,6 @@
       END
       ! *****************************************************************
       ! *****************************************************************
-      ! This routines computes the gradient for a Cox PH model
-      ! Last modified 06/20/01
       SUBROUTINE mygradphz(grad,hess,beta,delta,idx,covs,np,n1,logl,
      #           strata,np6)
       IMPLICIT none
@@ -246,8 +243,6 @@
       END 
       ! *****************************************************************
       ! *****************************************************************
-      ! This routine computes the partial likelihood
-      ! Last modified 06/20/01
       SUBROUTINE mypllxxz(logl,beta,delta,idx,covs,np,n1,strata)
       IMPLICIT none
           INTEGER LGCn1MAX
@@ -292,9 +287,6 @@
       END 
       ! *****************************************************************
       ! *****************************************************************
-      ! this subroutine calculates the partial likelihood for the
-      ! cox proportional hazards model
-      ! last modification 06/21/01
 
       SUBROUTINE My_own_fitting(prtr,rsp,dchp,ordrs,weight,n1,ntr,
      #               nop,wh,nsep,seps,score,betas,reject)
@@ -357,10 +349,6 @@
             END IF
          END DO
 
-
-!         PRINT *,strata(1:10)
-!         PRINT *,delta(1:10)
-
        ! conergence check
 
          myicheck=0
@@ -390,14 +378,6 @@
                myexit=1
             END IF
          END IF
-
-
-!         PRINT *,myexit0
-!         PRINT *,myexit1
-
-!         IF ((myexit0.EQ.0).OR.(myexit1.EQ.0)) THEN
-!            myexit=1
-!         END IF
 
          nnf(1)=nop+nsep
          nnf(2)=n1
