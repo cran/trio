@@ -55,6 +55,7 @@ An object of class \code{colGxE} consisting of the following numeric matrices wi
 \item{OR}{the odds ratio, i.e.\ \code{exp(coef)}},
 \item{lowerOR}{the lower bound of the 95\% confidence interval for \code{OR},}
 \item{upperOR}{the upper bound of the 95\% confidence interval for \code{OR},}
+\item{usedTrios}{the number of trios affecting the parameter estimation,}
 \item{type}{\code{model}.}
 }
 

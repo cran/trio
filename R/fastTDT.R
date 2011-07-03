@@ -13,13 +13,13 @@ fastTDT <- function(mat.geno, type, size=50){
 fastTDTsplit <- function(geno, size=50){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))	
-	num <- denom <- numeric(n.snp)
+	num <- denom <- used <- numeric(n.snp)
 	for(i in 1:(length(int)-1)){
 		tmp <- fastTDTchunk(geno[,int[i]:(int[i+1]-1), drop=FALSE])
 		num[int[i]:(int[i+1]-1)] <- tmp$num
 		denom[int[i]:(int[i+1]-1)] <- tmp$denom
+		used[int[i]:(int[i+1]-1)] <- tmp$used
 	}
-	logit <- function(x) log(x/(1-x))
 	beta <- logit(num/denom)
 	se <- sqrt(denom / ((denom-num)*num))
 	stat <- beta/se
@@ -27,8 +27,12 @@ fastTDTsplit <- function(geno, size=50){
 	lower <- exp(beta - qnorm(0.975) * se)
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
+	if(is.null(colnames(geno)))
+		names(beta) <- names(stat) <- names(pval) <- names(used) <- paste("SNP", 1:ncol(geno), sep="")
+	else
+		names(beta) <- names(stat) <- names(pval) <- names(used) <- colnames(geno)
 	out <- list(coef=beta, se=se, stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		ia=FALSE, type="additive", add=FALSE)
+		ia=FALSE, type="additive", usedTrios=used, add=FALSE)
 	class(out) <- "colTDT"
 	out
 }
@@ -50,8 +54,9 @@ fastTDTchunk <- function(geno){
 	a3 <- colSums(het1 & kid == 1, na.rm=TRUE)
 	a4 <- colSums(het1 & kid == 2, na.rm=TRUE)
 	num <- a2 + a4 + a67
-	denom <- a1 + a2 + a3 + a4 + 2 * a567
-	return(list(num=num, denom=denom))
+	used <- a1 + a2 + a3 + a4 + a567
+	# denom <- a1 + a2 + a3 + a4 + 2 * a567
+	return(list(num=num, denom=used+a567, used=used))
 }	
 	
 
@@ -73,8 +78,13 @@ fastTDTdomSplit <- function(geno, size=50){
 	lower <- exp(beta - qnorm(0.975) * se)
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
+	used <- rowSums(dmat)
+	if(is.null(colnames(geno)))
+		names(beta) <- names(stat) <- names(pval) <- names(used) <- paste("SNP", 1:ncol(geno), sep="")
+	else
+		names(beta) <- names(stat) <- names(pval) <- names(used) <- colnames(geno)
 	out <- list(coef=beta, se=se, stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		ia=FALSE, type="dominant", add=FALSE)
+		ia=FALSE, type="dominant", usedTrios=used, add=FALSE)
 	class(out) <- "colTDT"
 	out
 }
@@ -113,8 +123,13 @@ fastTDTrecSplit <- function(geno, size=50){
 	lower <- exp(beta - qnorm(0.975) * se)
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
+	used <- rowSums(rmat)
+	if(is.null(colnames(geno)))
+		names(beta) <- names(stat) <- names(pval) <- names(used) <- paste("SNP", 1:ncol(geno), sep="")
+	else
+		names(beta) <- names(stat) <- names(pval) <- names(used) <- colnames(geno)
 	out <- list(coef=beta, se=se, stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		ia=FALSE, type="recessive", add=FALSE)
+		ia=FALSE, type="recessive", usedTrios=used, add=FALSE)
 	class(out) <- "colTDT"
 	out
 }

@@ -1,12 +1,3 @@
-# snp, snp1, snp2: vector of length 3*t, where t is the number of trios and each
-#	of the n blocks of SNPs consists of the genotypes of father, mother, and
-#	the offspring (in this order). Genotypes need to be coded by 0, 1, 2 (i.e.
-#	the number of minor alleles). Missing values are allowed and need to be
-#	coded by NA. Thus, the vector must have the same structure as the SNP columns
-#	in the output of trio.check, or the genotype example data sets such as 
-#	trio.gen1	
-
-
 tdt <- function(snp, model=c("additive", "dominant", "recessive")){
 	require(survival)
 	n <- length(snp)
@@ -188,7 +179,7 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), fast=T
 	cn <- c("000", "010", "100", "011", "101", "021", "201", "222", "121", "211",
 		"122", "212", "110", "111", "112")
 	colnames(mat.code) <- cn
-	coef <- se <- numeric(ncol(mat.snp))
+	coef <- se <- used <- numeric(ncol(mat.snp))
 	if(warnError){
 		wa <- options()$warn
 		on.exit(options(warn=wa))
@@ -203,6 +194,8 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), fast=T
 				call.=FALSE)
 			code <- code[!tmp.ids]
 		}
+		used[i] <- switch(type, additive=sum(code %in% cn[c(2:5, 9:15)]), 
+			dominant=sum(code %in% cn[c(2:5, 13:15)]), recessive=sum(code %in% cn[9:15]))
 		x <- as.vector(mat.code[,code])
 		if(type=="dominant")
 			x <- (x >= 1) * 1
@@ -231,11 +224,11 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), fast=T
 	upper <- exp(coef + qnorm(0.975) * se)
 	pval <- 1 - pchisq(stat, 1)
 	if(is.null(colnames(mat.snp)))
-		names(coef) <- names(pval) <- names(stat) <- paste("SNP", 1:ncol(mat.snp), sep="")
+		names(coef) <- names(pval) <- names(stat) <- names(used) <- paste("SNP", 1:ncol(mat.snp), sep="")
 	else
-		names(coef) <- names(pval) <- names(stat) <- colnames(mat.snp)
+		names(coef) <- names(pval) <- names(stat) <- names(used) <- colnames(mat.snp)
 	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
-		lowerOR=lower, upperOR=upper, ia=FALSE, type=type, add=FALSE) 
+		lowerOR=lower, upperOR=upper, usedTrios=used, ia=FALSE, type=type, add=FALSE) 
 	class(out) <- "colTDT"
 	out
 }
@@ -359,7 +352,8 @@ colTDT2way <- function(mat.snp, epistatic=TRUE, genes=NULL, maf=FALSE,
 print.colTDT <- function(x, top=5, digits=4, ...){
 	pval <- format.pval(x$pval, digits=digits)
 	out <- data.frame(Coef=x$coef, OR=x$OR, Lower=x$lowerOR, Upper=x$upperOR, 
-		SE=x$se, Statistic=x$stat, "p-Value"=pval, check.names=FALSE)
+		SE=x$se, Statistic=x$stat, "p-Value"=pval, Trios=x$usedTrios,
+		check.names=FALSE)
 	if(x$ia)
 		cat("      Genotypic TDT for Two-Way Interaction (Using 15 Pseudo Controls)",
 			"\n\n")

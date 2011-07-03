@@ -447,7 +447,7 @@ compFailTDT <- function(geno, z, interval, type, B=1000, size=10, chunk=100, fas
 		tmpbin <- cut(z.perm, interval, include.lowest=TRUE)
 		vec.fail <- vec.fail + tabulate(tmpbin, n.int)
 		if(!fast)
-			vec.pos <- vec.pos + rank(-c(z.perm, z), ties="first")[length(z.perm) + (1:n.snp)]
+			vec.pos <- vec.pos + rank(-c(z.perm, z), ties.method="first")[length(z.perm) + (1:n.snp)]
 	}
 	structure(list(vec.fail=vec.fail, vec.pos=vec.pos, vec.neg=vec.neg))
 }
@@ -540,7 +540,7 @@ compFailTDTmax <- function(geno, stat, matA, interval, B=1000, size=10, chunk=10
 		tmpbin <- cut(z.perm, interval, include.lowest=TRUE)
 		vec.fail <- vec.fail + tabulate(tmpbin, n.int)
 		if(!fast)
-			vec.pos <- vec.pos + rank(-c(z.perm, stat), ties="first")[length(z.perm)+(1:n.snp)]
+			vec.pos <- vec.pos + rank(-c(z.perm, stat), ties.method="first")[length(z.perm)+(1:n.snp)]
 	}
 	structure(list(vec.fail=vec.fail, vec.pos=vec.pos, vec.neg=vec.neg))
 }

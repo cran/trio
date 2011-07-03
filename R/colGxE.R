@@ -27,14 +27,15 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 	tmp2 <- fun(mat.snp, env2==1, size=size)
 	beta <- cbind(SNP=tmp1[,1], GxE=tmp2[,1]-tmp1[,1])
 	se <- cbind(SNP=sqrt(tmp1[,2]), GxE=sqrt(tmp2[,2]+tmp1[,2]))
-	rownames(beta) <- rownames(se) <- colnames(mat.snp)
+	used <- cbind(NotExposed=tmp1[,3], Exposed=tmp2[,3])
+	rownames(beta) <- rownames(se) <- rownames(used) <- colnames(mat.snp)
 	stat <- beta/se
 	stat <- stat*stat
 	lower <- exp(beta - qnorm(0.975) * se)
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
 	out <- list(coef=beta, se=se, stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		type=type)
+		usedTrios=used, type=type)
 	class(out) <- "colGxE"
 	out
 }
@@ -43,16 +44,17 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 fastGxEsplit <- function(geno, env2, size=50){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))	
-	num <- denom <- numeric(n.snp)
+	num <- denom <- used <- numeric(n.snp)
 	for(i in 1:(length(int)-1)){
 		tmp <- fastTDTchunk(geno[env2,int[i]:(int[i+1]-1), drop=FALSE])
 		num[int[i]:(int[i+1]-1)] <- tmp$num
 		denom[int[i]:(int[i+1]-1)] <- tmp$denom
+		used[int[i]:(int[i+1]-1)] <- tmp$used
 	}
 	logit <- function(x) log(x/(1-x))
 	beta <- logit(num/denom)
 	se <- denom / ((denom-num)*num)
-	cbind(beta, se)
+	cbind(beta, se, used)
 }
 	
 
@@ -63,13 +65,14 @@ fastGxEdomSplit <- function(geno, env2, size=50){
 	dmat <- matrix(0, n.snp, 4)
 	for(i in 1:(length(int)-1))
 		dmat[int[i]:(int[i+1]-1),] <- fastTDTdomChunk(geno[env2,int[i]:(int[i+1]-1), drop=FALSE])
-	rownames(dmat) <- colnames(geno)
+	# rownames(dmat) <- colnames(geno)
 	h <- (dmat[,1]/3 - dmat[,2] + dmat[,3] - dmat[,4]/3) / (2*(dmat[,1]+dmat[,3]))
 	tmp <- (dmat[,2]+dmat[,4])/(3*(dmat[,1]+dmat[,3])) + h*h
 	or <- sqrt(tmp) - h
 	beta <- log(or)
 	tmp <- (dmat[,2]+dmat[,1])*or/(or+1)^2 + (dmat[,3]+dmat[,4])*or/(3*(or+1/3)^2)
-	cbind(beta, 1/tmp)
+	used <- rowSums(dmat)
+	cbind(beta, 1/tmp, used)
 }
 
 fastGxErecSplit <- function(geno, env2, size=50){
@@ -78,13 +81,14 @@ fastGxErecSplit <- function(geno, env2, size=50){
 	rmat <- matrix(0, n.snp, 4)
 	for(i in 1:(length(int)-1))
 		rmat[int[i]:(int[i+1]-1),] <- fastTDTrecChunk(geno[env2,int[i]:(int[i+1]-1), drop=FALSE])
-	rownames(rmat) <- colnames(geno)
+	# rownames(rmat) <- colnames(geno)
 	h <- (3*rmat[,1] - rmat[,2] + rmat[,3] - 3*rmat[,4]) / (2 * (rmat[,1]+rmat[,3]))
 	tmp <- 3 * (rmat[,2] + rmat[,4]) / (rmat[,1] + rmat[,3]) + h*h
 	or <- sqrt(tmp) - h		 
 	beta <- log(or)
 	tmp <- (rmat[,1] + rmat[,2]) * or/(or+1)^2 + 3 *(rmat[,3] + rmat[,4]) * or / (or+3)^2
-	cbind(beta,1/tmp)
+	used <- rowSums(rmat)
+	cbind(beta,1/tmp, used)
 }
 
 
@@ -96,7 +100,8 @@ print.colGxE <- function(x, top=5, digits=4, onlyGxE=FALSE, ...){
 	}
 	pvalGE <- format.pval(x$pval[,2], digits=digits)
 	outGE <- data.frame(Coef=x$coef[,2], OR=x$OR[,2], Lower=x$lowerOR[,2], Upper=x$upperOR[,2],
-		SE=x$se[,2], Statistic=x$stat[,2], "p-value"=pvalGE, check.names=FALSE)
+		SE=x$se[,2], Statistic=x$stat[,2], "p-value"=pvalGE, Trios0=x$usedTrios[,1],
+		Trios1=x$usedTrios[,2], check.names=FALSE)
 	cat("          Genotypic TDT for GxE Interactions with Binary E\n\n", "Model Type: ", 
 		switch(x$type, "additive"="Additive", "dominant"="Dominant","recessive"="Recessive"), 
 		"\n\n",sep="")
@@ -115,15 +120,6 @@ print.colGxE <- function(x, top=5, digits=4, onlyGxE=FALSE, ...){
 		print(format(outG, digits=digits))
 	}
 }
-
-	
-
-
-
-
-
-
-	
 
 
 	

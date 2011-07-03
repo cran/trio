@@ -65,6 +65,7 @@ An object of class \code{tdt} or \code{colTDT} consisting of the following numer
 \item{OR}{the odds ratio, i.e.\ \code{exp(coef)}},
 \item{lowerOR}{the lower bound of the 95\% confidence interval for \code{OR},}
 \item{upperOR}{the upper bound of the 95\% confidence interval for \code{OR},}
+\item{usedTrios}{the number of trios affecting the parameter estimation (only for \code{colTDT}),}
 \item{...}{further internal parameters}
 }
 
