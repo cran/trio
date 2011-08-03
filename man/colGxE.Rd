@@ -10,7 +10,7 @@ and a binary environmental factor.
 }
 \usage{
 colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"), 
-   size = 50)
+   size = 50, famid=NULL)
 
 \method{print}{colGxE}(x, top = 5, digits = 4, onlyGxE = FALSE, ...)
 }
@@ -29,6 +29,10 @@ colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"),
     fit a dominant model, and \code{model = "r"} an recessive model. 
 }
   \item{size}{the number of SNPs considered simultaneously when computing the parameter estimates.
+}
+  \item{famid}{a vector of the same length as \code{env} specifying the family IDs for the corresponding values of the environmental
+    variable in \code{env}. Can be used to reorder the vector \code{env} when the order of the trios differs between \code{env} and
+    \code{mat.snp}.
 }
   \item{x}{an object of class \code{colGxE}, i.e. the output of the function \code{colGxE}.
 }

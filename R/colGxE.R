@@ -1,4 +1,4 @@
-colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), size=50){
+colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), size=50, famid=NULL){
 	if (!is.matrix(mat.snp)) 
         	stop("mat.snp has to be a matrix.")
     	if (nrow(mat.snp)%%3 != 0) 
@@ -13,8 +13,13 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 		stop("size should be at least 1.")
 	if(length(env)!=nrow(mat.snp)/3)
 		stop("The length of env must be equal to the number of trios in mat.snp.")
-	if(any(is.na(env)))
-		stop("No missing values are allowed in env.")
+	if(!is.null(famid))
+		env <- reorderEnv(env, famid, rownames(mat.snp))
+	if(any(is.na(env))){
+		tmpEnv <- rep(env, e=3)
+		mat.snp <- mat.snp[!is.na(tmpEnv),]
+		env <- env[!is.na(env)]
+	}
 	if(any(!env %in% 0:1))
 		stop("The values in env must be 0 and 1.")
 	if(sum(env)<5 | sum(1-env)<5)
@@ -35,10 +40,28 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
 	out <- list(coef=beta, se=se, stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		usedTrios=used, type=type)
+		usedTrios=used, env=env, type=type)
 	class(out) <- "colGxE"
 	out
 }
+
+reorderEnv <- function(env, famid, rn){
+	if(length(famid) != length(env))
+		stop("famid has another length as env.")
+	if(!is.null(names(env))){
+		if(any(famid != names(env)))
+			stop("If the names of env are specified, they must be equal to famid.")
+	}
+	fid <- sapply(strsplit(rn[seq.int(3, length(rn), 3)], "_"), function(x) x[1])
+	names(env) <- famid
+	if(any(!famid %in% fid))
+		stop("At least one famid is not a family ID used in mat.snp.")
+	if(all(famid==fid))
+		return(env)
+	env <- env[fid]
+	env
+} 
+
 
 
 fastGxEsplit <- function(geno, env2, size=50){
