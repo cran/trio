@@ -24,13 +24,14 @@ getLD <- function(x, which=c("both", "rSquare", "Dprime"), parentsOnly=FALSE,
 	else
 		r2 <- NULL
 	if(typeLD %in% c("Dprime", "both")){
-		ids <- D > 0
-		Dmax <- numeric(length(D))
+		Dmax <- rep.int(NA, length(D))
+		ids <- which(D > 0)
 		Dmax[ids] <- pmin(pA1A2[ids], pA2B1[ids])
-		if(any(!ids)){
-			pA1B1 <- D.out$p1[!ids] * D.out$p2[!ids]
-			pA2B2 <- (1-D.out$p1[!ids]) * (1-D.out$p2[!ids])
-			Dmax[!ids] <- pmax(-pA1B1, -pA2B2)
+		ids2 <- which(D <= 0)
+		if(length(ids2) > 0){
+			pA1B1 <- D.out$p1[ids2] * D.out$p2[ids2]
+			pA2B2 <- (1-D.out$p1[ids2]) * (1-D.out$p2[ids2])
+			Dmax[ids2] <- pmax(-pA1B1, -pA2B2)
 		}
 		if(addVarN){
 			outDprime <- compVarDprime(D, Dmax, D.out$p1, D.out$p2, 
@@ -80,8 +81,8 @@ compD <- function(x, iter=50, addVar=FALSE){
 			"minor alleles.", call.=FALSE)
 	out <- est.pAB(x, iter=iter)
 	if(any(out$n<10))
-		stop("Each variable must show at least 10 non-missing values.", 
-			call.=FALSE)
+		stop("For at least one pair of SNPs, the genotypes of less than 5 individuals\n",
+			"are available at both SNPs.", call.=FALSE)
 	D <- out$f11 - out$p1 * out$p2
 	if(addVar){
 		tmp <- D * (1-2*out$p1) * (1-2*out$p2) - D^2
@@ -222,25 +223,30 @@ compVarDprime <- function(D, Dmax, p1, p2, n, varD){
 	b <- 1-a
 	pAB <- D + p1 * p2
 	x <- rep(NA, length(D))
-	ids <- Dmax == -p1*p2
-	x[ids] <- pAB[ids]
-	ids <- Dmax == p1*(1-p2)
-	x[ids] <- (p1-pAB)[ids]
-	ids <- Dmax == (1-p1)*p2
-	x[ids] <- (p2-pAB)[ids]
+	ids <- which(Dmax == -p1*p2)
+	if(length(ids) > 0)
+		x[ids] <- pAB[ids]
+	ids <- which(Dmax == p1*(1-p2))
+	if(length(ids) > 0)
+		x[ids] <- (p1-pAB)[ids]
+	ids <- which(Dmax == (1-p1)*p2)
+	if(length(ids) > 0)
+		x[ids] <- (p2-pAB)[ids]
 	ids <- Dmax == -(1-p1)*(1-p2)
-	x[ids] <- (1-p1-p2+pAB)[ids]
+	if(length(ids) > 0)
+		x[ids] <- (1-p1-p2+pAB)[ids]
 	Dprime <- D/Dmax
 	Dmax <- abs(Dmax)
 	D <- abs(D)
 	varDprime <- (1-Dprime) * (n * varD - Dprime * Dmax * (a*p1 + b*(1-p1) - 2*D))
 	num <- n * Dmax^2
 	varDprime <- (varDprime + Dprime * x* (1-x)) / num
-	if(any(varDprime<0)){
-		if(any(round(Dprime[varDprime<0],8)<1))
+	if(any(varDprime<0, na.rm=TRUE)){
+		ids2 <- which(varDprime < 0)
+		if(any(round(Dprime[ids2],8)<1, na.rm=TRUE))
 			warning("At least one of the variance estimates for a D'<1 is negative.",
 				call.=FALSE)
-		varDprime[varDprime<0] <- 0
+		varDprime[ids2] <- 0
 	}
 	return(list(Dprime=Dprime, varDprime=varDprime))
 }
