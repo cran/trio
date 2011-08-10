@@ -4,6 +4,8 @@
 \alias{print.tdtEpi}
 \alias{print.colTDTepi}
 \alias{colTDTinter2way}
+\alias{fastGxG}
+\alias{fastGxGrec}
 
 \title{
 Genotypic TDT for Two-Way Interactions
@@ -14,14 +16,22 @@ Alternatively, \code{colTDTinter2way} can be used to compute all possible intera
 \code{mat.snp1} with another SNP \code{snp} or each SNP from another matrix \code{mat.snp2}, 
 where the two matrices contain SNPs, e.g., from two different genes.
 
-This test makes use of the 16 possible genotypes that can be obtained from combining the parents' genotypes of the
-two considered SNPs. Thus, for each family, genotypes for one case (i.e. the offspring) and 15 pseudo-controls are used.
+\code{fastGxG} provides a fast implementation for the genotypic TDT for two-way interactions when considering the
+simplest conditional logistic regression model only containing one parameter for the interaction effect. It thus leads
+to the same results as \code{colTDT2way} with \code{epistatic = FALSE} and \code{add = FALSE}. In \code{fastGxGrec},
+an analytic solution to the genotypic TDT based on the simplest model for testing a recessive x recessive model is
+implemented, which is even faster than \code{fastGxG} with \code{model = "recessive"}. In future versions of this
+package, \code{fastGxG} and \code{fastGxGrec} will be joint with \code{colTDT2way} and \code{colTDTinter2way}.
+
+The genotypic TDT for testing two-way interactions makes use of the 16 possible genotypes that can be obtained 
+from combining the parents' genotypes of the two considered SNPs. Thus, for each family, genotypes for one case 
+(i.e. the affected offspring) and 15 pseudo-controls are used.
 }
 
 \usage{
 tdt2way(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
-	 add = FALSE, warnError = TRUE)
-	 
+     add = FALSE, warnError = TRUE)
+     
 colTDT2way(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
    model = c("additive", "dominant", "recessive"), add = FALSE, 
    warnError = TRUE)
@@ -29,6 +39,12 @@ colTDT2way(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
 colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE, 
    maf = FALSE, model = c("additive", "dominant", "recessive"), 
    add = FALSE, warnError = TRUE)
+   
+fastGxG(mat.snp, model = c("additive", "dominant", "recessive"), 
+   genes = NULL, interval = c(-10, 10), tol = 10^-8, maxiter = 1000, 
+   size = 20)
+   
+fastGxGrec(mat.snp, genes = NULL, size = 20)
 }
 
 \arguments{
@@ -72,12 +88,20 @@ colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE,
   \item{warnError}{logical indicating whether the statistics for the gTDT should be returned as \code{NA} if the fitting of the
     conditional logistic regression model fails. This might in particular happen when the two considered SNPs are in (strong) LD.
 }
+  \item{interval}{the end-points of the interval to be searched for the root. For details, see \code{\link[stats]{uniroot}}.
+}
+  \item{tol}{the desired accuracy/convergence tolerance. For details, see \code{\link[stats]{uniroot}}.
+}
+  \item{maxiter}{the maximum number of iterations. For details, see \code{\link[stats]{uniroot}}.
+}
+  \item{size}{the number of interactions considered simultaneously when computing the parameter estimates. 
+}
 }
 \value{
 Depending on \code{epistatic}, the output contains statistics and p-values either of a likelihood ratio test (\code{epistatic = TRUE})
 or the Wald statistic for the conditional logistic regression model (\code{epistatic = FALSE}). If \code{maf = TRUE}, a vector \code{maf}
 containing the minor allele frequencies of each SNP and a matrix \code{mat.maf} with two columns containing the SNP-wise minor allele
-frequencies for each tested pair of SNPs are added to the output.
+frequencies for each tested pair of SNPs are added to the output of \code{colTDT2way} and \code{colTDTinter2way}.
 }
 
 \references{
@@ -96,4 +120,3 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \keyword{htest}
 \keyword{models}
 \keyword{array}
-

@@ -8,7 +8,7 @@
 Genotypic TDT
 }
 \description{
-Computes the genotic TDT for a SNP or for each column of a matrix representing a SNP.
+Computes the genotypic TDT for a SNP or for each column of a matrix representing a SNP.
 }
 
 \usage{
