@@ -1,4 +1,4 @@
-6195395dce37476be7ae67a79474fff1 *DESCRIPTION
+cc244dd0a9958dbf3a829700081c92df *DESCRIPTION
 f67a39dda2aa413bce8bd084eccd4f28 *NAMESPACE
 d444e6c3f3946cdf0ea4f92dab9d44ec *R/colGxE.R
 208a77ac30a1d2942ffca060d963c027 *R/colMAFtrio.R
@@ -7,7 +7,7 @@ d2b2894df60ce5aaa322185aa4f8ffc6 *R/colTDTmaxTest.R
 c48bd880dc61a34c059f666668f78540 *R/compPermTDT2way.R
 0a32a2dd3c6b3c3dcda878224ee519bb *R/fastGxG.R
 43b6119890efc969f6a65c9ca2878496 *R/fastTDT.R
-381f59e0983b5cecdf7d7d40a7df4955 *R/getLD.R
+f32c28011e4df1718d6874547f3bbff4 *R/getLD.R
 d8600a03e1162a896d28a32e3d2e16f2 *R/ped2geno.R
 6e6d2849893ca9125ff1c16b8a849b19 *R/poly4root.R
 ce9da2ac4cfd78417113a848bb7f3edc *R/qingInternal.R
@@ -29,7 +29,7 @@ acc4a0c83bcdbfbad81cb1792121f5ff *inst/doc/figure2.png
 e2532aef04d115609aff45746d346246 *inst/doc/figure3.png
 a48170c7c01508d282d4d92902d6cbc6 *inst/doc/qingSweave.sty
 5ab8fb6de52c9baa06ddb6a0b3ea8cbd *inst/doc/trio.Rnw
-609161383439e4df5998c967282373cc *inst/doc/trio.pdf
+ff82ee4a4253b04ed1d0ca44c1979ad5 *inst/doc/trio.pdf
 1882949b7f5e0a1db2f3d42b46d8828d *inst/plugin/My_own_scoring.f
 a2020d2cf1efaef650499f896c97f870 *man/colGxE.Rd
 3aa3e8d1ac3d3df7a6cab9d79cd87fde *man/colTDTmaxTest.Rd

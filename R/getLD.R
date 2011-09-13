@@ -232,7 +232,7 @@ compVarDprime <- function(D, Dmax, p1, p2, n, varD){
 	ids <- which(Dmax == (1-p1)*p2)
 	if(length(ids) > 0)
 		x[ids] <- (p2-pAB)[ids]
-	ids <- Dmax == -(1-p1)*(1-p2)
+	ids <- which(Dmax == -(1-p1)*(1-p2))
 	if(length(ids) > 0)
 		x[ids] <- (1-p1-p2+pAB)[ids]
 	Dprime <- D/Dmax
