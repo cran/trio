@@ -158,9 +158,9 @@ bothHetMat <- function(a12, a34, a567, perm, denom){
 			tmp <- (a2 + d) / (3 * (a1+a5)) + h*h
 			or <- sqrt(tmp) - h
 			beta <- log(or)
-			tmp <- a12[j] * or/(or+1)^2 + i * or/(3*(or+1/3)^2)
-			v <- 1/tmp
-			dom <- beta * beta / v
+			v <- a12[j] * or/(or+1)^2 + i * or/(3*(or+1/3)^2)
+			#v <- 1/tmp
+			dom <- beta * beta * v
 			d <- a5 + a6
 			h <- (3*a3 - a4 + d - 3*a7) / (2*(a3+d))
 			tmp <- 3 * (a4+a7) / (a3+d) + h*h

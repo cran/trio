@@ -1,18 +1,23 @@
 \name{colGxE}
 \alias{colGxE}
 \alias{print.colGxE}
+\alias{colGxEPerms}
 \title{
 Genotypic TDT for Gene-Environment Interactions
 }
 \description{
 Performs a genotypic TDT for gene-environment interactions for each SNP represented by a column of a matrix in genotype format
-and a binary environmental factor.
+and a binary environmental factor. For determining permutation-based p-values, \code{colGxEPerms} can be used which computes 
+values of the gTDT statistics for permutations of the case-pseudo-control-status.
 }
 \usage{
 colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"), 
    size = 50, famid=NULL)
 
 \method{print}{colGxE}(x, top = 5, digits = 4, onlyGxE = FALSE, ...)
+
+colGxEPerms(mat.snp, env, model = c("additive", "dominant", "recessive"),
+   B = 10000, size = 20, famid = NULL, rand = NA)
 }
 
 \arguments{
@@ -45,13 +50,15 @@ colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"),
 }
   \item{digits}{number of digits that should be printed.}
   \item{...}{ignored.}
+  \item{B}{number of permutations.}
+  \item{rand}{integer for setting the random number generator into a reproducible state.}
 }
 \details{
 A conditional logistic regression model including two parameters, one for \eqn{G}, and the other for \eqn{GxE}, is fitted, where
 \eqn{G} is specified according to \code{model}.
 }
 \value{
-An object of class \code{colGxE} consisting of the following numeric matrices with two columns (one for each parameter):
+For \code{colGxE}, an object of class \code{colGxE} consisting of the following numeric matrices with two columns (one for each parameter):
 
 \item{coef}{the estimated parameter,}
 \item{se}{the estimated standard deviation of the parameter estimate,}
@@ -61,6 +68,14 @@ An object of class \code{colGxE} consisting of the following numeric matrices wi
 \item{upperOR}{the upper bound of the 95\% confidence interval for \code{OR},}
 \item{usedTrios}{the number of trios affecting the parameter estimation,}
 \item{type}{\code{model}.}
+
+For \code{colGxEPerms}, 
+\item{stat}{a matrix with two columns containing the values of gTDT statistics for the main effects of the SNPs and the
+  gene-environment interactions when considering the original, unpermuted case-pseudo-control status,}
+\item{matPermG}{a matrix with \code{B} columns containing the values of the gTDT statistic for the SNPs when considering
+  the \code{B} permutations of the case-pseudo-control status,}
+\item{matPermGxE}{a matrix with \code{B} columns containing the values of the gTDT statistic for the gene-environment interactions
+  when considering the \code{B} permutations of the case-pseudo-control status.}
 }
 
 \author{
