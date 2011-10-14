@@ -1,4 +1,4 @@
-3221f6bd6b4872090d2ea3f4ee179350 *DESCRIPTION
+863a788bb14f5405cdfafc89dd7331c8 *DESCRIPTION
 c4b195abbb369eba9758cf3c13d679ad *NAMESPACE
 d444e6c3f3946cdf0ea4f92dab9d44ec *R/colGxE.R
 e094d6e521fceda8d250b87af3b0e9d2 *R/colGxEPerms.R
@@ -17,7 +17,7 @@ be1332be053f4bd9a47b03cb9b913a85 *R/removeSNPs.R
 65e5795ca90eb67ca8cdc8cc1c710923 *R/scoreTDT.R
 b49332ac5d576384ff11f85d2b0fa5d8 *R/splitBlocks.R
 f594a96f5e8a261a12c1084f8f33b966 *R/tdt.R
-e98dcf84226ec05be599c4f90361bc9b *R/trio.R
+0e5c6253bac33dc9364043f0a29d6e23 *R/trio.R
 05dede2481a73cb11fe370d2be126054 *R/trio.check.R
 56a9747c0c15772803c49dced4d25a25 *R/trio.permTest.R
 f8fded4ba604c5e6997abc920f517471 *R/trio.sim.R
@@ -30,7 +30,7 @@ acc4a0c83bcdbfbad81cb1792121f5ff *inst/doc/figure2.png
 e2532aef04d115609aff45746d346246 *inst/doc/figure3.png
 a48170c7c01508d282d4d92902d6cbc6 *inst/doc/qingSweave.sty
 5ab8fb6de52c9baa06ddb6a0b3ea8cbd *inst/doc/trio.Rnw
-1cc6bbc63857f19e0bd03edba8ab642e *inst/doc/trio.pdf
+fbdf82ff009af440ab1facb40687336f *inst/doc/trio.pdf
 1882949b7f5e0a1db2f3d42b46d8828d *inst/plugin/My_own_scoring.f
 e7351f157575cd5aaf9c885f52eebad7 *man/colGxE.Rd
 3aa3e8d1ac3d3df7a6cab9d79cd87fde *man/colTDTmaxTest.Rd

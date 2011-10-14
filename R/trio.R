@@ -162,6 +162,7 @@ function(trio.dat, freq=NULL, blocks=NULL, logic=TRUE, ...){
      }else{
        re.fin= c(re.fin, freq=list(trio.hapFreqOnly))
      }
-   return(re.fin)
+   class(re.fin) <- "trioPrepare"
+   re.fin
  }
 
