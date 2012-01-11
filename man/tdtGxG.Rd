@@ -1,5 +1,7 @@
-\name{tdt2way}
+\name{tdtGxG}
+\alias{tdtGxG}
 \alias{tdt2way}
+\alias{colGxG}
 \alias{colTDT2way}
 \alias{print.tdtEpi}
 \alias{print.colTDTepi}
@@ -11,17 +13,15 @@
 Genotypic TDT for Two-Way Interactions
 }
 \description{
-Computes the genotypic TDT for the interactions of two SNPs or of each pair of columns of a matrix representing SNPs.
-Alternatively, \code{colTDTinter2way} can be used to compute all possible interactions between each SNP from one matrix
-\code{mat.snp1} with another SNP \code{snp} or each SNP from another matrix \code{mat.snp2}, 
-where the two matrices contain SNPs, e.g., from two different genes.
+\code{tdtGxG} and \code{colGxG} perform the genotypic TDT for the interaction of two SNPs or of each pair of columns 
+of a genotype matrix, respectively.
 
 \code{fastGxG} provides a fast implementation for the genotypic TDT for two-way interactions when considering the
 simplest conditional logistic regression model only containing one parameter for the interaction effect. It thus leads
-to the same results as \code{colTDT2way} with \code{epistatic = FALSE} and \code{add = FALSE}. In \code{fastGxGrec},
+to the same results as \code{colGxG} with \code{epistatic = FALSE} and \code{add = FALSE}. In \code{fastGxGrec},
 an analytic solution to the genotypic TDT based on the simplest model for testing a recessive x recessive model is
 implemented, which is even faster than \code{fastGxG} with \code{model = "recessive"}. In future versions of this
-package, \code{fastGxG} and \code{fastGxGrec} will be joint with \code{colTDT2way} and \code{colTDTinter2way}.
+package, \code{fastGxG} and \code{fastGxGrec} will be joint with \code{colGxG}.
 
 The genotypic TDT for testing two-way interactions makes use of the 16 possible genotypes that can be obtained 
 from combining the parents' genotypes of the two considered SNPs. Thus, for each family, genotypes for one case 
@@ -29,16 +29,12 @@ from combining the parents' genotypes of the two considered SNPs. Thus, for each
 }
 
 \usage{
-tdt2way(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
+tdtGxG(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
      add = FALSE, warnError = TRUE)
      
-colTDT2way(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
+colGxG(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
    model = c("additive", "dominant", "recessive"), add = FALSE, 
    warnError = TRUE)
-   
-colTDTinter2way(mat.snp1, mat.snp2, snp=NULL, epistatic = TRUE, 
-   maf = FALSE, model = c("additive", "dominant", "recessive"), 
-   add = FALSE, warnError = TRUE)
    
 fastGxG(mat.snp, model = c("additive", "dominant", "recessive"), 
    genes = NULL, interval = c(-10, 10), tol = 10^-8, maxiter = 1000, 
@@ -56,17 +52,9 @@ fastGxGrec(mat.snp, genes = NULL, size = 20)
     sets such as \code{trio.gen1} (see \code{data(trio.gen1)}), and can be generated from a ped-file by, e.g., employing 
     \code{\link{ped2geno}}.
 }
-  \item{mat.snp, mat.snp1}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have
+  \item{mat.snp}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have
     the same structure as \code{snp}, and can, e.g., be generated from a ped-file by employing \code{\link{ped2geno}}.
 }
-  \item{mat.snp2}{a numeric matrix similar to \code{mat.snp1} (or \code{mat.snp}). The interaction between each SNP in this
-    matrix and in each SNP in \code{mat.snp1} will be tested. If the interaction between each SNP in \code{mat.snp1} and a 
-    single SNP should be tested, \code{snp} needs to be specified instead of \code{mat.snp2}.
-}
-  \item{snp}{a numeric vector representing a SNP. This vector must have the same format as each columns in \code{mat.snp1}.
-    If the interaction between each SNP in \code{mat.snp1} and a single variable should be tested, \code{snp} needs to
-    be specified instead of \code{mat.snp2}.
-} 
   \item{epistatic}{logical value specifying whether a conditional logistic regression version of the test proposed by Cordell (2002)
     is used to test for epistatistical interactions. If \code{FALSE}, the respective two vectors containing the case and the 15 pseudo-controls for
     each trio are simply multiplied (considering \code{model}).
@@ -101,7 +89,7 @@ fastGxGrec(mat.snp, genes = NULL, size = 20)
 Depending on \code{epistatic}, the output contains statistics and p-values either of a likelihood ratio test (\code{epistatic = TRUE})
 or the Wald statistic for the conditional logistic regression model (\code{epistatic = FALSE}). If \code{maf = TRUE}, a vector \code{maf}
 containing the minor allele frequencies of each SNP and a matrix \code{mat.maf} with two columns containing the SNP-wise minor allele
-frequencies for each tested pair of SNPs are added to the output of \code{colTDT2way} and \code{colTDTinter2way}.
+frequencies for each tested pair of SNPs are added to the output of \code{colGxG}.
 }
 
 \references{

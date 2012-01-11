@@ -1,12 +1,11 @@
 \name{trio.check}
-\Rdversion{1.1}
-
 \alias{trio.check}
+
 \title{Check Case-Parent Trio Data for Mendelian Errors}
 
 \description{This function checks case-parent trio data in linkage or
 genotype format for Mendelian errors. If no errors are found, the
-function returns an object suitable for input to the \code{\link{trio}}
+function returns an object suitable for input to the \code{\link{trio.prepare}}
 function. Otherwise, an object identifying the Mendelian errors is
 returned.}
 
@@ -36,7 +35,7 @@ returned.}
     in linkage file format (complete and with missing records,
     respectively).
     
-    If the data are in trio \strong{genotype format}, each row in the
+    If the data are in \strong{genotype format}, each row in the
     object describes an individual, and each block of three consecutive
     rows describes the two parents and the affected child in a trio. The
     columns in the object are \emph{<famid> <pid> <genotype_1>
@@ -60,7 +59,7 @@ returned.}
     errors should be replaced by missing values. For each Mendelian
     error found (for a particular trio at a particular locus), all three
     genotypes are replaced by \code{NA}, and an object suitable for
-    input to the \code{\link{trio}} function is returned.}
+    input to the \code{\link{trio.prepare}} function is returned.}
 
 }
 
@@ -68,8 +67,8 @@ returned.}
   \code{trio.check}.  Unless otherwise specified, this function assumes
   that the data are in linkage format, however, genotype data can also
   be accommodated.  If no Mendelian inconsistencies in the data provided
-  are identified, \code{trio.check()} creates an object that can be
-  processed in the subsequent analysis with the \code{\link{trio}}
+  are identified, \code{trio.check} creates an object that can be
+  processed in the subsequent analysis with the \code{\link{trio.prepare}}
   function. If the data were in linkage format, the genotype information
   for each SNP will be converted into a single variable, denoting the
   number of variant alleles.
@@ -93,7 +92,7 @@ returned.}
   elements:
   
   \item{trio}{A data frame with the genotypes of the trios, suitable for
-    input to the function \code{\link{trio}}. This element will be
+    input to the function \code{\link{trio.prepare}}. This element will be
     \code{NULL} if Mendelian errors are detected.}
 
   \item{errors}{This element will be \code{NULL} if no Mendelian errors
@@ -118,7 +117,7 @@ and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents 
 
 \author{Qing Li, mail2qing@yahoo.com}
 
-\seealso{\code{\link{trio}}}
+\seealso{\code{\link{trio.prepare}}}
 
 \examples{\dontrun{
 data(trio.data)
@@ -139,8 +138,6 @@ trio.tmp$trio.err[1:6, c(1,2,7), drop=FALSE]
 trio.rep = trio.check(dat=trio.gen.err, is.linkage=FALSE, replace=TRUE)
 trio.rep$trio[1:6,c(1,2,7)]
 }}
-
-\section{Acknowledgments}{Support was provided by NIH grants R01 DK061662 and HL090577.}
 
 \keyword{manip}
 

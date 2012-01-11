@@ -1,5 +1,4 @@
 \name{findLDblocks}
-\Rdversion{1.1}
 \alias{findLDblocks}
 \alias{print.LDblock}
 \alias{splitBlocks}
@@ -76,14 +75,14 @@ splitBlocks(blocks)
    The LD-blocks are estimated using the method of Gabriel et al. (2002) as described in Wall and Pritchard (2003),
    where we use the approximate variance estimates of D' proposed by Zabaleta et al. (1997).
    
-   Since in \code{\link{trio}} the LD blocks are restricted to a maximum of 7 SNPs, \code{splitBlocks}
+   Since in \code{\link{trio.prepare}} the LD blocks are restricted to a maximum of 7 SNPs, \code{splitBlocks}
    can be used to split LD blocks composed of more than 7 SNPs into smaller blocks.  
 }
 \value{An object of class \code{LDblocks} consisting of 
-  	\item{\code{ld}}{the output of \code{getLD},}
-  	\item{\code{blocks}}{a vector specifying which SNP belongs to which LD-block,}
-  	\item{\code{vec.blocks}}{a list in which each entry contains the names of the SNPs belonging to a specific LD-block,}
-  	\item{\code{param}}{a list of the input parameters.}
+    \item{\code{ld}}{the output of \code{getLD},}
+    \item{\code{blocks}}{a vector specifying which SNP belongs to which LD-block,}
+    \item{\code{vec.blocks}}{a list in which each entry contains the names of the SNPs belonging to a specific LD-block,}
+    \item{\code{param}}{a list of the input parameters.}
 }
 \references{
   Gabriel, S.B. et al. (2002). The Structure of Haplotype Blocks in the Human Genome. \emph{Science}, 296, 2225-2229.
@@ -103,4 +102,3 @@ splitBlocks(blocks)
 }
 
 \keyword{multivariate}
-

@@ -1,6 +1,4 @@
 \name{trio.sim}
-\Rdversion{1.1}
-
 \alias{trio.sim}
 
 \title{Simulate Case-Parent Trios}
@@ -126,7 +124,7 @@ and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents 
 
 \author{Qing Li, mail2qing@yahoo.com}
 
-\seealso{\code{\link{trio}}}
+\seealso{\code{\link{trio.prepare}}}
 
 
 \examples{\dontrun{
@@ -135,9 +133,4 @@ sim = trio.sim(freq=simuBkMap, interaction="1R and 5R", prev=.001, OR=2, n=20, r
 sim[[1]][1:6, 1:12]
 }}
 
-
-\section{Acknowledgments}{Support was provided by NIH grants R01
-  DK061662 and HL090577.}
-
 \keyword{datagen}
-

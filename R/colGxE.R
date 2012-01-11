@@ -1,4 +1,5 @@
-colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), size=50, famid=NULL){
+colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), size=50, addGandE=TRUE,
+		whichLRT=c("both", "2df", "1df", "none"), add2df=TRUE, addCov=FALSE, famid=NULL){
 	if (!is.matrix(mat.snp)) 
         	stop("mat.snp has to be a matrix.")
     	if (nrow(mat.snp)%%3 != 0) 
@@ -23,24 +24,68 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 	if(any(!env %in% 0:1))
 		stop("The values in env must be 0 and 1.")
 	if(sum(env)<5 | sum(1-env)<5)
-		stop("Each of the two groups specified by env must contain at least 5 trios.") 
+		stop("Each of the two groups specified by env must contain at least 5 trios.")
+	typeLRT <- match.arg(whichLRT)
+	addLRT1 <- typeLRT %in% c("both", "1df") 
+	addLRT2 <- typeLRT %in% c("both", "2df")
 	type <- match.arg(model)
 	fun <- match.fun(switch(type, additive=fastGxEsplit, dominant=fastGxEdomSplit,
 		recessive=fastGxErecSplit))
 	env2 <- rep(env, e=3)
-	tmp1 <- fun(mat.snp, env2==0, size=size)
-	tmp2 <- fun(mat.snp, env2==1, size=size)
-	beta <- cbind(SNP=tmp1[,1], GxE=tmp2[,1]-tmp1[,1])
-	se <- cbind(SNP=sqrt(tmp1[,2]), GxE=sqrt(tmp2[,2]+tmp1[,2]))
-	used <- cbind(NotExposed=tmp1[,3], Exposed=tmp2[,3])
+	tmp1 <- fun(mat.snp, env2==0, size=size, addLRT1=addLRT1, addLRT2=addLRT2)
+	tmp2 <- fun(mat.snp, env2==1, size=size, addLRT1=addLRT1, addLRT2=addLRT2)
+	beta <- se <- matrix(NA, ncol(mat.snp), 2+addGandE)
+	beta[,1] <- tmp1$beta
+	beta[,2] <- tmp2$beta - tmp1$beta
+	se[,1] <- sqrt(tmp1$var)
+	tmpVar2 <- tmp2$var + tmp1$var
+	se[,2] <- sqrt(tmpVar2)
+	used <- cbind(NotExposed=tmp1$used, Exposed=tmp2$used)
+	if(addGandE){
+		beta[,3] <- tmp2$beta
+		se[,3] <- sqrt(tmp2$var)
+		colnames(beta) <- colnames(se) <- c("SNP", "GxE", "GandE")
+	}
+	else
+		colnames(beta) <- colnames(se) <- c("SNP", "GxE")		
 	rownames(beta) <- rownames(se) <- rownames(used) <- colnames(mat.snp)
-	stat <- beta/se
-	stat <- stat*stat
+	stat <- beta[,1:2] / se[,1:2]
+	stat <- stat * stat
+	if(typeLRT != "none")
+		lrtFull <-  tmp1$lBeta + tmp2$lBeta
+	if(addLRT2){
+		lrtNull <- log(0.25) * (tmp1$used + tmp2$used)
+		tmpStat <- -2 * (lrtNull - lrtFull)
+		tmpP <- pchisq(tmpStat, 2, lower.tail=FALSE)
+		lrt2df <- cbind(Statistic=tmpStat, pValue= tmpP)
+	}
+	if(addLRT1){
+		funG <- match.fun(switch(type, additive=lrtGxE, dominant=lrtGxEdom, recessive=lrtGxErec))
+		lrtG <- funG(tmp1$mat + tmp2$mat)
+		tmpStat <- -2 * (lrtG - lrtFull)
+		tmpP <- pchisq(tmpStat, 1, lower.tail=FALSE)
+		lrt1df <- cbind(Statistic=tmpStat, pValue=tmpP)
+	}	
+	if(add2df){
+		tmpFac <- beta[,2]/tmp2$var
+		tmpW <- beta[,1] * beta[,1] * tmpVar2 / (tmp1$var * tmp2$var)
+		tmpStat <- tmpW + (2 * beta[,1] + beta[,2]) * tmpFac
+		tmpP <- pchisq(tmpStat, 2, lower.tail=FALSE)
+		wald2df <- cbind(Statistic=tmpStat, pValue= tmpP)
+	}
 	lower <- exp(beta - qnorm(0.975) * se)
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
-	out <- list(coef=beta, se=se, stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		usedTrios=used, env=env, type=type)
+	out <- list(coef=beta[,1:2], se=se[,1:2], stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
+		usedTrios=used, env=env, type=type, addGandE=addGandE, addOther=c(addLRT2, add2df, addLRT1))
+	if(addCov)
+		out$cov <- -tmp1[,2]
+	if(addLRT2)
+		out$lrt2df <- lrt2df
+	if(add2df)
+		out$wald2df <- wald2df
+	if(addLRT1)
+		out$lrt1df <- lrt1df
 	class(out) <- "colGxE"
 	out
 }
@@ -63,8 +108,7 @@ reorderEnv <- function(env, famid, rn){
 } 
 
 
-
-fastGxEsplit <- function(geno, env2, size=50){
+fastGxEsplit <- function(geno, env2, size=50, addLRT1=TRUE, addLRT2=TRUE){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))	
 	num <- denom <- used <- numeric(n.snp)
@@ -74,31 +118,49 @@ fastGxEsplit <- function(geno, env2, size=50){
 		denom[int[i]:(int[i+1]-1)] <- tmp$denom
 		used[int[i]:(int[i+1]-1)] <- tmp$used
 	}
-	logit <- function(x) log(x/(1-x))
 	beta <- logit(num/denom)
-	se <- denom / ((denom-num)*num)
-	cbind(beta, se, used)
+	if(any(is.infinite(beta)))
+		beta[is.infinite(beta)] <- NA
+	tmpFac <- denom/(denom-num)
+	se <- tmpFac / num
+	if(!addLRT1 & !addLRT2)
+		return(list(beta=beta, var=se, used=used))
+	oneHet <- 2 * used - denom
+	lnTerm <- log(tmpFac) * denom
+	lBeta <- beta * num - log(2) * oneHet - lnTerm
+	if(addLRT1)
+		return(list(beta=beta, var=se, used=used, lBeta=lBeta, mat=cbind(num, denom, used)))
+	list(beta=beta, var=se, used=used, lBeta=lBeta)	
 }
 	
 
 
-fastGxEdomSplit <- function(geno, env2, size=50){
+fastGxEdomSplit <- function(geno, env2, size=50, addLRT1=TRUE, addLRT2=TRUE){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
 	dmat <- matrix(0, n.snp, 4)
 	for(i in 1:(length(int)-1))
 		dmat[int[i]:(int[i+1]-1),] <- fastTDTdomChunk(geno[env2,int[i]:(int[i+1]-1), drop=FALSE])
-	# rownames(dmat) <- colnames(geno)
 	h <- (dmat[,1]/3 - dmat[,2] + dmat[,3] - dmat[,4]/3) / (2*(dmat[,1]+dmat[,3]))
-	tmp <- (dmat[,2]+dmat[,4])/(3*(dmat[,1]+dmat[,3])) + h*h
+	d24 <- dmat[,2] + dmat[,4]
+	tmp <- d24/(3*(dmat[,1]+dmat[,3])) + h*h
 	or <- sqrt(tmp) - h
 	beta <- log(or)
-	tmp <- (dmat[,2]+dmat[,1])*or/(or+1)^2 + (dmat[,3]+dmat[,4])*or/(3*(or+1/3)^2)
+	if(any(is.infinite(beta)))
+		beta[is.infinite(beta)] <- NA
+	d12 <- dmat[,2] + dmat[,1]
+	d34 <- dmat[,3] + dmat[,4]
+	tmp <- d12*or/(or+1)^2 + d34*or/(3*(or+1/3)^2)
 	used <- rowSums(dmat)
-	cbind(beta, 1/tmp, used)
+	if(!addLRT1 & !addLRT2)
+		return(list(beta=beta, var=1/tmp, used=used))
+	lBeta <- d24 * beta - d12 * log(2 + 2*or) - d34 * log(1+3*or)
+	if(addLRT1)
+		return(list(beta=beta, var=1/tmp, used=used, lBeta=lBeta, mat=dmat))
+	list(beta=beta, var=1/tmp, used=used, lBeta=lBeta)
 }
 
-fastGxErecSplit <- function(geno, env2, size=50){
+fastGxErecSplit <- function(geno, env2, size=50, addLRT1=TRUE, addLRT2=TRUE){
 	n.snp <- ncol(geno)
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
 	rmat <- matrix(0, n.snp, 4)
@@ -106,12 +168,22 @@ fastGxErecSplit <- function(geno, env2, size=50){
 		rmat[int[i]:(int[i+1]-1),] <- fastTDTrecChunk(geno[env2,int[i]:(int[i+1]-1), drop=FALSE])
 	# rownames(rmat) <- colnames(geno)
 	h <- (3*rmat[,1] - rmat[,2] + rmat[,3] - 3*rmat[,4]) / (2 * (rmat[,1]+rmat[,3]))
-	tmp <- 3 * (rmat[,2] + rmat[,4]) / (rmat[,1] + rmat[,3]) + h*h
-	or <- sqrt(tmp) - h		 
+	r24 <- rmat[,2] + rmat[,4]
+	tmp <- 3 * r24 / (rmat[,1] + rmat[,3]) + h*h
+	or <- sqrt(tmp) - h	 
 	beta <- log(or)
-	tmp <- (rmat[,1] + rmat[,2]) * or/(or+1)^2 + 3 *(rmat[,3] + rmat[,4]) * or / (or+3)^2
+	if(any(is.infinite(beta)))
+		beta[is.infinite(beta)] <- NA
+	r12 <- rmat[,1] + rmat[,2]
+	r34 <- rmat[,3] + rmat[,4]
+	tmp <- r12 * or/(or+1)^2 + 3 * r34 * or / (or+3)^2
 	used <- rowSums(rmat)
-	cbind(beta,1/tmp, used)
+	if(!addLRT1 & !addLRT2)
+		return(list(beta=beta,var=1/tmp, used=used))
+	lBeta <- r24 * beta - r12 * log(2+2*or) - r34 * log(3+or)
+	if(addLRT1)
+		return(list(beta=beta, var=1/tmp, used=used,lBeta=lBeta, mat=rmat))
+	list(beta=beta, var=1/tmp, used=used, lBeta=lBeta)	
 }
 
 
@@ -119,19 +191,41 @@ print.colGxE <- function(x, top=5, digits=4, onlyGxE=FALSE, ...){
 	if(!onlyGxE){
 		pvalG <- format.pval(x$pval[,1], digits=digits)
 		outG <- data.frame(Coef=x$coef[,1], OR=x$OR[,1], Lower=x$lowerOR[,1], Upper=x$upperOR[,1],
-			SE=x$se[,1], Statistic=x$stat[,1], "p-value"=pvalG, check.names=FALSE)
+			SE=x$se[,1], Statistic=x$stat[,1], "p-value"=pvalG, check.names=FALSE, stringsAsFactors=FALSE)
+		if(any(x$addGandE))
+			outOR <- data.frame(OR=x$OR[,3], Lower=x$lowerOR[,3], Upper=x$upperOR[,3], check.names=FALSE,
+				stringsAsFactors=FALSE)
+		if(any(x$addOther)){
+			outMore <- data.frame(row.names=rownames(outG))
+			if(x$addOther[1])
+				outMore <- data.frame(outMore, "2df Stat"=x$lrt2df[,1], 
+					"2df p-Value"=format.pval(x$lrt2df[,2], digits=digits), check.names=FALSE,
+					stringsAsFactors=FALSE)
+			if(x$addOther[2])
+				outMore <- data.frame(outMore, "Wald Stat"=x$wald2df[,1],
+					"Wald p-value"=format.pval(x$wald2df[,2], digits=digits), check.names=FALSE,
+					stringsAsFactors=FALSE)
+			if(x$addOther[3])
+				outMore <- data.frame(outMore, "1df Stat"=x$lrt1df[,1], 
+					"1df p-Value"=format.pval(x$lrt1df[,2], digits=digits), check.names=FALSE,
+					stringsAsFactors=FALSE)
+		}
+			
 	}
 	pvalGE <- format.pval(x$pval[,2], digits=digits)
 	outGE <- data.frame(Coef=x$coef[,2], OR=x$OR[,2], Lower=x$lowerOR[,2], Upper=x$upperOR[,2],
 		SE=x$se[,2], Statistic=x$stat[,2], "p-value"=pvalGE, Trios0=x$usedTrios[,1],
-		Trios1=x$usedTrios[,2], check.names=FALSE)
+		Trios1=x$usedTrios[,2], check.names=FALSE, stringsAsFactors=FALSE)
 	cat("          Genotypic TDT for GxE Interactions with Binary E\n\n", "Model Type: ", 
 		switch(x$type, "additive"="Additive", "dominant"="Dominant","recessive"="Recessive"), 
 		"\n\n",sep="")
-	if(nrow(x$coef) > top){
+	if(!is.na(top) && top>0 && top <= length(x$coef)){
 		ord <- order(x$pval[,2])[1:top]
-		if(!onlyGxE)
+		if(!onlyGxE){
 			outG <- outG[ord,]
+			outOR <- outOR[ord,]
+			outMore <- outMore[ord,]
+		}
 		outGE <- outGE[ord,]
 		cat("Top", top, "GxE Interactions:\n")
 	}
@@ -141,8 +235,103 @@ print.colGxE <- function(x, top=5, digits=4, onlyGxE=FALSE, ...){
 	if(!onlyGxE){
 		cat("\n\n", "Effects of the SNPs in the Corresponding GxE Models:\n", sep="")
 		print(format(outG, digits=digits))
+		if(x$addGandE){
+			cat("\n\n", "ORs for Exposed Cases:\n", sep="")
+			print(format(outOR, digits=digits))
+		}
+		if(any(x$addOther)){
+			txt <- paste(c("2 df Likelihood Ratio Test", "2 df Wald Test", 
+				"1 df Likelihood Ratio Test")[x$addOther], collapse=", ")
+			cat("\n\n", txt, ":\n", sep="")
+			print(format(outMore, digits=digits))
+		}
 	}
 }
 
 
-	
+getGxEstats <- function(x, top=NA, sortBy=c("none", "gxe", "lrt2df", "wald2df", "lrt1df", "g")){
+	if(!is(x, "colGxE"))
+		stop("x must be the output of colGxE.")
+	type <- match.arg(sortBy)
+	if(!is.na(top)){
+		if(type=="none")
+			stop("If sortBy is set to none, top must be set to NA.")
+		if(top <= 0 | top>nrow(x$pval))
+			top <- NA
+	}		
+	dat <- data.frame("Coef GxE"=x$coef[,2], "OR GxE"=x$OR[,2], "Lower GxE"=x$lowerOR[,2], "Upper GxE"=x$upperOR[,2],
+		"SE GxE"=x$se[,2], "Stat GxE"=x$stat[,2], "pval GxE"=x$pval[,2], "Trios0"=x$usedTrios[,1],
+		Trios1=x$usedTrios[,2], "Coef G"=x$coef[,1], "OR G"=x$OR[,1], "Lower G"=x$lowerOR[,1], "Upper G"=x$upperOR[,1],
+		"SE G"=x$se[,1], "Stat G"=x$stat[,1], "pval G"=x$pval[,1], check.names=FALSE, stringsAsFactors=FALSE)
+	if(x$addGandE)
+		dat <- data.frame(dat, "OR G&E"=x$OR[,3], "Lower G&E"=x$lowerOR[,3], "Upper G&E"=x$upperOR[,3], 
+			check.names=FALSE, stringsAsFactors=FALSE)
+	if(x$addOther[1])
+		dat <- data.frame(dat, "Stat LRT 2df"=x$lrt2df[,1], "pval LRT 2df"=x$lrt2df[,2], check.names=FALSE, 
+			stringsAsFactors=FALSE)
+	if(x$addOther[2])
+		dat <- data.frame(dat, "Stat Wald 2df"=x$wald2df[,1], "pval Wald 2df"=x$wald2df[,2], check.names=FALSE, 
+			stringsAsFactors=FALSE)
+	if(x$addOther[3])
+		dat <- data.frame(dat, "Stat LRT 1df"=x$lrt1df[,1], "pval LRT 1df"=x$lrt1df[,2], check.names=FALSE, 
+			stringsAsFactors=FALSE)
+	if(type=="none")
+		return(dat)
+	if(type=="gxe")
+		ord <- order(x$pval[,2])
+	if(type=="lrt2df"){
+		if(!x$addOther[1])
+			stop("x does not contain results from the 2 df Likelihood Ratio Test.")
+		ord <- order(x$lrt2df[,2])
+	}
+	if(type=="wald2df"){
+		if(!x$addOther[2])
+			stop("x does not contain results from the 2 df Wald Test.")
+		ord <- order(x$wald2df[,2])
+	}
+	if(type=="lrt1df"){
+		if(!x$addOther[3])
+			stop("x does not contain results from the 1 df Likelihood Ratio Test.")
+		ord <- order(x$lrt1df[,2])
+	}
+	if(type=="g")
+		ord <- order(x$pval[,1])
+	if(!is.na(top))
+		ord <- ord[1:top]
+	dat[ord,]
+}
+
+lrtGxE <- function(stats){
+	beta <- logit(stats[,1]/stats[,2])
+	if(any(is.infinite(beta)))
+		beta[is.infinite(beta)] <- NA
+	tmpFac <- stats[,2]/(stats[,2]-stats[,1])
+	lnTerm <- log(tmpFac) * stats[,2]
+	oneHet <- 2*stats[,3] - stats[,2]
+	beta * stats[,1] - log(2) * oneHet - lnTerm
+}
+
+lrtGxEdom <- function(stats){
+	h <- (stats[,1]/3 - stats[,2] + stats[,3] - stats[,4]/3) / (2*(stats[,1]+stats[,3]))
+	d24 <- stats[,2] + stats[,4]
+	tmp <- d24/(3*(stats[,1]+stats[,3])) + h*h
+	or <- sqrt(tmp) - h
+	beta <- log(or)
+	if(any(is.infinite(beta)))
+		beta[is.infinite(beta)] <- NA
+	d12 <- stats[,2] + stats[,1]
+	d34 <- stats[,3] + stats[,4]
+	d24 * beta - d12 * log(2 + 2*or) - d34 * log(1+3*or)
+}
+
+lrtGxErec <- function(stats){
+	h <- (3*stats[,1] - stats[,2] + stats[,3] - 3*stats[,4]) / (2 * (stats[,1]+stats[,3]))
+	r24 <- stats[,2] + stats[,4]
+	tmp <- 3 * r24 / (stats[,1] + stats[,3]) + h*h
+	or <- sqrt(tmp) - h		 
+	beta <- log(or)
+	r12 <- stats[,1] + stats[,2]
+	r34 <- stats[,3] + stats[,4]
+	r24 * beta - r12 * log(2+2*or) - r34 * log(3+or)
+}
+

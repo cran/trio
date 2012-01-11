@@ -22,7 +22,7 @@ For the applications of genotypic TDTs for individual SNPs and two-way interacti
 called \code{mat.test} consisting of genotype data for 100 trios genotyped at 6 SNPs.
 
 For the preparation of the trio data for an application of trio logic regression with \code{\link{trio.check}} and
-\code{\link{trio}}, \code{trio.data} contains different data set containing genotype data for 10 SNPs in 100
+\code{\link{trio.prepare}}, \code{trio.data} contains different data set containing genotype data for 10 SNPs in 100
 trios in different formats. 
 
 \code{trio.gen1}, \code{trio.gen2}, and \code{trio.gen.err} consist of 12 columns and 300 rows, where 
@@ -49,9 +49,8 @@ haplotype block identifier, haplotype, and haplotype frequency. While \code{freq
 for simulation, containing some indexes and sampling frequencies.  
 }
 
-\author{\code{LDdata} and \code{mat.test}: Holger Schwender, \email{holger@jhu.edu};
+\author{\code{LDdata} and \code{mat.test}: Holger Schwender, \email{holger.schwender@udo.edu};
 all other data sets: Qing Li, \email{mail2qing@yahoo.com}}
 
 
 \keyword{datasets}
-

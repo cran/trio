@@ -1,5 +1,5 @@
 colGxEPerms <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), B=10000, size=20,
-		famid=NULL, rand=NA){
+		addPerms=TRUE, famid=NULL, rand=NA){
 	if (length(env) != nrow(mat.snp)/3) 
         	stop("The length of env must be equal to the number of trios in mat.snp.")
     	if (!is.null(famid)) 
@@ -23,8 +23,12 @@ colGxEPerms <- function(mat.snp, env, model=c("additive", "dominant", "recessive
 		matG[vec.ids[[i]],] <- tmp$G
 		matGxE[vec.ids[[i]],] <- tmp$GxE
 	}
-	rownames(matG) <- rownames(matGxE) <- rownames(stat) <- colnames(mat.snp)
-	return(list(stat=stat, matPermG=matG, matPermGxE=matGxE))
+	pval <- cbind(G=rowMeans(stat[,1] <= matG, na.rm=TRUE), GxE=rowMeans(stat[,2] <= matGxE, na.rm=TRUE))
+	rownames(stat) <- rownames(pval) <- colnames(mat.snp)
+	if(!addPerms)
+		return(list(stat=stat, pval=pval))
+	rownames(matG) <- rownames(matGxE) <- colnames(mat.snp)
+	structure(list(stat=stat, pval=pval, matPermG=matG, matPermGxE=matGxE))
 }
 	
 

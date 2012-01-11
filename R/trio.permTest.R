@@ -26,31 +26,30 @@ util.shuffleIdx <- function(segLen, segCt){
 }
 
 
-trio.permTest <- function(object, conditional=FALSE, n.perm=10, nleaves=NULL, anneal.control=NULL,
-		rand=NA){
-	require(LogicReg)
+trio.permTest <- function(object, conditional=FALSE, n.perm=10, nleaves=NULL, control=NULL, rand=NA){
+	require(mcbiopi, quietly=TRUE) || stop("Package mcbiopi is required.")
     	if(n.perm <= 0)
 		stop("n.perm must be at least 1.")
-	if(!is(object, "logreg"))
-		stop("object must be an object of class logreg.")
-	if(object$type != "own.scoring")
-		stop("object does not seem to be the result of a Trio Logic Regression analysis.")
-	if(!object$select %in% c("single.model", "greedy"))
-		stop("In the original analysis leading to object, select must have been set to 1 or 6.")
-	select <- ifelse(object$select=="single.model", 1, 6)
+	if(!is(object, "trioLR"))
+		stop("object must be an object of class trioLR.")
+	if(!object$choice == 1)
+		stop("In the original analysis leading to object, a single model must have been fitted using simulated annealing.")
 	resp <- object$response
 	nr <- length(resp)
-	if(any(resp != rep(c(3,0,0,0), nr/4)))
-		stop("object does not seem to be the result of a Trio Logic Regression analysis.")
 	bina <- object$binary
+	weights <- object$weight[resp==3]
+	if(length(weights) != length(resp)/4)
+		stop("The number of weights is incorrect.")
 	if(is.null(nleaves))
 		nleaves <- object$nleaves
 	if(length(nleaves) != 1)
 		stop("nleaves must be a single integer.")
 	if(nleaves < 1)
 		stop("nleaves must be at least 1.")
-	if(is.null(anneal.control))
-		anneal.control <- object$anneal.control
+	if(is.null(control))
+		control <- object$control
+	else
+		checkControlPars(control, nr/4)
     	setId <- rep(1:(nr/4), each=4)
     	dIdx <- seq(1, nr, by=4)
 	if(!is.na(rand))
@@ -61,8 +60,7 @@ trio.permTest <- function(object, conditional=FALSE, n.perm=10, nleaves=NULL, an
 	}
 	else{
 		logreg.score <- object$model$score
-		logreg.tree <- object$model$trees[[1]]
-  		logreg.pred <- eval.logreg(ltree=logreg.tree, data=bina)
+  		logreg.pred <- evalTree(object$model$trees[[1]]$trees, bina)
   	}
   	scoreVec <- rep(NA, times=n.perm+1)
   	scoreVec[1] <- logreg.score
@@ -103,8 +101,7 @@ trio.permTest <- function(object, conditional=FALSE, n.perm=10, nleaves=NULL, an
        		newIdx <- lapply(dIdx, FUN=tmpfoo2, pl=idxSetIdxShuffle)
    		binaNew <- bina[unlist(newIdx),]
    		logregRe <- NULL
-       		logregRe <- logreg(resp=resp, bin=binaNew, type = 0, select = 1, anneal.control=anneal.control, 
-			ntrees = 1, nleaves=nleaves)
+       		logregRe <- triologreg(binaNew, resp, weights, 1, nleaves=nleaves, penalty=object$penalty, control=control)
   		scoreVec[1+i] <- logregRe$model$score
   	} 
 	structure(list(origScore=scoreVec[1], permScore=scoreVec[-1]))

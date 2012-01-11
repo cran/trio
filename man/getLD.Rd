@@ -1,5 +1,4 @@
 \name{getLD}
-\Rdversion{1.1}
 \alias{getLD}
 \alias{mat}
 

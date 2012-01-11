@@ -1,4 +1,5 @@
-\name{compPermTDT2way}
+\name{colGxGPerms}
+\alias{colGxGPerms}
 \alias{compPermTDT2way}
 \title{
 Permutation-Based gTDT for Two-Way Interactions
@@ -8,7 +9,7 @@ Computes the original and permuted values of the test statistic of the gTDT test
 interaction between the pairs of SNPs in mat.snp.
 }
 \usage{
-compPermTDT2way(mat.snp, n.perm = 1000, genes = NULL, col.out = NULL, 
+colGxGPerms(mat.snp, n.perm = 1000, genes = NULL, col.out = NULL, 
    warnError = TRUE, verbose = TRUE, rand = NA)
 }
 \arguments{
@@ -23,7 +24,7 @@ compPermTDT2way(mat.snp, n.perm = 1000, genes = NULL, col.out = NULL,
   \item{genes}{a character vector containing the names of the genes to which the SNPs belong. If specified, only the two-way interactions
     between SNPs from different genes are tested. If \code{NULL}, all two-way interactions between all possible pairs of SNPs are tested.
 }
-  \item{col.out}{the output of \code{\link{colTDT2way}} with \code{epistatic = TRUE} (which is the default in \code{\link{colTDT2way}}).
+  \item{col.out}{the output of \code{\link{colGxG}} with \code{epistatic = TRUE} (which is the default in \code{\link{colGxG}}).
     If \code{NULL}, \code{compPermTDT2way} computes the values of the test statistic for the original permutation of the response.
 }
   \item{warnError}{logical indicating whether the statistics for the gTDT should be returned as \code{NA} if the fitting of the
@@ -51,10 +52,9 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 }
 
 \seealso{
-\code{\link{colTDT2way}}
+\code{\link{colGxG}}
 }
 
 \keyword{htest}
 \keyword{models}
 \keyword{array}
-

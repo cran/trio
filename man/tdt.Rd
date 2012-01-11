@@ -18,6 +18,7 @@ colTDT(mat.snp, model = c("additive", "dominant", "recessive"),
    fast = TRUE, size = 50, warnError = TRUE)
 
 \method{print}{tdt}(x, digits = 4, ...)
+
 \method{print}{colTDT}(x, top = 5, digits = 4, ...)
 }
 
@@ -46,13 +47,13 @@ colTDT(mat.snp, model = c("additive", "dominant", "recessive"),
     i.e. if the minor allele frequency of this SNP is very low.
 }
 
-  \item{x}{an object of class \code{tdt} or \code{colTDT}, i.e. the output of the function \code{tdt} (or \code{tdt2way})
+  \item{x}{an object of class \code{tdt} or \code{colTDT}, i.e. the output of the function \code{tdt} (or \code{tdtGxG})
     or the function \code{colTDT}.
 }
   \item{digits}{number of digits that should be printed.}
-  \item{top}{number of interactions that should be printed. If the number of interactions is smaller than or equal to 
-    \code{top}, then the statistics for all interactions are printed in the order of their computation. Otherwise, 
-    the \code{top} interactions with the smallest p-values are printed.
+  \item{top}{number of interactions that should be printed. If \code{top} is less than or equal to zero, set to \code{NA}, or
+    larger than the number of SNPs, then the statistics for all SNPs are printed in the order as they were in the genotype matrix
+    used as input into \code{colTDT}. Otherwise, the \code{top} interactions with the smallest p-values are printed.
   }
   \item{...}{ignored.}
 }

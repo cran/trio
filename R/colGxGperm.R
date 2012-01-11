@@ -31,7 +31,10 @@ getDummyX <- function(mat.snp, n.snp){
 	mat.pseudo - 1
 }	
 
-compPermTDT2way <- function(mat.snp, n.perm=1000, genes=NULL, col.out=NULL,
+compPermTDT2way <- function(...)
+	cat("compPermTDT2way has been renamed to colGxGPerms. So please use colGxGPerms instead.\n")
+
+colGxGPerms <- function(mat.snp, n.perm=1000, genes=NULL, col.out=NULL,
 		warnError=TRUE, verbose=TRUE, rand=NA){
 	require(survival)
 	if(!is.null(col.out)){
