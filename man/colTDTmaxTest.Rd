@@ -54,6 +54,12 @@ For \code{colTDTmaxTest}, an object of class \code{maxTestTrio} consisting of \c
 p-values \code{pval} corresponding to \code{stat}. 
 }
 
+\references{
+Schwender, H., Taub, M.A., Beaty, T.H., Marazita, M.L., and Ruczinski, I. (2011). 
+Rapid Testing of SNPs and Gene-Environment Interactions in Case-Parent Trio Data Based on 
+Exact Analytic Parameter Estimation. \emph{Biometrics}. DOI: 10.1111/j.1541-0420.2011.01713.x.
+}
+
 \author{
 Holger Schwender, \email{holger.schwender@udo.edu}
 }

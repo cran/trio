@@ -97,6 +97,10 @@ Efron, B., Tibshirani, R., Storey, J.D., and Tusher, V. (2001).
 Schwender, H. and Ickstadt, K. (2008). Empirical Bayes Analysis of Single Nucleotide Polymorphisms. 
    \emph{BMC Bioinformatics}, 9, 144.
 
+Schwender, H., Taub, M.A., Beaty, T.H., Marazita, M.L., and Ruczinski, I. (2011). 
+Rapid Testing of SNPs and Gene-Environment Interactions in Case-Parent Trio Data Based on 
+Exact Analytic Parameter Estimation. \emph{Biometrics}. DOI: 10.1111/j.1541-0420.2011.01713.x.
+
 Tusher, V.G., Tibshirani, R., and Chu, G. (2001). Significance Analysis of Microarrays
    Applied to the Ionizing Radiation Response. \emph{Proceedings of the National Academy of Science of the 
    United States of America}, 98, 5116-5121.

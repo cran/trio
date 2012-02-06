@@ -158,8 +158,7 @@ tdtGxG <- function(snp1, snp2, epistatic=TRUE,
 }
 	
 
-colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), fast=TRUE, size=50,  
-		warnError=TRUE){
+colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), size=50){
 	if(!is.matrix(mat.snp))
 		stop("mat.snp has to be a matrix.")
 	if(nrow(mat.snp) %% 3 != 0)
@@ -171,69 +170,7 @@ colTDT <- function(mat.snp, model=c("additive", "dominant", "recessive"), fast=T
 	if(any(!mat.snp %in% c(0, 1, 2, NA)))
 		stop("The values in mat.snp must be 0, 1, and 2.")
 	type <- match.arg(model)
-	if(fast)
-		return(fastTDT(mat.snp, type, size=size))	
-	require(survival)
-	warning("This way (fast = FALSE) of performing a gTDT will not be available in\n",
-		"future versions of the package trio.")
-	mat.code <- matrix(c(0,0,0,0, 0,0,1,1, 0,0,1,1, 1,0,0,1, 1,0,0,1, 1,1,1,1, 
-		1,1,1,1, 2,2,2,2, 1,1,2,2, 1,1,2,2, 2,1,1,2, 2,1,1,2, 0,1,1,2, 
-		1,0,1,2, 2,0,1,1), nrow=4)
-	cn <- c("000", "010", "100", "011", "101", "021", "201", "222", "121", "211",
-		"122", "212", "110", "111", "112")
-	colnames(mat.code) <- cn
-	coef <- se <- used <- numeric(ncol(mat.snp))
-	if(warnError){
-		wa <- options()$warn
-		on.exit(options(warn=wa))
-	}
-	for(i in 1:ncol(mat.snp)){
-		mat.trio <- matrix(mat.snp[,i], ncol=3, byrow=TRUE)
-		mat.trio <- mat.trio[rowSums(is.na(mat.trio))==0,]
-		code <- paste(mat.trio[,1], mat.trio[,2], mat.trio[,3], sep="")
-		if(any(!code %in% cn)){
-			tmp.ids <- !code %in% cn
-			warning(sum(tmp.ids), " trios show Mendelian errors. These are removed.",
-				call.=FALSE)
-			code <- code[!tmp.ids]
-		}
-		used[i] <- switch(type, additive=sum(code %in% cn[c(2:5, 9:15)]), 
-			dominant=sum(code %in% cn[c(2:5, 13:15)]), recessive=sum(code %in% cn[9:15]))
-		x <- as.vector(mat.code[,code])
-		if(type=="dominant")
-			x <- (x >= 1) * 1
-		if(type=="recessive")
-			x <- (x > 1) * 1
-		y <- rep.int(c(1,0,0,0), length(code))
-		strat <- rep(1:length(code), e=4)
-		if(warnError)
-			options(warn=2)
-		c.out <- try(clogit(y ~ x + strata(strat)), silent=TRUE)
-		if(is(c.out, "try-error"))
-			coef[i] <- se[i] <- NA
-		else{
-			coef[i] <- c.out$coefficients
-			se[i] <- sqrt(diag(c.out$var))
-		}
-		if(warnError)
-			options(warn=wa)
-	}
-	if(any(is.na(coef)))
-		warning("The fitting of some of the models has failed. A possible reason\n",
-			"is that the corresponding SNPs have very low minor allele frequencies.\n",
-			"For these SNPs, all statistics are thus set to NA.", call.=FALSE)
-	stat <- (coef / se)^2
-	lower <- exp(coef - qnorm(0.975) * se)
-	upper <- exp(coef + qnorm(0.975) * se)
-	pval <- 1 - pchisq(stat, 1)
-	if(is.null(colnames(mat.snp)))
-		names(coef) <- names(pval) <- names(stat) <- names(used) <- paste("SNP", 1:ncol(mat.snp), sep="")
-	else
-		names(coef) <- names(pval) <- names(stat) <- names(used) <- colnames(mat.snp)
-	out <- list(coef=coef, se=se, stat=stat, pval=pval, OR=exp(coef), 
-		lowerOR=lower, upperOR=upper, usedTrios=used, ia=FALSE, type=type, add=FALSE) 
-	class(out) <- "colTDT"
-	out
+	fastTDT(mat.snp, type, size=size)
 }
 
 colTDT2way <- function(...){
@@ -358,14 +295,19 @@ colGxG <- function(mat.snp, epistatic=TRUE, genes=NULL, maf=FALSE,
 
 print.colTDT <- function(x, top=5, digits=4, ...){
 	pval <- format.pval(x$pval, digits=digits)
-	out <- data.frame(Coef=x$coef, OR=x$OR, Lower=x$lowerOR, Upper=x$upperOR, 
-		SE=x$se, Statistic=x$stat, "p-Value"=pval, Trios=x$usedTrios,
-		check.names=FALSE, stringsAsFactors=FALSE)
-	if(x$ia)
+	if(x$ia){
+		out <- data.frame(Coef=x$coef, OR=x$OR, Lower=x$lowerOR, Upper=x$upperOR, 
+			SE=x$se, Statistic=x$stat, "p-Value"=pval,
+			check.names=FALSE, stringsAsFactors=FALSE)
 		cat("      Genotypic TDT for Two-Way Interaction (Using 15 Pseudo Controls)",
 			"\n\n")
-	else
+	}
+	else{
+		out <- data.frame(Coef=x$coef, OR=x$OR, Lower=x$lowerOR, Upper=x$upperOR, 
+			SE=x$se, Statistic=x$stat, "p-Value"=pval, Trios=x$usedTrios,
+			check.names=FALSE, stringsAsFactors=FALSE)
 		cat("        Genotypic TDT Based on 3 Pseudo Controls","\n\n")
+	}
 	cat("Model Type: ", switch(x$type, "additive"="Additive", "dominant"="Dominant",
 		"recessive"="Recessive"), "\n", 
 		if(x$add) "Model also contains the two respective individual SNPs.\n",

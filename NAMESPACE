@@ -2,7 +2,7 @@ useDynLib(trio)
 
 export(
 trio.sim, trio.prepare, trio.check,
-getLD,findLDblocks, splitBlocks,
+getLD, findLDblocks, splitBlocks,
 tdt, colTDT, tdt2way, colTDT2way, colTDTinter2way, compPermTDT2way,
 ped2geno, read.pedfile, removeSNPs, removeTrios, orderSNPs, colMAFtrio,
 colTDTmaxStat, colTDTmaxTest,
@@ -15,7 +15,8 @@ scoreTDT, scoreGxE, scoreMaxStat, scoreGxG,
 trioLR, trioFS, lrControl,
 getMatPseudo, getGxEstats,
 colGxG, tdtGxG, colGxGPerms,
-allelicTDT
+allelicTDT,
+getLDlarge
 )
 
 S3method(plot, getLD)
@@ -36,6 +37,7 @@ S3method(plot, trioLR)
 S3method(print, trioFS)
 S3method(plot, trioFS)
 S3method(print, aTDT)
+S3method(plot, getLDlarge)
 
 S3method(trioLR, default)
 S3method(trioLR, trioPrepare)

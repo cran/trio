@@ -149,7 +149,7 @@ allCombs <- function(m, upperID=FALSE){
 	cbind(vec1, vec2)
 }
 
-plot.getLD <- function(x, y="rSquare", squared=TRUE, col=NULL, start=1, end=NA, 
+plot.getLD <- function(x, y="rSquare", start=1, end=NA, squared=TRUE, col=NULL, 
 		xlab="", ylab="", cexAxis=0.8, alpha=0.1, ciLD=c(0.7,0.98), 
 		cuRecomb=0.9, ...){
 	if(!y %in% c("rSquare", "Dprime", "gabriel"))
@@ -318,7 +318,6 @@ findLDblocks <- function(x, alpha=0.1, ciLD=c(0.7, 0.98), cuRecomb=0.9, ratio=9,
 		b <- b+1		
 	}
 	names(blocks) <- x$rn
-	blocks
 	vec.blocks <- split(names(blocks), blocks)
 	idsLength <- sapply(vec.blocks, length)
 	vec.blocks <- vec.blocks[idsLength>1]

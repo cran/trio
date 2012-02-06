@@ -15,7 +15,7 @@ Computes the genotypic TDT for a SNP or for each column of a matrix representing
 tdt(snp, model = c("additive", "dominant", "recessive"))
 
 colTDT(mat.snp, model = c("additive", "dominant", "recessive"), 
-   fast = TRUE, size = 50, warnError = TRUE)
+   size = 50)
 
 \method{print}{tdt}(x, digits = 4, ...)
 
@@ -36,17 +36,8 @@ colTDT(mat.snp, model = c("additive", "dominant", "recessive"),
   \item{model}{type of model that should be fitted. Abbreviations are allowed. Thus, e.g., \code{model = "dom"} will
     fit a dominant model, and \code{model = "r"} an recessive model. 
 }
-  \item{fast}{should closed-form parameter estimates be used? If \code{FALSE}, the function \code{clogit} is used to
-    fit the conditional logistic regression model. The latter ``traditional" way of performing a gTDT will be removed
-    in one of the next versions of \code{trio}.
-}
   \item{size}{the number of SNPs considered simultaneously when computing the parameter estimates. Ignored if \code{fast = FALSE}.
 }
-  \item{warnError}{logical indicating whether the statistics for the gTDT should be returned as \code{NA} if the fitting of the
-    conditional logistic regression model fails. This might in particular happen when the considered SNP is almost monomorphic,
-    i.e. if the minor allele frequency of this SNP is very low.
-}
-
   \item{x}{an object of class \code{tdt} or \code{colTDT}, i.e. the output of the function \code{tdt} (or \code{tdtGxG})
     or the function \code{colTDT}.
 }
@@ -68,6 +59,12 @@ An object of class \code{tdt} or \code{colTDT} consisting of the following numer
 \item{upperOR}{the upper bound of the 95\% confidence interval for \code{OR},}
 \item{usedTrios}{the number of trios affecting the parameter estimation (only for \code{colTDT}),}
 \item{...}{further internal parameters}
+}
+
+\references{
+Schwender, H., Taub, M.A., Beaty, T.H., Marazita, M.L., and Ruczinski, I. (2011). 
+Rapid Testing of SNPs and Gene-Environment Interactions in Case-Parent Trio Data Based on 
+Exact Analytic Parameter Estimation. \emph{Biometrics}. DOI: 10.1111/j.1541-0420.2011.01713.x.
 }
 
 \author{

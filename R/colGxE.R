@@ -1,4 +1,4 @@
-colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), size=50, addGandE=TRUE,
+colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), alpha1=1, size=50, addGandE=TRUE,
 		whichLRT=c("both", "2df", "1df", "none"), add2df=TRUE, addCov=FALSE, famid=NULL){
 	if (!is.matrix(mat.snp)) 
         	stop("mat.snp has to be a matrix.")
@@ -25,13 +25,28 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 		stop("The values in env must be 0 and 1.")
 	if(sum(env)<5 | sum(1-env)<5)
 		stop("Each of the two groups specified by env must contain at least 5 trios.")
+	if(alpha1 > 1 | alpha1 <= 0)
+		stop("alpha1 must be larger than 0 and smaller than or equal to 1.") 
 	typeLRT <- match.arg(whichLRT)
 	addLRT1 <- typeLRT %in% c("both", "1df") 
 	addLRT2 <- typeLRT %in% c("both", "2df")
 	type <- match.arg(model)
+	env2 <- rep(env, e=3)
+	if(alpha1 < 1){
+		if(type=="additive")
+			step1pval <- EvsG4(mat.snp, env2, size=size)
+		else
+			step1pval <- EvsG2(mat.snp, env2, size=size, type=type)
+		names(step1pval) <- colnames(mat.snp)
+		if(all(step1pval > alpha1)){
+			out <- list(step1pval=step1pval, n.select=0)
+			class(out) <- "colGxE"
+			return(out)
+		}
+		mat.snp <- mat.snp[,step1pval <= alpha1, drop=FALSE]
+	}   
 	fun <- match.fun(switch(type, additive=fastGxEsplit, dominant=fastGxEdomSplit,
 		recessive=fastGxErecSplit))
-	env2 <- rep(env, e=3)
 	tmp1 <- fun(mat.snp, env2==0, size=size, addLRT1=addLRT1, addLRT2=addLRT2)
 	tmp2 <- fun(mat.snp, env2==1, size=size, addLRT1=addLRT1, addLRT2=addLRT2)
 	beta <- se <- matrix(NA, ncol(mat.snp), 2+addGandE)
@@ -77,7 +92,10 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), s
 	upper <- exp(beta + qnorm(0.975) * se)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
 	out <- list(coef=beta[,1:2], se=se[,1:2], stat=stat, pval=pval, OR=exp(beta), lowerOR=lower, upperOR=upper,
-		usedTrios=used, env=env, type=type, addGandE=addGandE, addOther=c(addLRT2, add2df, addLRT1))
+		usedTrios=used, env=env, type=type, addGandE=addGandE, addOther=c(addLRT2, add2df, addLRT1), 
+		n.select=ncol(mat.snp))
+	if(alpha1<1)
+		out$step1pval <- step1pval
 	if(addCov)
 		out$cov <- -tmp1[,2]
 	if(addLRT2)
@@ -188,70 +206,83 @@ fastGxErecSplit <- function(geno, env2, size=50, addLRT1=TRUE, addLRT2=TRUE){
 
 
 print.colGxE <- function(x, top=5, digits=4, onlyGxE=FALSE, ...){
-	if(!onlyGxE){
-		pvalG <- format.pval(x$pval[,1], digits=digits)
-		outG <- data.frame(Coef=x$coef[,1], OR=x$OR[,1], Lower=x$lowerOR[,1], Upper=x$upperOR[,1],
-			SE=x$se[,1], Statistic=x$stat[,1], "p-value"=pvalG, check.names=FALSE, stringsAsFactors=FALSE)
-		if(any(x$addGandE))
-			outOR <- data.frame(OR=x$OR[,3], Lower=x$lowerOR[,3], Upper=x$upperOR[,3], check.names=FALSE,
-				stringsAsFactors=FALSE)
-		if(any(x$addOther)){
-			outMore <- data.frame(row.names=rownames(outG))
-			if(x$addOther[1])
-				outMore <- data.frame(outMore, "2df Stat"=x$lrt2df[,1], 
-					"2df p-Value"=format.pval(x$lrt2df[,2], digits=digits), check.names=FALSE,
-					stringsAsFactors=FALSE)
-			if(x$addOther[2])
-				outMore <- data.frame(outMore, "Wald Stat"=x$wald2df[,1],
-					"Wald p-value"=format.pval(x$wald2df[,2], digits=digits), check.names=FALSE,
-					stringsAsFactors=FALSE)
-			if(x$addOther[3])
-				outMore <- data.frame(outMore, "1df Stat"=x$lrt1df[,1], 
-					"1df p-Value"=format.pval(x$lrt1df[,2], digits=digits), check.names=FALSE,
-					stringsAsFactors=FALSE)
-		}
-			
-	}
-	pvalGE <- format.pval(x$pval[,2], digits=digits)
-	outGE <- data.frame(Coef=x$coef[,2], OR=x$OR[,2], Lower=x$lowerOR[,2], Upper=x$upperOR[,2],
-		SE=x$se[,2], Statistic=x$stat[,2], "p-value"=pvalGE, Trios0=x$usedTrios[,1],
-		Trios1=x$usedTrios[,2], check.names=FALSE, stringsAsFactors=FALSE)
-	cat("          Genotypic TDT for GxE Interactions with Binary E\n\n", "Model Type: ", 
-		switch(x$type, "additive"="Additive", "dominant"="Dominant","recessive"="Recessive"), 
-		"\n\n",sep="")
-	if(!is.na(top) && top>0 && top <= length(x$coef)){
-		ord <- order(x$pval[,2])[1:top]
+	if(x$n.select>0){
 		if(!onlyGxE){
-			outG <- outG[ord,]
-			outOR <- outOR[ord,]
-			outMore <- outMore[ord,]
+			pvalG <- format.pval(x$pval[,1], digits=digits)
+			outG <- data.frame(Coef=x$coef[,1], OR=x$OR[,1], Lower=x$lowerOR[,1], Upper=x$upperOR[,1],
+				SE=x$se[,1], Statistic=x$stat[,1], "p-value"=pvalG, check.names=FALSE, stringsAsFactors=FALSE)
+			if(any(x$addGandE))
+				outOR <- data.frame(OR=x$OR[,3], Lower=x$lowerOR[,3], Upper=x$upperOR[,3], check.names=FALSE,
+					stringsAsFactors=FALSE)
+			if(any(x$addOther)){
+				outMore <- data.frame(row.names=rownames(outG))
+				if(x$addOther[1])
+					outMore <- data.frame(outMore, "2df Stat"=x$lrt2df[,1], 
+						"2df p-Value"=format.pval(x$lrt2df[,2], digits=digits), check.names=FALSE,
+						stringsAsFactors=FALSE)
+				if(x$addOther[2])
+					outMore <- data.frame(outMore, "Wald Stat"=x$wald2df[,1],
+						"Wald p-value"=format.pval(x$wald2df[,2], digits=digits), check.names=FALSE,
+						stringsAsFactors=FALSE)
+				if(x$addOther[3])
+					outMore <- data.frame(outMore, "1df Stat"=x$lrt1df[,1], 
+						"1df p-Value"=format.pval(x$lrt1df[,2], digits=digits), check.names=FALSE,
+						stringsAsFactors=FALSE)
+			}
+			
 		}
-		outGE <- outGE[ord,]
-		cat("Top", top, "GxE Interactions:\n")
+		pvalGE <- format.pval(x$pval[,2], digits=digits)
+		outGE <- data.frame(Coef=x$coef[,2], OR=x$OR[,2], Lower=x$lowerOR[,2], Upper=x$upperOR[,2],
+			SE=x$se[,2], Statistic=x$stat[,2], "p-value"=pvalGE, Trios0=x$usedTrios[,1],
+			Trios1=x$usedTrios[,2], check.names=FALSE, stringsAsFactors=FALSE)
 	}
-	else
-		cat("Effects of the GxE Interactions:\n")
-	print(format(outGE, digits=digits))
-	if(!onlyGxE){
-		cat("\n\n", "Effects of the SNPs in the Corresponding GxE Models:\n", sep="")
-		print(format(outG, digits=digits))
-		if(x$addGandE){
-			cat("\n\n", "ORs for Exposed Cases:\n", sep="")
-			print(format(outOR, digits=digits))
+	if(!is.null(x$step1pval))
+		cat("         Gauderman's Two-Step Procedure for Testing GxE Interactions\n\n", 
+			"First Step: Logistic Regression of E vs. Sum of Genotypes of Parents\n\n",
+			ifelse(x$n.select==0, "None", x$n.select), " of ", length(x$step1pval),
+			" SNPs selected for the second step.\n\n\n", sep="")
+	if(x$n.select>0){
+		if(!is.null(x$step1pval))
+			cat("Second Step: Genotypic TDT for GxE Interactions with Binary E\n\n", sep="")
+		else
+			cat("          Genotypic TDT for GxE Interactions with Binary E\n\n", sep="")
+		cat("Model Type: ", switch(x$type, "additive"="Additive", "dominant"="Dominant","recessive"="Recessive"), 
+			"\n\n",sep="")
+		if(!is.na(top) && top>0 && top <= nrow(x$coef)){
+			ord <- order(x$pval[,2])[1:top]
+			if(!onlyGxE){
+				outG <- outG[ord,]
+				outOR <- outOR[ord,]
+				outMore <- outMore[ord,]
+			}
+			outGE <- outGE[ord,]
+			cat("Top", top, "GxE Interactions:\n")
 		}
-		if(any(x$addOther)){
-			txt <- paste(c("2 df Likelihood Ratio Test", "2 df Wald Test", 
-				"1 df Likelihood Ratio Test")[x$addOther], collapse=", ")
-			cat("\n\n", txt, ":\n", sep="")
-			print(format(outMore, digits=digits))
+		else
+			cat("Effects of the GxE Interactions:\n")
+		print(format(outGE, digits=digits))
+		if(!onlyGxE){
+			cat("\n\n", "Effects of the SNPs in the Corresponding GxE Models:\n", sep="")
+			print(format(outG, digits=digits))
+			if(x$addGandE){
+				cat("\n\n", "ORs for Exposed Cases:\n", sep="")
+				print(format(outOR, digits=digits))
+			}
+			if(any(x$addOther)){
+				txt <- paste(c("2 df Likelihood Ratio Test", "2 df Wald Test", 
+					"1 df Likelihood Ratio Test")[x$addOther], collapse=", ")
+				cat("\n\n", txt, ":\n", sep="")
+				print(format(outMore, digits=digits))
+			}
 		}
 	}
 }
 
-
 getGxEstats <- function(x, top=NA, sortBy=c("none", "gxe", "lrt2df", "wald2df", "lrt1df", "g")){
 	if(!is(x, "colGxE"))
 		stop("x must be the output of colGxE.")
+	if(x$n.select==0)
+		stop("No SNP has been chosen for the second step of Gauderman's procedure for testing GxE interactions.")
 	type <- match.arg(sortBy)
 	if(!is.na(top)){
 		if(type=="none")
@@ -334,4 +365,117 @@ lrtGxErec <- function(stats){
 	r34 <- stats[,3] + stats[,4]
 	r24 * beta - r12 * log(2+2*or) - r34 * log(3+or)
 }
+
+EvsG4 <- function(geno, env2, size=50){
+	n.snp <- ncol(geno)
+	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
+	stat <- rep.int(NA, n.snp)
+	for(i in 1:(length(int)-1))
+		stat[int[i]:(int[i+1]-1)] <- EvsG4split(geno[,int[i]:(int[i+1]-1), drop=FALSE], env2==1, size=size)
+	pchisq(stat, 1, lower.tail=FALSE)
+}	
+
+EvsG4split <- function(geno, env3, size=50){ 
+	matA <- EvsG4chunk(geno)
+	matS <- EvsG4chunk(geno[env3,,drop=FALSE], onlySum=TRUE)
+	coef <- matrix(NA, ncol(geno), 2)
+	for(i in 1:ncol(geno))
+		coef[i,] <- optim(c(0,0), llEvsG4, a=matA[i,], s=matS[i,], method="BFGS")$par
+	varbeta1 <- compVarEvsG4(coef, matA)	
+	coef[,2] * coef[,2] / varbeta1
+	
+}	
+
+EvsG4chunk <- function(geno, onlySum=FALSE){
+	n.row <- nrow(geno)
+	x <- geno[seq.int(1, n.row, 3),, drop=FALSE] + geno[seq.int(2, n.row, 3),, drop=FALSE]
+	mat <- matrix(NA, ncol(geno), 5)
+	for(i in 0:4)
+		mat[,i+1] <- colSums(x==i, na.rm=TRUE)
+	if(!onlySum)
+		return(mat)	
+	vecPos <- mat[,2:5] %*% (1:4)
+	vecAll <- rowSums(mat, na.rm=TRUE)
+	cbind(vecAll, vecPos)
+}	
+	
+llEvsG4 <- function(beta, a, s){
+	a[1] * log(1+exp(beta[1])) + a[2] * log(1+exp(beta[1]+beta[2])) + a[3] * log(1+exp(beta[1]+2*beta[2])) +
+		a[4] * log(1+exp(beta[1] + 3*beta[2])) + a[5] * log(1+exp(beta[1]+4*beta[2])) - 
+		beta[1] * s[1] - beta[2] * s[2] 	
+}
+
+compVarEvsG4 <- function(coef, matA){
+	expb <- exp(coef[,1])
+	fac0 <- matA[,1] * expb / (1+expb)^2
+	expb1 <- exp(coef[,2])
+	mat.fac <- matrix(NA, nrow(coef), 4)
+	for(i in 1:4){
+		expb <- expb * expb1
+		mat.fac[,i] <- matA[,i+1] * expb / (1+expb)^2
+	}
+	b0b0 <- fac0 + rowSums(mat.fac)
+	b0b1 <- mat.fac %*% (1:4)
+	b1b1 <- mat.fac %*% c(1,4,9,16)
+	detInfo <- b0b0 * b1b1 - b0b1 * b0b1
+	b0b0/detInfo
+}
+
+EvsG2 <- function(geno, env2, size=50, type="dominant"){
+	if(type=="dominant")
+		geno <- (geno > 0) * 1
+	else
+		geno <- (geno == 2) * 1
+	n.snp <- ncol(geno)
+	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
+	stat <- rep.int(NA, n.snp)
+	for(i in 1:(length(int)-1))
+		stat[int[i]:(int[i+1]-1)] <- EvsG2split(geno[,int[i]:(int[i+1]-1), drop=FALSE], env2==1, size=size)
+	pchisq(stat, 1, lower.tail=FALSE)
+}
+
+EvsG2split <- function(geno, env3, size=50){
+	matA <- EvsG2chunk(geno)
+	matS <- EvsG2chunk(geno[env3,,drop=FALSE], onlySum=TRUE)
+	coef <- matrix(NA, ncol(geno), 2)
+	for(i in 1:ncol(geno))
+		coef[i,] <- optim(c(0,0), llEvsG2, a=matA[i,], s=matS[i,], method="BFGS")$par
+	varbeta1 <- compVarEvsG2(coef, matA)
+	coef[,2] * coef[,2] / varbeta1
+}
+
+EvsG2chunk <- function(geno, onlySum=FALSE){
+	n.row <- nrow(geno)
+	x <- geno[seq.int(1, n.row, 3),, drop=FALSE] + geno[seq.int(2, n.row, 3),, drop=FALSE]
+	mat <- matrix(NA, ncol(geno), 3)
+	for(i in 0:2)
+		mat[,i+1] <- colSums(x==i, na.rm=TRUE)
+	if(!onlySum)
+		return(mat)
+	vecPos <- mat[,2] + 2*mat[,3]
+	vecAll <- rowSums(mat, na.rm=TRUE)
+	cbind(vecAll, vecPos)
+}
+
+llEvsG2 <- function(beta, a, s){
+	a[1] * log(1+exp(beta[1])) + a[2] * log(1+exp(beta[1]+beta[2])) + a[3] * log(1+exp(beta[1]+2*beta[2])) - 
+		beta[1] * s[1] - beta[2] * s[2]
+}
+
+compVarEvsG2 <- function(coef, matA){
+	expb <- exp(coef[,1])
+	fac0 <- matA[,1] * expb / (1+expb)^2
+	expb1 <- exp(coef[,2])
+	expb <- expb * expb1
+	fac1 <- matA[,2] * expb / (1+expb)^2
+	expb <- expb * expb1
+	fac2 <- matA[,3] * expb / (1+expb)^2
+	b0b0 <- fac0 + fac1 + fac2
+	b0b1 <- fac1 + 2*fac2
+	b1b1 <- fac1 + 4*fac2
+	detInfo <- b0b0 * b1b1 - b0b1 * b0b1
+	b0b0/detInfo
+}
+
+
 

@@ -6,12 +6,19 @@ Genotypic TDT for Gene-Environment Interactions
 }
 \description{
 Performs a genotypic TDT for gene-environment interactions for each SNP represented by a column of a matrix in genotype format
-and a binary environmental factor. While \code{colGxE} computes the p-values based on asymptotic ChiSquare-distributions, 
-\code{colGxEPerms} can be used to determine permutation-based p-values.
+and a binary environmental factor. If \code{alpha1} is set to a value smaller than 1, then the two-step procedure of
+Gauderman et al. (2010) will be used to first select all SNPs showing a p-value smaller than \code{alpha1}
+in a logistic regression of the environmental factor against the sums of the codings for the parents' genotypes at the respective 
+SNP. In the second step, the genotypic TDT is then applied to the selected SNPs.
+
+While \code{colGxE} computes the p-values based on asymptotic ChiSquare-distributions, 
+\code{colGxEPerms} can be used to determine permutation-based p-values. Currently, no two-step procedure is
+provided for \code{colGxEPerms}.
 }
+
 \usage{
 colGxE(mat.snp, env, model = c("additive", "dominant", "recessive"), 
-   size = 50, addGandE = TRUE, whichLRT = c("both", "2df", "1df", "none"),
+   alpha1 = 1, size = 50, addGandE = TRUE, whichLRT = c("both", "2df", "1df", "none"),
    add2df = TRUE, addCov = FALSE, famid=NULL)
    
 colGxEPerms(mat.snp, env, model = c("additive", "dominant", "recessive"),
@@ -30,6 +37,13 @@ colGxEPerms(mat.snp, env, model = c("additive", "dominant", "recessive"),
 }
   \item{model}{type of model that should be fitted. Abbreviations are allowed. Thus, e.g., \code{model = "dom"} will
     fit a dominant model, and \code{model = "r"} an recessive model. 
+}
+  \item{alpha1}{a numeric value between 0 and 1 (excluding 0). If \code{alpha1 = 1}, all SNPs will be tested with a genotypic TDT.
+    Otherwise, the two-step procedure of Gauderman et al. (2010) will be used to select all SNPs showing a p-value smaller than
+    or equal to \code{alpha1} in a logistic regression in which the environmental factor is used as response and the
+    sums over the codings for the genotypes of the parents are employed as predictor. The genotypic TDT will then be applied to
+    the selected SNPs. Since a logistic regression is employed in the first step, which requires a numerical determination of
+    the parameter estimates, the two-step procedure will not lead to a reduction in computing time, but will increase the computing time.
 }
   \item{size}{the number of SNPs considered simultaneously when computing the parameter estimates.
 }
@@ -94,6 +108,16 @@ and if \code{addPerms = TRUE}
   the \code{B} permutations of the case-pseudo-control status,}
 \item{matPermGxE}{a matrix with \code{B} columns containing the values of the gTDT statistic for the gene-environment interactions
   when considering the \code{B} permutations of the case-pseudo-control status.}
+}
+
+\references{
+Gauderman, W.J., Thomas, D.C., Murcray, C.E., Conti, D., Li, D., and Lewinger, J.P. (2010).
+Efficient Genome-Wide Association Testing of Gene-Environment Interaction in Case-Parent Trios.
+\emph{American Journal of Epidemiology}, 172, 116-122.
+
+Schwender, H., Taub, M.A., Beaty, T.H., Marazita, M.L., and Ruczinski, I. (2011). 
+Rapid Testing of SNPs and Gene-Environment Interactions in Case-Parent Trio Data Based on 
+Exact Analytic Parameter Estimation. \emph{Biometrics}. DOI: 10.1111/j.1541-0420.2011.01713.x.
 }
 
 \author{

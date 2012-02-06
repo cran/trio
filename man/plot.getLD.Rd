@@ -1,25 +1,36 @@
 \name{plot.getLD}
-\Rdversion{1.1}
 \alias{plot.getLD}
+\alias{plot.getLDlarge}
 
 \title{
- Plotting a getLD Object
+ Plotting a getLD or getLDlarge Object
 }
 \description{
-Plots either the pairwise r^2 or D' values computed by \code{getLD}. Can also be used to plot
+Plots either the pairwise r^2 or D' values computed by either \code{getLD} or \code{getLDlarge}. Can also be used to plot
 the categorizations used in the procedure of Gabriel et al. (2002).
 }
 \usage{
-\method{plot}{getLD}(x, y = "rSquare", squared = TRUE, col = NULL, start = 1,
-   end = NA, xlab = "", ylab = "", cexAxis = 0.8, alpha = 0.1,
+\method{plot}{getLD}(x, y = "rSquare", start = 1, end = NA, squared = TRUE,
+   col = NULL, xlab = "", ylab = "", cexAxis = 0.8, alpha = 0.1,
    ciLD = c(0.7, 0.98), cuRecomb = 0.9, ...)
+   
+\method{plot}{getLDlarge}(x, y="rSquare", start=NA, end=NA, squared=TRUE, 
+   xlab="", ylab="", cexAxis=0.8, alpha=0.1, ciLD=c(0.7,0.98), 
+   cuRecomb=0.9, ...)
 }
 
 \arguments{
-  \item{x}{the output of \code{getLD}.
+  \item{x}{the output of \code{getLD} or \code{getLDlarge}.
 }
   \item{y}{either \code{"rSquare"} (default), \code{"Dprime"}, or \code{"gabriel"} specifying
     the LD values that should be plotted.
+}
+  \item{start}{integer or character string specifying the index or the name of the first SNP, respectively, 
+    that should be plotted, where the index corresponds to the column (or row if \code{snp.in.col = FALSE})
+    in the matrix used as input in \code{getLD} or \code{getLDlarge}.
+}
+  \item{end}{integer or character string specifying the index or the name of the last SNP, respectively,
+    that should be plotted.
 }
   \item{squared}{should the \eqn{r^2}{r^2} values be plotted? If \code{FALSE}, the \eqn{r} values
     are plotted. Only considered if \code{y = "rSquare"}.
@@ -28,13 +39,6 @@ the categorizations used in the procedure of Gabriel et al. (2002).
     or \code{y = "Dprime"}, different levels of gray will be used by default (the darker, the higher is the LD value).
     If \code{y = "gabriel"}, strong LD is by default marked by blue fields, evidence of recombination by white color,
     and others by yellow.
-}
-  \item{start}{integer or character string specifying the index or the name of the first SNP, respectively, 
-    that should be plotted, where the index corresponds to the column (or row if \code{snp.in.col = FALSE})
-    in the matrix used as input in \code{getLD}.
-}
-  \item{end}{integer or character string specifying the index or the name of the last SNP, respectively,
-    that should be plotted.
 }
   \item{xlab}{character string naming the label of the x-axis.
 }

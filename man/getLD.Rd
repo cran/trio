@@ -1,24 +1,34 @@
 \name{getLD}
 \alias{getLD}
-\alias{mat}
+\alias{getLDlarge}
 
 \title{
  Computation of LD Measures
 }
 \description{
- Computes the value of D' and r^2 for each pair of SNPs in a matrix.
+ While \code{getLD} computes the value of D' and r^2 for each pair of SNPs in a matrix,
+ \code{getLDlarge} determines D' and r^2 between each SNP and a user-specified number of SNPs
+ closest to the SNP on the corresponding chromosome. Thus, \code{getLDlarge} can be applied
+ to much more SNPs than \code{getLD}.
 }
 \usage{
   getLD(x, which = c("both", "rSquare", "Dprime"), parentsOnly = FALSE,
      iter = 50, snp.in.col = TRUE, asMatrix = FALSE, addVarN = FALSE)
+     
+  getLDlarge(x, neighbors=25, which=c("both", "rSquare", "Dprime"), 
+        parentsOnly=FALSE, iter=50, snp.in.col=TRUE, addVarN=FALSE)     
 }
 
 \arguments{
   \item{x}{a numeric matrix consisting of 0, 1, and 2, where it is assumed that
      the values represent the numbers of minor alleles that the SNPs show. Missing values
      are allowed. By default, each column represents a SNP and each row a subject.
-     This can be changed by setting \code{snp.in.col = FALSE}. The SNPs should be ordered
+     This can be changed by setting \code{snp.in.col = FALSE}. It is assumed that the SNPs are ordered
      by their position on the considered chromosome.
+}
+  \item{neighbors}{positive integer specifying the number of neighbors of a SNP (in both directions) on a chromosome
+    for which D' or r^2 should be computed. Thus, for each SNP (except for the SNPs in the first and last \code{neighbors}
+    columns of \code{x}), 2 * \code{neighbors} r^2 or D' values are computed.
 }
   \item{which}{which LD measures should be computed? Either \code{"rSquare"}, or \code{"Dprime"},
     or the values of \code{"both"} measures are computed. The latter is the default.
@@ -45,10 +55,10 @@
 }
 
 \value{
-An object of class \code{getLD} consisting (depending of the specification of \code{which}) the
+An object of class \code{getLD} or \code{getLDlarge} consisting (depending of the specification of \code{which}) the
 D' (\code{Dprime}) or r^2 (\code{rSquare}) values for each SNP pair, and (depending of the specification
 of \code{addVarN}) the variance estimates for D' (\code{varDprime}) and the numbers of non-missing values
-(\code{n}). Furthermore, the names of the SNPs (\code{rn}) will be added if \code{asMatrix = FALSE}.
+(\code{n}). Furthermore, the names of the SNPs (\code{rn}) will be added (in \code{getLD}, if \code{asMatrix = FALSE}).
 
 }
 \references{

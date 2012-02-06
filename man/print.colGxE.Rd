@@ -35,6 +35,12 @@ getGxEstats(x, top = NA, sortBy = c("none", "gxe", "lrt2df", "wald2df", "lrt1df"
     SNPs are not sorted and the SNPs are in the same order as in the genotype matrix used to specify \code{mat.snp} in \code{\link{colGxE}}.}
 }
 
+\references{
+Schwender, H., Taub, M.A., Beaty, T.H., Marazita, M.L., and Ruczinski, I. (2011). 
+Rapid Testing of SNPs and Gene-Environment Interactions in Case-Parent Trio Data Based on 
+Exact Analytic Parameter Estimation. \emph{Biometrics}. DOI: 10.1111/j.1541-0420.2011.01713.x.
+}
+
 \author{
 Holger Schwender, \email{holger.schwender@udo.edu}
 }
