@@ -229,21 +229,27 @@ Similarly the interaction between \texttt{SNP1} and \texttt{SNP2} in \texttt{mat
 tdtGxG(mat.test[,1], mat.test[,2])
 @
 
-In this case, the interaction is tested for epistatic interactions as described in \citet{cordell2002}.
+In this case, the interaction is tested for epistatic interactions as described in \citet{cordell2002} and \citet{cordell2004}.
 Thus, two conditional logistic regression models are fitted to the cases and the respective 15 matched pseudo-controls
 (i.e.\ the 15 possible, but not transmitted Mendelian genotype realizations, given the parents' genotypes at the two loci), 
-one consisting of two dummy variables for each
-of the two SNPs, and the other additionally containing the four possible interactions of these dummy variables.
+one consisting of two coding variables for each
+of the two SNPs, and the other additionally containing the four possible interactions of these variables.
 The two fitted models are then compared by a likelihood ratio test, and the $p$-values are computed by approximation
 to a $\chi^2$-distribution with four degrees of freedom.
 
-This is the recommended way to test the two-way interaction. \texttt{tdtGxG}, however,
-also provides a simpler test, in which the values of the SNPs (either coding for an additive -- which is the default --
-for a recessive, or for a dominant model) are simply multiplied for each case and its 15 matched pseudo-controls, 
-and a conditional logistic regression is applied to this interaction.
+Besides this likelihood ratio test (which is the default for the argument \texttt{test}), \texttt{tdtGxG} also provides the
+possibility to perform a likelihood ratio test comparing a conditional logistic regression model containing one parameter
+for each SNP and one parameter for the interaction of these two SNPs with a model only consisting of the two parameters for the
+main effects of the SNPs (\texttt{test = "lrt"}), where the genetic mode of inheritance assumed for the SNPs can be specified
+by the argument \texttt{mode} (by default, an additive mode is assumed). Furthermore, it is also possible to perform a Wald test
+for the interaction term either by considering a conditional logistic regression model either composed of one parameter for each SNP
+and one parameter for the interaction (\texttt{test = "full"}) or consisting of just one parameter for the interaction
+(\texttt{test = "screen"}).
+
+Thus, if the most simplest of these tests should be performed, then this could be done by
 
 <<>>=
-tdtGxG(mat.test[,1], mat.test[,2], epistatic=FALSE)
+tdtGxG(mat.test[,1], mat.test[,2], test="screen")
 @
 
 All SNPs represented by the columns of a matrix in genotype format can be tested with a gTDT by employing the function \texttt{colTDT}.
@@ -294,8 +300,11 @@ max.out
 All two-way interactions comprised a matrix in genotype format can be tested using the function \texttt{colGxG}. Since both the gTDT
 for two-way interactions and the likelihood ratio test of \citet{cordell2004}
 assume that the two considered loci are unlinked, the testing might fail, i.e.\ the fitting of the 
-conditional logistic regression might not work pro\-per\-ly, if the two SNPs are in (strong) LD. (Another reason why the fitting
-might not work properly is that the minor allele frequencies of both SNPs are very small.) Therefore, \texttt{colGxG}
+conditional logistic regression might not work pro\-per\-ly, if the two SNPs are in (strong) LD. There are several other reasons
+why this might happen. One of these reasons is that either the minor allele frequencies of both SNPs are very small or that
+the number of trios influencing the parameter estimation becomes very small when considering the two SNPs in combination. 
+
+Therefore, \texttt{colGxG}
 provides an argument called \texttt{genes} that allows specifying which SNP belongs to which LD-block, gene, or genetic region.
 If \texttt{genes} is not specified, the interactions between all $m(m-1)/2$ pairs of the $m$ SNPs in a matrix are tested.
 If specified, only the interactions between SNPs showing different values of \texttt{genes} are tested.

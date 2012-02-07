@@ -1,4 +1,4 @@
-2de51831907cfc7e700304e9c87421a3 *DESCRIPTION
+a6feed38f041c4e5566eadc89ba4fae2 *DESCRIPTION
 463d6fafbe23a1bc62f3a242e95b5b6a *NAMESPACE
 2f81d3d55e9c9e6f2d91cd450f3a3626 *R/allelicTDT.R
 e3243b5c549d647dbfd6fe4bedc3d243 *R/colGxE.R
@@ -19,7 +19,7 @@ eed7d66465f575cec2d9fc5dd62a24ab *R/read.pedfile.R
 be1332be053f4bd9a47b03cb9b913a85 *R/removeSNPs.R
 65e5795ca90eb67ca8cdc8cc1c710923 *R/scoreTDT.R
 b49332ac5d576384ff11f85d2b0fa5d8 *R/splitBlocks.R
-649833677825632c11c521db456e04e8 *R/tdt.R
+3b5369207309b27c45b0df8d77071d3d *R/tdt.R
 9afab895b977e45d8723a656acb906c9 *R/trio.R
 05dede2481a73cb11fe370d2be126054 *R/trio.check.R
 718058faf56965aa4e26b1c8f66d8ba7 *R/trio.permTest.R
@@ -28,8 +28,8 @@ f8fded4ba604c5e6997abc920f517471 *R/trio.sim.R
 db8f6de4f7459919405ac546ca62ce42 *R/trioLR.R
 f819aa053b9668ef717037205c710862 *R/zzz.R
 8b9449da45f0288c1002c709b177b30d *data/trio.data.RData
-e4a6d53eea7991bcdc462e9401c04594 *inst/doc/trio.Rnw
-2cc5a96ceb6c220624dbd2c8b95a99fe *inst/doc/trio.pdf
+90f064dbab40f3248e39f0a321534065 *inst/doc/trio.Rnw
+cd0070d1195b07aa9122ea86bc9f968c *inst/doc/trio.pdf
 3fc82565c7b27fd41f7b2272d6f556cc *man/allelicTDT.Rd
 b26d64c55fccc140c2dd731d7cd341f8 *man/colGxE.Rd
 d5094660707af818da26d05288993405 *man/colGxGPerms.Rd
@@ -51,7 +51,7 @@ d3f734b74bfef1e46dd4023162d965c5 *man/read.pedfile.Rd
 fc777f84cfd4ae4122577f00a7c2079a *man/removeSNPs.Rd
 2fc623eb176493ef568964ce6e4a4c3c *man/scoreTDT.Rd
 16f48fca19032004b93297b16d865d71 *man/tdt.Rd
-5f5c0ae3cb6cc7ae1850dc360ffa47f2 *man/tdtGxG.Rd
+c266098b36f3254ef65c94a0765b0b30 *man/tdtGxG.Rd
 d7045f844c9551cd121e630e6dc8d8a7 *man/trio.check.Rd
 4f121cedab30c5b9fcc919c40801e14e *man/trio.data.Rd
 9b7ce6dbda532a1bf2a82b0c9802e808 *man/trio.permTest.Rd
@@ -76,4 +76,4 @@ e2532aef04d115609aff45746d346246 *vignettes/figure3ld.png
 7f7947832cd69c17c4c682e1da439af7 *vignettes/figure3lr.eps
 1a6d9ebf56c0508967c5fd56efc579a2 *vignettes/figure3lr.png
 a48170c7c01508d282d4d92902d6cbc6 *vignettes/qingSweave.sty
-e4a6d53eea7991bcdc462e9401c04594 *vignettes/trio.Rnw
+90f064dbab40f3248e39f0a321534065 *vignettes/trio.Rnw

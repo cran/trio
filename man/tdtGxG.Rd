@@ -18,7 +18,7 @@ of a genotype matrix, respectively.
 
 \code{fastGxG} provides a fast implementation for the genotypic TDT for two-way interactions when considering the
 simplest conditional logistic regression model only containing one parameter for the interaction effect. It thus leads
-to the same results as \code{colGxG} with \code{epistatic = FALSE} and \code{add = FALSE}. In \code{fastGxGrec},
+to the same results as \code{colGxG} with \code{test = "screen"}. In \code{fastGxGrec},
 an analytic solution to the genotypic TDT based on the simplest model for testing a recessive x recessive model is
 implemented, which is even faster than \code{fastGxG} with \code{model = "recessive"}. In future versions of this
 package, \code{fastGxG} and \code{fastGxGrec} will be joint with \code{colGxG}.
@@ -29,12 +29,11 @@ from combining the parents' genotypes of the two considered SNPs. Thus, for each
 }
 
 \usage{
-tdtGxG(snp1, snp2, epistatic = TRUE, model = c("additive", "dominant", "recessive"),
-     add = FALSE, warnError = TRUE)
+tdtGxG(snp1, snp2, test = c("epistatic", "lrt", "full", "screen"), 
+     model = c("additive", "dominant", "recessive"))
      
-colGxG(mat.snp, epistatic = TRUE, genes = NULL, maf = FALSE,
-   model = c("additive", "dominant", "recessive"), add = FALSE, 
-   warnError = TRUE)
+colGxG(mat.snp, test = c("epistatic", "lrt", "full", "screen"), genes = NULL,
+   maf = FALSE, model = c("additive", "dominant", "recessive"))
    
 fastGxG(mat.snp, model = c("additive", "dominant", "recessive"), 
    genes = NULL, interval = c(-10, 10), tol = 10^-8, maxiter = 1000, 
@@ -55,9 +54,15 @@ fastGxGrec(mat.snp, genes = NULL, size = 20)
   \item{mat.snp}{a numeric matrix in which each column represents a SNP. Each of the SNPs must have
     the same structure as \code{snp}, and can, e.g., be generated from a ped-file by employing \code{\link{ped2geno}}.
 }
-  \item{epistatic}{logical value specifying whether a conditional logistic regression version of the test proposed by Cordell (2002)
-    is used to test for epistatistical interactions. If \code{FALSE}, the respective two vectors containing the case and the 15 pseudo-controls for
-    each trio are simply multiplied (considering \code{model}).
+  \item{test}{character string naming the GxG test that should be performed. If \code{test = "epistatic"}, then a conditional
+    logistic regression version of the test proposed by Cordell (2002) is used to test for epistatistical interactions. If
+    \code{test = "full"}, a conditional logistic regression model containing one parameter for each SNP and one parameter for
+    the interaction of these two SNPs will be fitted and a Wald test for the interaction term will be performed, where a
+    genetic model specified by \code{model} is assumed for both SNPs. If \code{test = "lrt"}, a likelihood ratio test is
+    performed comparing the fit of this model with the fit of a conditional logistic regression model only containing the
+    two parameters for the main effects of the SNPs. If \code{test = "screen"}, a conditional logistic regression model
+    only composed of one parameter for the interaction of the two SNPs will be fitted and a Wald test will be performed,
+    where the genetic model specified by \code{model} is assumed for both SNPs.
 }
   \item{genes}{a character vector containing the names of the genes to which the SNPs belong. If specified, only the two-way interactions
     between SNPs from different genes are tested. If \code{NULL}, all two-way interactions between all possible pairs of SNPs are tested.
@@ -69,13 +74,6 @@ fastGxGrec(mat.snp, genes = NULL, size = 20)
     consider a dominant model for each of the respective two SNPs, and \code{model = "r"} an recessive model. Ignored if 
     \code{epistatic = TRUE}. 
 }
-  \item{add}{should the main effects be added to the model, if \code{epistatic = FALSE}? If \code{FALSE}, the conditional
-    logistic regression model contains only the interaction as predictor. Otherwise, the two SNPs themselves are also included 
-    in the model. Ignored if \code{epistatic = TRUE}.
-}
-  \item{warnError}{logical indicating whether the statistics for the gTDT should be returned as \code{NA} if the fitting of the
-    conditional logistic regression model fails. This might in particular happen when the two considered SNPs are in (strong) LD.
-}
   \item{interval}{the end-points of the interval to be searched for the root. For details, see \code{\link[stats]{uniroot}}.
 }
   \item{tol}{the desired accuracy/convergence tolerance. For details, see \code{\link[stats]{uniroot}}.
@@ -85,9 +83,11 @@ fastGxGrec(mat.snp, genes = NULL, size = 20)
   \item{size}{the number of interactions considered simultaneously when computing the parameter estimates. 
 }
 }
+
 \value{
-Depending on \code{epistatic}, the output contains statistics and p-values either of a likelihood ratio test (\code{epistatic = TRUE})
-or the Wald statistic for the conditional logistic regression model (\code{epistatic = FALSE}). If \code{maf = TRUE}, a vector \code{maf}
+Depending on \code{test}, the output contains statistics and p-values either of a likelihood ratio test (\code{test = "epistatic"} or
+\code{test = "lrt"}) or the Wald statistics and the corresponding p-values for the interaction term in the conditional logistic
+regression model (\code{test = "full"} or \code{test = "screen"}). If \code{maf = TRUE}, a vector \code{maf}
 containing the minor allele frequencies of each SNP and a matrix \code{mat.maf} with two columns containing the SNP-wise minor allele
 frequencies for each tested pair of SNPs are added to the output of \code{colGxG}.
 }
