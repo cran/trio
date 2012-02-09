@@ -18,7 +18,8 @@ splitBlocks(blocks)
 }
 
 \arguments{
-  \item{x}{either the output of \code{\link{getLD}} or a numeric matrix
+  \item{x}{either the output of \code{\link{getLD}} or \code{\link{getLDlarge}}, respectively,
+     or a numeric matrix
      consisting of the integers 0, 1, and 2, where these integers are
      assumed to be the number of minor alleles that the respective
      SNPs shows at the respective subject. Missing values are allowed. By default,
@@ -58,14 +59,14 @@ splitBlocks(blocks)
     4, 5, ... of \code{x}, should be used in the computation of the LD measures when \code{x}
     is in genotype format and contains case-parent trio data (see \code{\link{ped2geno}} and \code{\link{read.pedfile}}).
     If \code{FALSE} (default), all rows are used in the determination of the pairwise LD measure. Ignored
-    if \code{x} is the output of \code{getLD}.
+    if \code{x} is the output of \code{getLD} or \code{getLDlarge}.
 } 
   \item{iter}{integer specifying the number of iterations used in the computation of D (for details,
       see \code{\link{getLD}}). Ignored if \code{x} is the output of \code{getLD}.
 }
   \item{snp.in.col}{logical specifying whether each column of \code{x} represents a SNP (and each row a subject).
      If \code{FALSE}, each row represents a SNP (and each column a subject). Ignored if \code{x} is the
-     output of \code{getLD}.
+     output of \code{getLD} or \code{getLDlarge}.
 }     
   \item{blocks}{output of \code{findLDblocks}. See Details.
 }
@@ -76,7 +77,9 @@ splitBlocks(blocks)
    where we use the approximate variance estimates of D' proposed by Zabaleta et al. (1997).
    
    Since in \code{\link{trio.prepare}} the LD blocks are restricted to a maximum of 7 SNPs, \code{splitBlocks}
-   can be used to split LD blocks composed of more than 7 SNPs into smaller blocks.  
+   can be used to split LD blocks composed of more than 7 SNPs into smaller blocks, if the output of \code{findLDblocks}
+   should be used in \code{\link{trio.prepare}} to prepare a matrix for a \code{\link{trioLR}} or \code{\link{trioFS}}
+   analysis.  
 }
 \value{An object of class \code{LDblocks} consisting of 
     \item{\code{ld}}{the output of \code{getLD},}

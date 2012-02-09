@@ -279,15 +279,25 @@ getCalls4LD <- function(Dprime, varDprime, alpha=0.1, ciLD=c(0.7, 0.98), cuRecom
 	
 findLDblocks <- function(x, alpha=0.1, ciLD=c(0.7, 0.98), cuRecomb=0.9, ratio=9,
 		alsoOthers=FALSE, parentsOnly=FALSE, iter=50, snp.in.col=TRUE){
-	if(!is(x, "getLD") && !is.matrix(x))
-		stop("x must either be a matrix or the output of getLD.")
-	if(is.matrix(x))	
+	if(!is(x, "getLD") && !is(x, "getLDlarge") && !is.matrix(x))
+		stop("x must either be a matrix or the output of getLD or getLDlarge.")
+	if(is.matrix(x)){
+		if((snp.in.col & ncol(x) > 500) | (!snp.in.col & nrow(x) > 500))
+			stop("If x is a matrix, x must contain at most 500 SNPs. If x contains more SNPs,\n",
+				"please consider to use getLDlarge.")	
 		x <- getLD(x, which="Dprime", parentsOnly=parentsOnly, iter=iter, 
 			snp.in.col=snp.in.col, addVarN=TRUE)
+		large <- FALSE
+		}
+	else
+		large <- is(x, "getLDlarge")
 	calls <- getCalls4LD(x$Dprime, x$varDprime, alpha=alpha, ciLD=ciLD,
 		cuRecomb=cuRecomb)
 	n.snps <- length(x$rn)
-	combs <- allCombs(n.snps)
+	if(large)
+		combs <- allNeighborCombs(n.snps, x$neighbors)[,c(2,1)]
+	else
+		combs <- allCombs(n.snps)
 	i <- b <- 1
 	endLD <- ifelse(alsoOthers, 0, 1)
 	idsEnd <- calls >= endLD
@@ -322,7 +332,7 @@ findLDblocks <- function(x, alpha=0.1, ciLD=c(0.7, 0.98), cuRecomb=0.9, ratio=9,
 	idsLength <- sapply(vec.blocks, length)
 	vec.blocks <- vec.blocks[idsLength>1]
 	param <- list(alpha=alpha, ciLD=ciLD, cuRecomb=cuRecomb, ratio=ratio)
-	out <- list(ld=x, blocks=blocks, vec.blocks=vec.blocks, param=param)
+	out <- list(ld=x, blocks=blocks, vec.blocks=vec.blocks, param=param, large=large)
 	class(out) <- "LDblocks"
 	out
 }

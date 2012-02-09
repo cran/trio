@@ -14,9 +14,9 @@ the categorizations used in the procedure of Gabriel et al. (2002).
    col = NULL, xlab = "", ylab = "", cexAxis = 0.8, alpha = 0.1,
    ciLD = c(0.7, 0.98), cuRecomb = 0.9, ...)
    
-\method{plot}{getLDlarge}(x, y="rSquare", start=NA, end=NA, squared=TRUE, 
-   xlab="", ylab="", cexAxis=0.8, alpha=0.1, ciLD=c(0.7,0.98), 
-   cuRecomb=0.9, ...)
+\method{plot}{getLDlarge}(x, y = "rSquare", start = NA, end = NA, squared = TRUE, 
+   col = NULL, xlab = "", ylab = "", cexAxis = 0.8, alpha = 0.1, 
+   ciLD = c(0.7,0.98), cuRecomb = 0.9, ...)
 }
 
 \arguments{

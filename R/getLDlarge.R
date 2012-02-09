@@ -195,7 +195,7 @@ neighborIds <- function(x, neighbors){
 }
 
 	
-plot.getLDlarge <- function(x, y="rSquare", start=NA, end=NA, squared=TRUE, xlab="", ylab="", cexAxis=0.8,
+plot.getLDlarge <- function(x, y="rSquare", start=NA, end=NA, squared=TRUE, col=NULL, xlab="", ylab="", cexAxis=0.8,
 		alpha=0.1, ciLD=c(0.7,0.98), cuRecomb=0.9, ...){
 	if(!y %in% c("rSquare", "Dprime", "gabriel"))
 		stop("y must be either 'rSquare', 'Dprime', or 'gabriel'.")
@@ -207,6 +207,7 @@ plot.getLDlarge <- function(x, y="rSquare", start=NA, end=NA, squared=TRUE, xlab
 		y <- "Dprime"
 		gab <- TRUE
 	}
+	else
 		gab <- FALSE
 	vecLD <- x[[y]]
 	if(is.null(vecLD))
@@ -225,9 +226,11 @@ plot.getLDlarge <- function(x, y="rSquare", start=NA, end=NA, squared=TRUE, xlab
 	}
 	if(start<1)
 		stop("start must be a positive integer.")
-	if(end > length(x$rn)-2)
-		stop("Since x contains data for ", length(x$rn), " SNPs, end should be at most ",
+	if(start > length(x$rn)-2)
+		stop("Since x contains data for ", length(x$rn), " SNPs, start must be at most ",
 			length(x$rn)-2, ".")
+	if(end > length(x$rn))
+		stop("end must be smaller than or equal to the number of considered SNPs.") 
 	if(start >= end)
 		stop("start must be larger than end.")
 	idsLD <- allNeighborCombs(length(x$rn), x$neighbors, start=start, end=end)
