@@ -135,10 +135,8 @@ triologreg <- function(bin, resp, weights, choice, nleaves=5, penalty=0, control
         	chs <- "greedy"
 	tree.control$operators <- switch(tree.control$opers, "both", "and", "or", "both")
 	m1 <- list(nsample = n1, nbinary = n2, nseparate = nsep, type = type, select = chs, 
-		anneal.control = anneal.control, tree.control = tree.control, seed = rand, 
-		choice = choice)
+		seed = rand, choice = choice, control=control)
     	if(choice == 7){
-        	m1$anneal.control <- NULL
 		v1 <- fit$trees
         	v3 <- 1:length(v1)
         	v3 <- max(v3[v1 > 0])

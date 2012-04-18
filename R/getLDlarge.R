@@ -171,7 +171,7 @@ comp2MatX11 <- function(x1, x2, withna=FALSE){
 		naId1 <- !is.na(x1)
 		naId2 <- !is.na(x2)
 		n <- naId1 %*% t(naId2)
-		if(any(n<10))
+		if(any(n<5))
 			stop("For at least one pair of SNPs, the genotypes of less than 5 individuals\n",
 				"are available for both SNPs.", call.=FALSE)
 		x1[!naId1] <- 0

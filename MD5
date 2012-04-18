@@ -1,4 +1,4 @@
-a3743e849206a880e0a7b3d2734a5fe9 *DESCRIPTION
+d5e74e27b69fb35b978b0872deb115a7 *DESCRIPTION
 463d6fafbe23a1bc62f3a242e95b5b6a *NAMESPACE
 2f81d3d55e9c9e6f2d91cd450f3a3626 *R/allelicTDT.R
 e3243b5c549d647dbfd6fe4bedc3d243 *R/colGxE.R
@@ -10,7 +10,7 @@ aec65bab67cd746328c7abb54040b164 *R/colTDTsam.R
 0a32a2dd3c6b3c3dcda878224ee519bb *R/fastGxG.R
 43b6119890efc969f6a65c9ca2878496 *R/fastTDT.R
 12b0156fb0c25ade2ee1c7df0c2eaa42 *R/getLD.R
-8fa7ca1e1d99ecfe7e9333857cfb5938 *R/getLDlarge.R
+451e12a0e4758e328d9da1504f79095c *R/getLDlarge.R
 0446de4587281aeb55bb216b108d976c *R/lrControl.R
 d8600a03e1162a896d28a32e3d2e16f2 *R/ped2geno.R
 6e6d2849893ca9125ff1c16b8a849b19 *R/poly4root.R
@@ -22,14 +22,14 @@ b49332ac5d576384ff11f85d2b0fa5d8 *R/splitBlocks.R
 3b5369207309b27c45b0df8d77071d3d *R/tdt.R
 9afab895b977e45d8723a656acb906c9 *R/trio.R
 05dede2481a73cb11fe370d2be126054 *R/trio.check.R
-718058faf56965aa4e26b1c8f66d8ba7 *R/trio.permTest.R
+096f8eb2facf6f6cd6966a312b15521a *R/trio.permTest.R
 f8fded4ba604c5e6997abc920f517471 *R/trio.sim.R
 57f8a009394454aa43007debd1b868cd *R/trioFS.R
-db8f6de4f7459919405ac546ca62ce42 *R/trioLR.R
-f819aa053b9668ef717037205c710862 *R/zzz.R
+e4ec8c1fb7ebaa76cf43e081537f9587 *R/trioLR.R
+cf496766e1b091c0d56e62c6e0d6ff72 *R/zzz.R
 8b9449da45f0288c1002c709b177b30d *data/trio.data.RData
 90f064dbab40f3248e39f0a321534065 *inst/doc/trio.Rnw
-27f5ebcccd0f4ea214fd6d698243ae67 *inst/doc/trio.pdf
+58d32dc4893e48279b938ba449c75eb8 *inst/doc/trio.pdf
 3fc82565c7b27fd41f7b2272d6f556cc *man/allelicTDT.Rd
 b26d64c55fccc140c2dd731d7cd341f8 *man/colGxE.Rd
 d5094660707af818da26d05288993405 *man/colGxGPerms.Rd

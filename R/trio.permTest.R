@@ -91,8 +91,9 @@ trio.permTest <- function(object, conditional=FALSE, n.perm=10, nleaves=NULL, co
           	c(kk + (idx.new1-1), kk + (zeroIdx-1) )
 	}
 	idxSetIdxShuffle <- NULL
+	cat("\n", sep="")
   	for(i in 1:n.perm){
-		cat("\nPermutation ", i, ".", sep="")
+		cat("Permutation ", i, ".\n", sep="")
        		if(is.null(idxSetIdxShuffle)){
           		idxSetIdxShuffle <- lapply(dIdx, FUN=tmpfoo1, predStatus=logreg.pred)
         		#oneIdxes <- idxSetIdxShuffle[seq(1, length(dIdx)*2, by=2)]
