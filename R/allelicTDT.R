@@ -1,8 +1,8 @@
-allelicTDT <- function(mat.snp, size=50, correct=TRUE){
+allelicTDT <- function(mat.snp, size=50, correct=FALSE){
 	if(!is.matrix(mat.snp))
 		stop("mat.snp has to be a matrix.")
 	n.snp <- ncol(mat.snp)
-	if(n.snp %% 3 != 0)
+	if(nrow(mat.snp) %% 3 != 0)
 		stop("mat.snp does not seem to contain trio data, as its number of rows is\n",
 			"not dividable by 3.")
 	if(is.null(rownames(mat.snp)))
@@ -20,7 +20,7 @@ allelicTDT <- function(mat.snp, size=50, correct=TRUE){
 	out
 }
 
-aTDTchunk <- function(geno, correct=TRUE){
+aTDTchunk <- function(geno, correct=FALSE){
 	n.row <- nrow(geno)
 	dad <- geno[seq.int(1, n.row, 3),, drop=FALSE]
 	mom <- geno[seq.int(2, n.row, 3),, drop=FALSE]

@@ -10,7 +10,7 @@ Performs the allelic Transmission/Disequilibrium Test for each SNP contained in 
 }
 
 \usage{
-allelicTDT(mat.snp, size = 50, correct = TRUE)
+allelicTDT(mat.snp, size = 50, correct = FALSE)
 
 \method{print}{aTDT}(x, top = 5, digits = 4, ...)
 }

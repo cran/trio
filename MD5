@@ -1,6 +1,6 @@
-d5e74e27b69fb35b978b0872deb115a7 *DESCRIPTION
+bd6cc0b3fc81df2f7c582b75285f8fc0 *DESCRIPTION
 463d6fafbe23a1bc62f3a242e95b5b6a *NAMESPACE
-2f81d3d55e9c9e6f2d91cd450f3a3626 *R/allelicTDT.R
+6253d58e7fbc655a396522b3a4fe7850 *R/allelicTDT.R
 e3243b5c549d647dbfd6fe4bedc3d243 *R/colGxE.R
 ed699af42b0054077ce746a7113bce51 *R/colGxEPerms.R
 320aef09bc282508947c03d39e501ceb *R/colGxGperm.R
@@ -10,7 +10,7 @@ aec65bab67cd746328c7abb54040b164 *R/colTDTsam.R
 0a32a2dd3c6b3c3dcda878224ee519bb *R/fastGxG.R
 43b6119890efc969f6a65c9ca2878496 *R/fastTDT.R
 12b0156fb0c25ade2ee1c7df0c2eaa42 *R/getLD.R
-451e12a0e4758e328d9da1504f79095c *R/getLDlarge.R
+c3c53b3d1fac7f34fcb8522d2cfcb16b *R/getLDlarge.R
 0446de4587281aeb55bb216b108d976c *R/lrControl.R
 d8600a03e1162a896d28a32e3d2e16f2 *R/ped2geno.R
 6e6d2849893ca9125ff1c16b8a849b19 *R/poly4root.R
@@ -28,9 +28,9 @@ f8fded4ba604c5e6997abc920f517471 *R/trio.sim.R
 e4ec8c1fb7ebaa76cf43e081537f9587 *R/trioLR.R
 cf496766e1b091c0d56e62c6e0d6ff72 *R/zzz.R
 8b9449da45f0288c1002c709b177b30d *data/trio.data.RData
-90f064dbab40f3248e39f0a321534065 *inst/doc/trio.Rnw
-58d32dc4893e48279b938ba449c75eb8 *inst/doc/trio.pdf
-3fc82565c7b27fd41f7b2272d6f556cc *man/allelicTDT.Rd
+1a2028b496290c4e91e8c80baad17e3f *inst/doc/trio.Rnw
+98e8d908604c926f0cb5cc99d45f8c78 *inst/doc/trio.pdf
+2264d557900399bfe6469b769703f15d *man/allelicTDT.Rd
 b26d64c55fccc140c2dd731d7cd341f8 *man/colGxE.Rd
 d5094660707af818da26d05288993405 *man/colGxGPerms.Rd
 9574d78384d910e7a4d3422ae160f0be *man/colTDTmaxTest.Rd
@@ -76,4 +76,4 @@ e2532aef04d115609aff45746d346246 *vignettes/figure3ld.png
 7f7947832cd69c17c4c682e1da439af7 *vignettes/figure3lr.eps
 1a6d9ebf56c0508967c5fd56efc579a2 *vignettes/figure3lr.png
 a48170c7c01508d282d4d92902d6cbc6 *vignettes/qingSweave.sty
-90f064dbab40f3248e39f0a321534065 *vignettes/trio.Rnw
+1a2028b496290c4e91e8c80baad17e3f *vignettes/trio.Rnw

@@ -128,8 +128,9 @@ compLDsplit <- function(x, p1=NULL, p2=NULL, n=NULL, iter=50, type="both", addVa
 			varDprime <- NULL
 			D <- D / Dmax
 		}
-		if(any(D>1))
-			D[D>1] <- 1
+		idsLarger1 <- which(D>1)
+		if(length(idsLarger1) > 0)
+			D[idsLarger1] <- 1
 	}
 	else
 		D <- varDprime <- NULL

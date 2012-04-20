@@ -389,21 +389,21 @@ a.out <- allelicTDT(mat.test)
 a.out
 @
 
-By default, the test statistic for the allelic TDT is adjusted for continuity by adding 1 to the difference in the denominator of
-McNemar's test statistic, i.e.\
-\begin{equation*}
-a_\text{Cor}= \dfrac{(|b-c|-1)^2}{b+c}
-\end{equation*}
-is used as test statstic, where $b$ and $c$ are the off-diagonal elements of the 2x2-table summarizing the transmitted and untransmitted
-alleles from heterozygous parents, i.e. $b$ is the number of heterozygous parents that transmitted the minor allele to their respective
-children, and $c$ the number of heterozygous parents that transmitted the major allele. This correction can be avoided and
+By default, McNemar's test statistic
 \begin{equation*}
 a=\dfrac{(b-c)^2}{b+c}
 \end{equation*}
-can be used as test statistic by calling
+is used as test statistic in \texttt{allelicTDT}, where $b$ and $c$ are the off-diagonal elements of the 2x2-table 
+summarizing the transmitted and untransmitted alleles from heterozygous parents, i.e.\ $b$ is the number of heterozygous parents
+that transmitted the minor allele to their respective children, and $c$ the number of heterozygous parents that transmitted the major allele. 
+Alternatively, a version of McNemar's test statistic corrected for continuity, namely
+\begin{equation*}
+a_\text{Cor}= \dfrac{(|b-c|-1)^2}{b+c}
+\end{equation*} 
+can be used by calling
 
 <<>>=
-a.out2 <- allelicTDT(mat.test, correct=FALSE)
+a.out2 <- allelicTDT(mat.test, correct=TRUE)
 a.out2
 @
 
