@@ -21,13 +21,11 @@ trioFS.default <- function(x, y, B=20, nleaves=5, replace=TRUE, sub.frac=0.632, 
 	vim.out
 }
 
-#trioFS.formula <- function(formula, data, recdom=TRUE, ...){
-#	require(logicFS, quietly=TRUE)
-#	if(packageVersion("logicFS")<"1.23.2")
-#		stop("The formula method of trioLR can only be used with logicFS version 1.23.2 or higher.")
-#	xy <- getXy(formula, data, recdom=recdom)
-#	trioFS(xy$x, xy$y, ...)
-#}
+trioFS.formula <- function(formula, data, recdom=TRUE, ...){
+	require(logicFS, quietly=TRUE) || stop("Package logicFS is required.")
+	xy <- getXy(formula, data, recdom=recdom)
+	trioFS(xy$x, xy$y, ...)
+}
 
 trioFS.trioPrepare <- function(x, ...){
 	trioFS(x$bin[,-1], x$bin[,1], ...)
@@ -35,9 +33,7 @@ trioFS.trioPrepare <- function(x, ...){
 
 trioBagging <- function(x, y, B=20, nleaves=5, replace=TRUE, sub.frac=0.632, control=NULL, fast=FALSE, 
 		verbose=FALSE, rand=NA){
-	#require(logicFS, quietly=TRUE)
-	#if(packageVersion("logicFS")<"1.23.4")
-	#	stop("For trioFS, version 1.23.4 or higher of the R package logicFS is required.")
+	require(logicFS, quietly=TRUE) || stop("Package logicFS is required.")
 	if(B < 1)
 		stop("B must be a positive integer.")
   	n.trios <- nrow(x)/4

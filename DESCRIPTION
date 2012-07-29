@@ -1,12 +1,12 @@
 Package: trio
 Type: Package
-Title: Detection of disease-associated SNP interactions in case-parent
-        trio data
-Version: 1.5.0
-Date: 2012-04-20
-Author: Holger Schwender, Qing Li, Ingo Ruczinski
+Title: trio package without Fortran code
+Version: 1.7.0
+Date: 2012-07-29
+Author: Holger Schwender, Qing Li, Christoph Neumann, Ingo Ruczinski
 Maintainer: Holger Schwender <holger.schw@gmx.de>
-Suggests: survival, haplo.stats, mcbiopi, siggenes, splines
+Suggests: survival, haplo.stats, mcbiopi, siggenes, splines, LogicReg
+        (>= 1.5.3), logicFS (>= 1.23.4)
 Description: Testing SNPs and SNP interactions with a genotypic TDT.
         This package furthermore contains functions for computing
         pairwise values of LD measures and for identifying LD blocks,
@@ -16,6 +16,6 @@ Description: Testing SNPs and SNP interactions with a genotypic TDT.
         simulate case-parent trios with disease risk dependent on SNP
         interaction.
 License: LGPL-2
-Packaged: 2012-04-20 17:09:39 UTC; schwender
+Packaged: 2012-07-29 13:01:33 UTC; schwender
 Repository: CRAN
-Date/Publication: 2012-04-23 12:22:24
+Date/Publication: 2012-07-30 03:59:57

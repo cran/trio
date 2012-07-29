@@ -1,5 +1,3 @@
-useDynLib(trio)
-
 export(
 trio.sim, trio.prepare, trio.check,
 getLD, findLDblocks, splitBlocks,
@@ -16,7 +14,8 @@ trioLR, trioFS, lrControl,
 getMatPseudo, getGxEstats,
 colGxG, tdtGxG, colGxGPerms,
 allelicTDT,
-getLDlarge
+getLDlarge,
+trio.power
 )
 
 S3method(plot, getLD)
@@ -38,8 +37,11 @@ S3method(print, trioFS)
 S3method(plot, trioFS)
 S3method(print, aTDT)
 S3method(plot, getLDlarge)
+S3method(print, trio.power)
 
 S3method(trioLR, default)
 S3method(trioLR, trioPrepare)
+S3method(trioLR, formula)
 S3method(trioFS, default)
 S3method(trioFS, trioPrepare)
+S3method(trioFS, formula)

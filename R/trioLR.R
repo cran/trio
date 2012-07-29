@@ -1,12 +1,10 @@
 trioLR <- function(x, ...) UseMethod("trioLR")
 
-#trioLR.formula <- function(formula, data, recdom=TRUE, ...){
-#	require(logicFS, quietly=TRUE)
-#	if(packageVersion("logicFS")<"1.23.2")
-#		stop("The formula method of trioLR can only be used with logicFS version 1.23.2 or higher.")
-#	xy <- getXy(formula, data, recdom=recdom)
-#	trioLR(xy$x, xy$y, ...)
-#}
+trioLR.formula <- function(formula, data, recdom=TRUE, ...){
+	require(logicFS, quietly=TRUE) || stop("Package logicFS is required.")
+	xy <- getXy(formula, data, recdom=recdom)
+	trioLR(xy$x, xy$y, ...)
+}
 
 trioLR.trioPrepare <- function(x, ...){
 	trioLR(x$bin[,-1], x$bin[,1], ...)
@@ -14,6 +12,7 @@ trioLR.trioPrepare <- function(x, ...){
 
 trioLR.default <- function(x, y, search=c("sa", "greedy", "mcmc"), nleaves=5, penalty=0, weights=NULL,
 		control=lrControl(), rand=NA, ...){
+	require(LogicReg, quietly=TRUE) || stop("Package LogicReg is required.")
 	call <- match.call()
   	if(nrow(x)%%4 != 0)
     		stop("x does not seem to contain trio data with three pseudo-controls for each affected children\n",
@@ -45,7 +44,7 @@ triologreg <- function(bin, resp, weights, choice, nleaves=5, penalty=0, control
 	wgt <- rep(weights, e=4)
 	seed <- ifelse(is.na(rand), 0, rand)
 	binnames <- colnames(bin)
-	mdl <- 0
+	mdl <- 9
 	n1 <- length(resp)
     	n2 <- ncol(bin)
     	nsep <- 0
@@ -98,6 +97,7 @@ triologreg <- function(bin, resp, weights, choice, nleaves=5, penalty=0, control
         	n.b <- n.d * (nsep + ntr[2] + 1)
         	n.c <- n.d
     	}
+	n100 <- -100
 	if(choice == 7){
 		n.a <- 256
         	n.b <- n2
@@ -107,21 +107,27 @@ triologreg <- function(bin, resp, weights, choice, nleaves=5, penalty=0, control
         	nxx <- n.c * n2
         	if(abs(mc.control$output) < 3) 
             		nxx <- 1
+		n100 <- 0
     	}
-	xtree <-  rep(-100, n.a)
-	fit <- .Fortran("tlogreg", as.integer(n1), as.integer(n2), 
+	xtree <-  rep(n100, n.a)
+	ip4 <- 2 * ipars[4] + 1
+	fit <- .Fortran("slogreg", as.integer(n1), as.integer(n2), 
 		as.integer(nsep), ip = as.integer(ipars), as.single(rpars), 
 		as.single(t(sep)), as.integer(cens), as.integer(orders), 
 		as.single(resp), as.single(wgt), as.integer(t(bin)), 
-		trees = as.integer(xtree), coef = as.single(rep(-100, n.b)), 
-		scores = as.single(rep(-100, n.c)), rd4 = as.integer(rep(0,nxx)),
-		PACKAGE = "trio")
+		trees = as.integer(xtree), coef = as.single(rep(n100, n.b)), 
+		scores = as.single(rep(n100, n.c)), as.integer(ipars[6]), 
+		as.integer(ip4), as.integer(rep(0, 2 * ipars[6] * ip4 * n1)), 
+		as.integer(rep(0, 7 * ipars[6] * (ip4 + 1) * n2 * 4)), 
+		as.single(rep(0, 7 * ipars[6] * (ip4 + 1) * n2 * 4)), 
+		as.integer(t(bin)),rd4 = as.integer(rep(0,nxx)),
+		PACKAGE = "LogicReg")
 	type <- "Trio Logic Regression"
 	if(choice %in% (1:2) && is.na(fit$coef[2])){
 		if(notBuiltStop)
-			stop("For some unknown reason, the fitting of the trio logic regression model failed.\n",
-				"Please rerun the analysis with trioLR. If this error persists,\n",
-				"please contact the maintainer of the trio package.", call.=FALSE)
+			cat("For some unknown reason, the fitting of the trio logic regression model failed.\n",
+				"Please rerun the analysis with trioLR (maybe after restarting R).\n",
+				"If this will not work, please contact the maintainer of the trio package.\n\n", sep="")
 		else
 			return(NULL)
 	}

@@ -2,6 +2,8 @@
 \alias{trioFS}
 \alias{trioFS.default}
 \alias{trioFS.trioPrepare}
+\alias{trioFS.formula}
+
 \title{Trio Feature Selection
 }
 \description{Performs a trioFS (trio Feature Selection) analysis as proposed by Schwender et al. (2011) based on bagging/subsampling
@@ -13,6 +15,8 @@ with base learner trio logic regression (Li et al., 2011).
     verbose = FALSE, rand = NA, ...)
 
 \method{trioFS}{trioPrepare}(x, ...)
+
+\method{trioFS}{formula}(formula, data, recdom = TRUE, ...)
 }
 
 \arguments{
@@ -61,7 +65,30 @@ with base learner trio logic regression (Li et al., 2011).
 }
   \item{rand}{positive integer. If specified, the random number generator is set into a reproducible state.
 }
-  \item{\dots}{for the \code{trioPrepare} method, optional parameters to be passed to 
+ \item{formula}{an object of class \code{formula} describing the model that should be fitted.
+}
+  \item{data}{a data frame containing the variables in the model. Each row of \code{data}
+     must correspond to an observation, and each column to a binary variable (coded by 0 and 1) 
+     or a factor (for details, see \code{recdom}) except for the column comprising
+     the response, where no missing values are allowed in \code{data}. For a description of the specification
+     of the response, see \code{y}.
+}
+  \item{recdom}{a logical value or vector of length \code{ncol(data)} comprising whether a SNP should
+     be transformed into two binary dummy variables coding for a recessive and a dominant effect.
+     If \code{recdom} is \code{TRUE} (and a logical value), then all factors/variables with three levels will be coded by two dummy
+     variables as described in \code{\link[logicFS]{make.snp.dummy}}. Each level of each of the other factors 
+     (also factors specifying a SNP that shows only two genotypes) is coded by one indicator variable. 
+     If \code{recdom} is\code{FALSE} (and a logical value),
+     each level of each factor is coded by an indicator variable. If \code{recdom} is a logical vector,
+     all factors corresponding to an entry in \code{recdom} that is \code{TRUE} are assumed to be SNPs
+     and transformed into two binary variables as described above. All variables corresponding
+     to entries of \code{recdom} that are \code{TRUE} (no matter whether \code{recdom} is a vector or a value)
+     must be coded either by the integers 1 (coding for the homozygous reference genotype), 2 (heterozygous), 
+     and 3 (homozygous variant), or alternatively by the number of minor alleles, i.e. 0, 1, and 2, where
+     no mixing of the two coding schemes is allowed. Thus, it is not allowed that some SNPs are coded by
+     1, 2, and 3, and others are coded by 0, 1, and 2.
+}
+  \item{\dots}{for the \code{trioPrepare} and the \code{formula} method, optional parameters to be passed to 
     the low level function \code{trioFS.default}, i.e. all arguments of \code{trioFS.default} except for
     \code{x} and \code{y}. Otherwise, ignored.
 }
