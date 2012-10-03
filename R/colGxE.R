@@ -97,7 +97,7 @@ colGxE <- function(mat.snp, env, model=c("additive", "dominant", "recessive"), a
 	if(alpha1<1)
 		out$step1pval <- step1pval
 	if(addCov)
-		out$cov <- -tmp1[,2]
+		out$cov <- -tmp1$var
 	if(addLRT2)
 		out$lrt2df <- lrt2df
 	if(add2df)

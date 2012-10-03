@@ -1,7 +1,7 @@
-7d3e745a17a191b6754b7224a82ebdfe *DESCRIPTION
+ffd79e4f5e0c6c135ad60cccd8e8b5b4 *DESCRIPTION
 c91ae77eeafb3f4f00dd670d3cf3724d *NAMESPACE
 6253d58e7fbc655a396522b3a4fe7850 *R/allelicTDT.R
-e3243b5c549d647dbfd6fe4bedc3d243 *R/colGxE.R
+4f46ce55b3b6333ec7363615ffac34dd *R/colGxE.R
 ed699af42b0054077ce746a7113bce51 *R/colGxEPerms.R
 320aef09bc282508947c03d39e501ceb *R/colGxGperm.R
 208a77ac30a1d2942ffca060d963c027 *R/colMAFtrio.R
@@ -30,7 +30,7 @@ d661220a86c32eb082339befadf4fad5 *R/trioLR.R
 1b6ca3bd8a0a95e337d4952697cc5be2 *R/zzz.R
 8b9449da45f0288c1002c709b177b30d *data/trio.data.RData
 1a2028b496290c4e91e8c80baad17e3f *inst/doc/trio.Rnw
-f6d6abd2f11a81ff8cdae2e91c963fdb *inst/doc/trio.pdf
+d5a64cd6209304b3d9fdb790ab618b5e *inst/doc/trio.pdf
 2264d557900399bfe6469b769703f15d *man/allelicTDT.Rd
 b26d64c55fccc140c2dd731d7cd341f8 *man/colGxE.Rd
 d5094660707af818da26d05288993405 *man/colGxGPerms.Rd
