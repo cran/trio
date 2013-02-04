@@ -1,8 +1,8 @@
 Package: trio
 Type: Package
 Title: Testing of SNPs and SNP Interactions in Case-Parent Trio Studies
-Version: 1.7.1
-Date: 2012-10-03
+Version: 1.9.3
+Date: 2013-02-04
 Author: Holger Schwender, Qing Li, Christoph Neumann, Ingo Ruczinski
 Maintainer: Holger Schwender <holger.schw@gmx.de>
 Suggests: survival, haplo.stats, mcbiopi, siggenes, splines, LogicReg
@@ -17,6 +17,6 @@ Description: Testing SNPs and SNP interactions with a genotypic TDT.
         interaction, and for power and sample size calculation in trio
         data.
 License: LGPL-2
-Packaged: 2012-10-03 09:39:04 UTC; schwender
+Packaged: 2013-02-04 00:18:59 UTC; schwender
 Repository: CRAN
-Date/Publication: 2012-10-03 10:20:00
+Date/Publication: 2013-02-04 07:48:37

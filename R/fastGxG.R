@@ -16,7 +16,6 @@ fastGxG <- function(mat.snp, model=c("additive", "dominant", "recessive"), genes
 	kid <- out$kid
 	mat.ids <- out$mat.comb
 	cn <- if(is.null(colnames(mat.snp))) paste("SNP", 1:ncol(mat.snp), sep="") else colnames(mat.snp)
-	rm(mat.snp, out)
 	if(is.null(genes))
 		combs <- allCombs(ncol(kid))
 	else{
@@ -27,6 +26,7 @@ fastGxG <- function(mat.snp, model=c("additive", "dominant", "recessive"), genes
 		ids.genes <- as.numeric(as.factor(genes))
 		combs <- allBetweenCombs(ids.genes)
 	}
+	rm(mat.snp, out)
 	n.combs <- nrow(combs)
 	int <- unique(c(seq.int(1, n.combs, size), n.combs + 1))
 	betaFun <- match.fun(paste("getBeta", type, sep=""))

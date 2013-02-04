@@ -13,7 +13,7 @@ allelicTDT <- function(mat.snp, size=50, correct=FALSE){
 	int <- unique(c(seq.int(1, n.snp, size), n.snp+1))
 	stat <- numeric(n.snp)
 	for(i in 1:(length(int)-1))
-		stat <- aTDTchunk(mat.snp[,int[i]:(int[i+1]-1), drop=FALSE], correct=correct)
+		stat[int[i]:(int[i+1]-1)] <- aTDTchunk(mat.snp[,int[i]:(int[i+1]-1), drop=FALSE], correct=correct)
 	pval <- pchisq(stat, 1, lower.tail=FALSE)
 	out <- list(stat=stat, pval=pval)
 	class(out) <- "aTDT"

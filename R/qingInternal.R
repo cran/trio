@@ -2593,6 +2593,8 @@ function(bkMap, caseNo, ifS = NULL, reControl=FALSE){
    child2 = matrix(chExp[,2], nrow=caseNo, byrow=FALSE)
 
    affChild = covDipStr2CodedGeno(child1, child2, subjectCt=caseNo, snpLen=bkMap$snpLen, snpCoding=0:3, snpBase=c(0, bkMap$alleleCode))
+
+
    trioSetts = rbind(fa, ma, affChild)
    #print(paste("!reControl: trioSetts dim:", paste(dim(trioSetts), collapse=" by ", sep="")))
 
@@ -4394,7 +4396,7 @@ function(appVarNames, filteredBkInfo, idxList, snpCoding, reqIn=NULL, reqDigits 
 	tryCatch({
 				
 				tmpGetObj = NULL
-				tmpGetObj = get(appVarNames$digit, envir=.GlobalEnv)
+				tmpGetObj = get(appVarNames$digit, envir=baseenv() )
 				
 				idx4hapDigit$digitMap1 = tmpGetObj$digitMap1[1:(2^(snpLen-1)), 1:snpLen]
 				idx4hapDigit$digitMap2 = tmpGetObj$digitMap2[1:(2^(snpLen-1)), 1:snpLen]
@@ -5085,7 +5087,7 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
   if(ifD) print(par1)
   if(ifD) print(par2)
   tryCatch({
-    maxTbl = get(appVarNames$tbl, envir=.GlobalEnv)
+    maxTbl = get(appVarNames$tbl, envir=baseenv())
     maxRow = nrow(maxTbl)
   }, error=function(e){
     errTrace = paste(e, collapse=";", sep="")
@@ -5093,7 +5095,7 @@ function(appVarNames, child, par1, par2, prob1, prob2, logF = NULL, job=1){
   })
   
   tryCatch({
-    maxMateTbl = get(appVarNames$mateTbl, envir=.GlobalEnv)
+    maxMateTbl = get(appVarNames$mateTbl, envir=baseenv())
   }, error=function(e){
     errTrace = paste(e, collapse=";", sep="")
     stop(paste("\n", fStr, errTrace, "\nApp-wise Global Variable ", appVarNames$freqMap, " does not exisit."))
@@ -7617,7 +7619,7 @@ function(appVarNames, homoHetoInfo, snpLen){
 	tryCatch({
 				
 				tmpGetObj = NULL
-				tmpGetObj = get(appVarNames$digit, envir=.GlobalEnv)
+				tmpGetObj = get(appVarNames$digit, envir=baseenv())
 				idx4hapDigit$digitMap1 = tmpGetObj$digitMap1[1:(2^(snpLen-1)), 1:snpLen]
 				idx4hapDigit$digitMap2 = tmpGetObj$digitMap2[1:(2^(snpLen-1)), 1:snpLen]
 				
@@ -7860,8 +7862,8 @@ function(str, delim, re.1st = FALSE){
 
 qTraceback <-
 function(x = NULL){
-    if (is.null(x) && (exists(".Traceback", envir = .GlobalEnv))) 
-        x <- get(".Traceback", envir = .GlobalEnv)
+    if (is.null(x) && (exists(".Traceback", envir = baseenv()))) 
+        x <- get(".Traceback", envir = baseenv())
 
     reStr = NULL
     if (is.null(x) || length(x) == 0) 
@@ -8315,7 +8317,7 @@ function(coef, type, signalStr){
     #if (length(vars)!=length( boolOp )) stop("Error in signal.new: not unique markers in string.")
     
     segReplace = sapply(1:length(vars), FUN=function(i,  snpDR, snpId) {
-      
+      re = ""
       if(snpDR[i]== "D"){
         ## dominant:
         re = paste( "v", snpId[i] ,"a", sep="")
@@ -8556,7 +8558,7 @@ function(freqMaps){
     #print(paste("Application wise global environment var with names as", paste(appVarNames, sep="", collapse=";")))
     
     lapply(1:length(appVarNames), FUN=function(item, varNames, varList){
-              assign(varNames[[item]], varList[[item]], envir=.GlobalEnv); return(NULL)},
+              assign(varNames[[item]], varList[[item]], envir=baseenv()); return(NULL)},
            varNames=appVarNames,
            varList = list(semiAugHapBkGenoMap, idx4hapDigitAll, exhaustHapExpAll, maxTbl, maxMateTbl))
     return(appVarNames)
@@ -8775,7 +8777,7 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
       matingTbInfo = bkMap.HRCB.famMap(info$bkMapS, rule, newColName=info$newColName,  ifS=infoS, baseName=baseObj.name)
 
       #finalUse =  baseObj.name
-      assign(finalUse, matingTbInfo, envir=.GlobalEnv)
+      assign(finalUse, matingTbInfo, envir=baseenv())
       
     }else{
       ## or not save it, just used. Not recommend.
@@ -8783,7 +8785,7 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
       matingTbInfo = bkMap.HRCB.famMap(info$bkMapS, rule, newColName=info$newColName,  ifS=infoS, baseName=NULL)
 
       #finalUse = matingTblInfo
-      assign(finalUse, matingTbInfo, envir=.GlobalEnv)
+      assign(finalUse, matingTbInfo, envir=baseenv())
     }
     
   }else{
@@ -8792,11 +8794,11 @@ function (bkMap, rule, caseNo, datasetCt=1, infoS="simuDirInfo", ddir=NULL, base
     if( is.character(baseObj.saveFN)){
       print(qp("Stepstone object is saved before as:", baseObj.saveFN, ". Do not need to generate it."))
       tmp = load(paste(baseObj.saveFN, ".RData", sep=""))
-      assign(finalUse, get(tmp[1]), envir=.GlobalEnv)
+      assign(finalUse, get(tmp[1]), envir=baseenv())
       
     }else{
       print(qp("Stepstone object is given."))
-      assign(finalUse, baseObj.saveFN, envir=.GlobalEnv)
+      assign(finalUse, baseObj.saveFN, envir=baseenv())
     }
   }
 
@@ -8870,14 +8872,14 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
       if(ifD) print(qp("No stepstone object is previously saved. Generate and save the object as:", spStrata.name, ".RData"))
 
       #finalUse = spStrata.name
-      assign(finalUse, spStrata, envir=.GlobalEnv)
+      assign(finalUse, spStrata, envir=baseenv())
       
     }else{
       ## or not save it, just used. Not recommend.
       spStrata = bkMap.HRCB.Esp1Rule.Base(bkMap, rule, baseName=NULL)
 
       #finalUse = spStrata
-      assign(finalUse, spStrata, envir=.GlobalEnv)
+      assign(finalUse, spStrata, envir=baseenv())
       #print(qp("No stepstone object is previously saved. Generate but not save the object."))
     }
     
@@ -8888,7 +8890,7 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
       if(ifD) print(qp("Stepstone object is previously saved as:", spStrata.saveFN, ".RData. Do not need to generate it."))
 
       tryCatch({tmp = load(paste(spStrata.saveFN, ".RData", sep=""))
-               assign(finalUse, get(tmp[1]), envir=.GlobalEnv)  },
+               assign(finalUse, get(tmp[1]), envir=baseenv())  },
              error = function(e){
                stop(paste("Cannot open step-stone file '", spStrata.saveFN, ".RData'.", sep=""))
              })
@@ -8896,7 +8898,7 @@ function(bkMap, rule, caseNo, datasetCt=1, infoS="simuPropInfo", exInfoS="exSimu
     }else{
       #print(qp("Stepstone object is given."))
       #finalUse = spStrata.saveFN
-      assign(finalUse, spStrata.saveFN, envir=.GlobalEnv)
+      assign(finalUse, spStrata.saveFN, envir=baseenv())
     }
   }
   
@@ -9322,6 +9324,16 @@ function(trioData1, trioData2, colName1, colName2,snpCoding=0:3){
 
   ifD = FALSE
 
+  # print("trioMerge")
+  # print(colName1)
+  # print(colName2)
+  # 
+  # print(str(trioData1))
+  # print(str(trioData2))
+  # 
+  # print(trioData1[1:6, 1:5])
+  # print(trioData2[1:6, 1:5])
+
   if( sum(snpCoding == (0:3))!=4)
     stop ("Function use 1-digit coding for genotypes as the following, integer 1 to 3 to
                     represent the three genotypes: less common homozygous, common homozygous, and heterzygous.
@@ -9336,15 +9348,19 @@ function(trioData1, trioData2, colName1, colName2,snpCoding=0:3){
   
   trioCol = c(colName1.first, colName2.first)
 
-  id.all = 1:(length(trioCol))
+  id.all = 1:(length(trioCol)/2)
   
   ori.col = paste("v", id.all, "a", sep="")
+  #print(ori.col)
 
   shuffle.order = match(ori.col, trioCol)
 
   #print( cbind(trioCol, ori.col, shuffle.order))
 
   trioData.shuffled = trioData[, shuffle.order]
+
+  #print(shuffle.order)
+  #print(colnames(trioData.shuffled))
 
   if(ifD) print(str(trioData.shuffled))
   

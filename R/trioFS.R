@@ -154,9 +154,7 @@ trioPImp <- function(log.out){
 }
 
 trioPImpEval <- function(dat, vec.primes){
-	attach(dat, warn.conflicts=FALSE)
-	mat.eval <- sapply(vec.primes, function(x) eval(parse(text=x)))
-	detach(dat)
+	mat.eval <- with(dat, sapply(vec.primes, function(x) eval(parse(text=x))))
 	cs <- colSums(mat.eval)
 	if(any(cs %in% c(0, nrow(mat.eval)))){
 		ids <- which(cs %in% c(0, nrow(mat.eval)))

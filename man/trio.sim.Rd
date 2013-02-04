@@ -3,15 +3,16 @@
 
 \title{Simulate Case-Parent Trios}
 
-\description{This function generates case-parents trios when the disease
+\description{\code{trio.sim} generates case-parents trios when the disease
   risk of children is specified by (possibly higher-order) SNP-SNP
   interactions. The SNP minor allele frequencies and/or haplotypes are
   specified by the user, as are the parameters in the logistic model
-  that describes the disease risk.}
+  that describes the disease risk. If \code{pi.usr} is specified, a
+  specific type of model, namely the well-known Risch model, will be employed.}
 
 \usage{
-trio.sim(freq, interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1, 
-   step.save=NULL, step.load=NULL, verbose=FALSE)
+trio.sim(freq, interaction = "1R and 2D", prev = 1e-3, OR = 1, pi.usr = 0, 
+   n = 100, rep = 1, step.save = NULL, step.load = NULL, verbose = FALSE)
 }
 
 \arguments{
@@ -50,6 +51,9 @@ trio.sim(freq, interaction="1R and 2D", prev=1e-3, OR=1, n=100, rep=1,
 
   \item{OR}{The odds ratio of disease in the simulated population,
     comparing carriers to non-carriers.}
+    
+  \item{pi.usr}{probability for an individual without the \code{interaction}
+     to be affected}
 
   \item{n}{The number of case-parent trios simulated. The default is
     100.}

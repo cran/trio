@@ -34,6 +34,14 @@ read.pedfile <- function(file, first.row=NA, coded=NULL, naVal=0, sep=" ",
 		ped <- read.table(file, stringsAsFactors=FALSE)
 		snpnames <- paste("SNP", 1:((ncol(ped) - 6) / 2), sep="")
 	}
+	if(any(sapply(ped, is.logical))){
+		idsLogical <- which(sapply(ped, is.logical))
+		for(i in idsLogical){
+			if(any(!ped[,i]))
+				stop("ped contains a logic variable with values TRUE and FALSE.")
+			ped[,i] <- "T"
+		}
+	}
 	n.snp <- length(snpnames)
 	colnames(ped) <- c("famid", "pid", "fatid", "motid", "sex", "affected",
 		paste(rep(snpnames, e=2), rep(1:2, n.snp), sep="."))
