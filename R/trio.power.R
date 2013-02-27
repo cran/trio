@@ -1,5 +1,6 @@
-trio.power<-function(p=0.5,RR=1.5,alpha=5*10^(-8),n=NULL,beta=NULL,model=c("additive","dominant","recessive"),
+trio.power<-function(maf=0.5,RR=1.5,alpha=5*10^(-8),n=NULL,beta=NULL,model=c("additive","dominant","recessive"),
 		test=c("gTDT","Score","aTDT")){
+	p <- maf
 	if(is.null(n)&&is.null(beta))
 		stop("Either n or beta has to be speficied.")
 	if(!is.null(n) && !is.null(beta))
@@ -23,9 +24,9 @@ trio.power<-function(p=0.5,RR=1.5,alpha=5*10^(-8),n=NULL,beta=NULL,model=c("addi
     		del<-which((p>=1) | (p<= 0))
     		p<-p[-del]
     		if(length(p)==0)
-	  		stop("p must be between 0 and 1.")
+	  		stop("maf must be between 0 and 1.")
 		else
-			warning("Some p were deleted, as they were not between 0 and 1.",call.=FALSE)
+			warning("Some maf were deleted, as they were not between 0 and 1.",call.=FALSE)
 	}
 	if(any(alpha>=1) | any(alpha<=0)){
 		del<-which((alpha >= 1) | (alpha <= 0))
@@ -216,7 +217,7 @@ trio.power<-function(p=0.5,RR=1.5,alpha=5*10^(-8),n=NULL,beta=NULL,model=c("addi
 	if(!is.null(n)){
   		vars<-expand.grid(n,p,RR,alpha,model,test,stringsAsFactors=FALSE)
 		wa<-which(vars[,6]=="aTDT")
-		le<-length(wa)/3
+		le<-length(wa)/length(model)
 		if(le>=1){
   			aw<-wa[-c(1:le)]
   			vars<-vars[-aw,]
@@ -233,7 +234,7 @@ trio.power<-function(p=0.5,RR=1.5,alpha=5*10^(-8),n=NULL,beta=NULL,model=c("addi
 	if(!is.null(beta)){
   		vars<-expand.grid(beta,p,RR,alpha,model,test,stringsAsFactors=FALSE)
   		wa<-which(vars[,6]=="aTDT")
-  		le<-length(wa)/3
+  		le<-length(wa)/length(model)
   		if(le>=1){
   			aw<-wa[-c(1:le)]
   			vars<-vars[-aw,]}
@@ -253,13 +254,13 @@ trio.power<-function(p=0.5,RR=1.5,alpha=5*10^(-8),n=NULL,beta=NULL,model=c("addi
 print.trio.power<-function(x,digits=4,...){
   	if(x$calc[1]=="power"){
     		power<-format.pval(as.numeric(as.character(x$power)),digits=digits)
-    		out<-data.frame(Test=x$test,Model=x$model,p=x$p,alpha=x$alpha,RR=x$RR,trios=x$n,power=power)
+    		out<-data.frame(Test=x$test,Model=x$model, MAF=x$p,alpha=x$alpha,RR=x$RR,Trios=x$n,power=power)
     		cat("        Trio studies power calculation", "\n\n")
     		print(format(out,digits=digits))
   	}
   	if(x$calc[1]=="size"){
     		size<-ceiling(as.numeric(as.character(x$size)))
-    		out<-data.frame(Test=x$test,Model=x$model,p=x$p,alpha=x$alpha,RR=x$RR,beta=x$beta,trios=size)
+    		out<-data.frame(Test=x$test,Model=x$model,MAF=x$p,alpha=x$alpha,RR=x$RR,beta=x$beta,Trios=size)
     		cat("       Trio studies sample size calculation", "\n\n")
     		print(format(out,digits=digits,trim=FALSE)
              ) 

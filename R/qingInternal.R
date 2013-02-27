@@ -9002,7 +9002,7 @@ function(bkMap=NULL,  sigStr="g9=11 and g13=11", sigType, para=c(-1, .5),  caseN
 
   if(is.null(bkMap)){
     print(paste("Value for argument bkMap is NULL. Function will use package default object, simuBkMap."))
-    data("simuBkMap")
+    data(simuBkMap, envir = environment())
     bkdata = get("simuBkMap")
     bkMap = bkMap.constr(data=bkdata, keyCol=1, hapLenCol=NULL, expCol=2, probCol=3, alleleCode=1:2)
   }
@@ -9091,7 +9091,7 @@ function(bkMap=NULL,  interaction="9R and 13R", alpha, beta, n=10, rep=1,  steps
 
   if(is.null(bkMap)){
     print(paste("Value for argument bkMap is NULL. Function will use package default object, simuBkMap."))
-    data("simuBkMap")
+    data(simuBkMap, envir = environment())
     bkdata = get("simuBkMap")
     bkMap = bkMap.constr(data=bkdata, keyCol=1, hapLenCol=NULL, expCol=2, probCol=3, alleleCode=alleleCode)
   }

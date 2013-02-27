@@ -1,4 +1,4 @@
-bf14cd021aa228396b550ed0fc9b1e15 *DESCRIPTION
+1b4ef880978c66be0627da037121a466 *DESCRIPTION
 57d24e24119ab45c6d0fa2445ee38299 *NAMESPACE
 7eff1eeb7250dc313109c1035e9f1117 *R/allelicTDT.R
 4f46ce55b3b6333ec7363615ffac34dd *R/colGxE.R
@@ -14,7 +14,7 @@ c3c53b3d1fac7f34fcb8522d2cfcb16b *R/getLDlarge.R
 0446de4587281aeb55bb216b108d976c *R/lrControl.R
 d8600a03e1162a896d28a32e3d2e16f2 *R/ped2geno.R
 6e6d2849893ca9125ff1c16b8a849b19 *R/poly4root.R
-8e077b1d1a44b7ceb65dd8cc0fd3b9de *R/qingInternal.R
+c320722aa27ad81b5073c54b2b8609d2 *R/qingInternal.R
 80257f9152981a20ba4bdcea52d65b20 *R/read.pedfile.R
 be1332be053f4bd9a47b03cb9b913a85 *R/removeSNPs.R
 65e5795ca90eb67ca8cdc8cc1c710923 *R/scoreTDT.R
@@ -23,14 +23,14 @@ b49332ac5d576384ff11f85d2b0fa5d8 *R/splitBlocks.R
 9afab895b977e45d8723a656acb906c9 *R/trio.R
 05dede2481a73cb11fe370d2be126054 *R/trio.check.R
 096f8eb2facf6f6cd6966a312b15521a *R/trio.permTest.R
-932ee0cde71f45e496d005b989a04eaa *R/trio.power.R
+6f421bd5c0568565bab1b97bf99b95f7 *R/trio.power.R
 9de9bc34f33de72c38323019e4aeb1ec *R/trio.sim.R
 0606a70ea15bf5ad69d97becada7ba82 *R/trioFS.R
-d661220a86c32eb082339befadf4fad5 *R/trioLR.R
+de135d2663b63cecd119062cee03482b *R/trioLR.R
 1b6ca3bd8a0a95e337d4952697cc5be2 *R/zzz.R
 8b9449da45f0288c1002c709b177b30d *data/trio.data.RData
 1a2028b496290c4e91e8c80baad17e3f *inst/doc/trio.Rnw
-6e1aab5c6aee9ca5aa5f781eb956b6fe *inst/doc/trio.pdf
+587cec201d701f8ac7c703055bf11eaa *inst/doc/trio.pdf
 2264d557900399bfe6469b769703f15d *man/allelicTDT.Rd
 b26d64c55fccc140c2dd731d7cd341f8 *man/colGxE.Rd
 d5094660707af818da26d05288993405 *man/colGxGPerms.Rd
@@ -56,7 +56,7 @@ c266098b36f3254ef65c94a0765b0b30 *man/tdtGxG.Rd
 d7045f844c9551cd121e630e6dc8d8a7 *man/trio.check.Rd
 4f121cedab30c5b9fcc919c40801e14e *man/trio.data.Rd
 9b7ce6dbda532a1bf2a82b0c9802e808 *man/trio.permTest.Rd
-d25db03ea67b7be62102afb3bc1b6a53 *man/trio.power.Rd
+438ac18a1b153dba1ac38b8c18b65df7 *man/trio.power.Rd
 12458319748b1ca629ca9dfe33a93835 *man/trio.prepare.Rd
 b73220bda6c54c06b09091913cc5e519 *man/trio.sim.Rd
 02ea1247ab21e9f74fffd2b143b1c090 *man/trioFS.Rd

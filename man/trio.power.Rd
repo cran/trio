@@ -7,13 +7,13 @@
 Computes power for genotypic TDT, allelic TDT or Score test given n trios or required sample size to gain given power.
 }
 \usage{
-trio.power(p = 0.5, RR = 1.5, alpha = 5*10^(-8), n = NULL, beta = NULL, 
+trio.power(maf = 0.5, RR = 1.5, alpha = 5*10^(-8), n = NULL, beta = NULL, 
   model = c("additive", "dominant", "recessive"), test = c("gTDT", "Score", "aTDT"))
   
 \method{print}{trio.power}(x,digits=4,...)
 }
 \arguments{
-  \item{p}{
+  \item{maf}{
 a numeric vector of population frequencies of a mutant allele.
 }
   \item{RR}{
