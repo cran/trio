@@ -1,7 +1,8 @@
 trioLR <- function(x, ...) UseMethod("trioLR")
 
 trioLR.formula <- function(formula, data, recdom=TRUE, ...){
-	require(logicFS, quietly=TRUE) || stop("Package logicFS is required.")
+	(require(logicFS, quietly=TRUE) && packageVersion("logicFS") >= "1.28.1") || 
+		stop("Package logicFS >= 1.28.1 is required.")
 	xy <- getXy(formula, data, recdom=recdom)
 	trioLR(xy$x, xy$y, ...)
 }
@@ -12,7 +13,8 @@ trioLR.trioPrepare <- function(x, ...){
 
 trioLR.default <- function(x, y, search=c("sa", "greedy", "mcmc"), nleaves=5, penalty=0, weights=NULL,
 		control=lrControl(), rand=NA, ...){
-	require(logicFS, quietly=TRUE) || stop("Package logicFS is required.")
+	(require(logicFS, quietly=TRUE) && packageVersion("logicFS") >= "1.28.1") || 
+		stop("Package logicFS >= 1.28.1 is required.")
 	call <- match.call()
   	if(nrow(x)%%4 != 0)
     		stop("x does not seem to contain trio data with three pseudo-controls for each affected children\n",
