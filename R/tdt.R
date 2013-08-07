@@ -316,6 +316,9 @@ print.colTDT <- function(x, top=5, digits=4, ...){
 		out <- data.frame(Coef=x$coef, OR=x$OR, Lower=x$lowerOR, Upper=x$upperOR, 
 			SE=x$se, Statistic=x$stat, "p-Value"=pval, Trios=x$usedTrios,
 			check.names=FALSE, stringsAsFactors=FALSE)
+		if(!is.null(x$pMendelErr))
+			out <- data.frame(out, "P(Mendel Error)"=x$pMendelErr, 
+				check.names=FALSE, stringsAsFactors=FALSE)
 		cat("        Genotypic TDT Based on 3 Pseudo Controls","\n\n")
 	}
 	cat("Model Type: ", switch(x$type, "additive"="Additive", "dominant"="Dominant",

@@ -17,7 +17,7 @@ trio.power(maf = 0.5, RR = 1.5, alpha = 5*10^(-8), n = NULL, beta = NULL,
 a numeric vector of population frequencies of a mutant allele.
 }
   \item{RR}{
-a numeric vector of the assumed relative risks for an individual getting a disease with 1 (in case of recessive model 2) mutant alleles compared to the risk of individuals carying 0 mutant alleles.
+a numeric vector of the assumed relative risks for an individual getting a disease with 1 (in case of recessive model 2) mutant alleles compared to the risk of individuals carnying 0 mutant alleles.
 }
   \item{alpha}{
 a numeric vector of significance levels (Type I Error probability).
@@ -63,6 +63,15 @@ Knapp,M. (1999). A Note on Power Approximations for the Transmission/Disequilibr
 }
 \author{
 Christoph Neumann
+}
+
+\examples{
+# The required samples size to reach of power
+# of 0.8 when testing SNPs with minor allele
+# frequencies of 0.1 and 0.2 with an additive
+# or dominant genotypic TDT and score test
+# can be determined by 
+trio.power(maf = c(0.1, 0.2), beta = 0.8, model = c("add", "dom"))
 }
 
 \keyword{design}

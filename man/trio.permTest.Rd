@@ -28,7 +28,7 @@ trio.permTest(object, conditional = FALSE, n.perm = 10, nleaves = NULL,
   \item{nleaves}{integer specifying the maximum number of leaves that the logic tree in the trio logic regression model is allowed to have.
     If \code{NULL}, the maximum number of leaves saved in \code{object} is used.
 }
-  \item{control}{a list containing the control parameters for the search algorihms and the logic tree considered in \code{\link{trioLR}}, where
+  \item{control}{a list containing the control parameters for the search algorithms and the logic tree considered in \code{\link{trioLR}}, where
     the parameters for an MCMC run and the logic tree are ignored. If \code{NULL} (i.e. by default), the same values for the parameters are
     used that have been employed in the original analysis with \code{\link{trioLR}}. If other values should be used, it is highly recommended
     to specify \code{control} by employing \code{\link{lrControl}}.
@@ -54,6 +54,49 @@ Qing Li, \email{mail2qing@yahoo.com}. Modified by Holger Schwender.
 
 \seealso{
 \code{\link{trioLR}}
+}
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Prepare the data in trio.ped1 for a trio logic
+# regression analysis by first calling
+trio.tmp <- trio.check(dat = trio.ped1)
+
+# and then applying
+set.seed(123456)
+trio.bin <- trio.prepare(trio.dat=trio.tmp, blocks=c(1,4,2,3))
+
+# where we here assume the block structure to be
+# c(1, 4, 2, 3), which means that the first LD "block"
+# only consists of the first SNP, the second LD block
+# consists of the following four SNPs in trio.bin,
+# the third block of the following two SNPs,
+# and the last block of the last three SNPs.
+# set.seed() is specified to make the results reproducible.
+
+# For the application of trio logic regression, some
+# parameters of trio logic regression are changed
+# to make the following example faster.
+my.control <- lrControl(start=1, end=-3, iter=1000, output=-4)
+
+# Please note typically you should consider much more
+# than 1000 iterations (usually, at least a few hundred
+# thousand).
+
+# Trio regression can then be applied to the trio data in
+# trio.ped1 by
+lr.out <- trioLR(trio.bin, control=my.control, rand=9876543)
+
+# where we specify rand just to make the results reproducible.
+
+# A null model permutation test can be performed by
+trio.permTest(lr.out)
+
+# The conditional permutation test can be performed by
+trio.permTest(lr.out, conditional = TRUE)
+}
 }
 
 \keyword{htest}

@@ -57,4 +57,24 @@ Holger Schwender, \email{holger.schwender@udo.edu}
  \code{\link{findLDblocks}}, \code{\link{plot.getLD}}
 }
 
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# Estimate LD blocks.
+blocks <- findLDblocks(LDdata)
+
+# Alternatively, the LD blocks can be estimated by
+ld.out <- getLD(LDdata, addVarN=TRUE)
+blocks2 <- findLDblocks(ld.out)
+
+\dontrun{
+# Plot the LD blocks showing the Gabriel categorization.
+plot(blocks)
+
+# Plot the LD blocks showing the Dprime values.
+plot(blocks, "Dprime")
+}
+}
+
 \keyword{hplot}

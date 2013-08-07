@@ -50,5 +50,18 @@ For \code{colMAFtrio}, a vector containing the minor allele frequencies of the S
 Holger Schwender, \email{holger.schwender@udo.edu}
 }
 
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# All SNPs with a minor allele frequency smaller than 0.1
+# can be removed from mat.test by
+mat2 <- removeSNPs(mat.test, maf = 0.1)
+
+# The minor allele frequencies for all SNPs can be 
+# determined (based on the genotypes of the parents) by
+maf <- colMAFtrio(mat.test)
+}
+
 \keyword{manip}
 

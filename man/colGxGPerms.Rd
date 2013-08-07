@@ -55,6 +55,18 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \code{\link{colGxG}}
 }
 
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Cordell's LRT for all pairs of SNPs in mat.test can be performed
+# and permutation-based p-values computed by
+gxg <- colGxGperms(mat.test)
+}
+}
+
+
 \keyword{htest}
 \keyword{models}
 \keyword{array}

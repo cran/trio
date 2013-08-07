@@ -35,14 +35,14 @@ trio.sim(freq, interaction = "1R and 2D", prev = 1e-3, OR = 1, pi.usr = 0,
     interaction as a Boolean term, such as \emph{"7D or 19R"}, or
     \emph{"(not 10D) or 45D"}.  Each locus can appear at most once in
     the string, and the the Boolean term \emph{not} can appear at most
-    once before each locus, and must be enclosed in paranthesis, e.g.,
+    once before each locus, and must be enclosed in parenthesis, e.g.,
     \emph{"(not 3D)"}.  Therefore, strings such as \emph{"not (not 3D)"}
     and \emph{"not 3D or 5R"} are prohibited.  Parenthesis are also used
     to unambiguously define the Boolean expression as a binary tree,
     i.e., every parent node has exact two children.  For example Thus, a
     long string such as \emph{"1R or 3D or 5R"} must be written as
     \emph{"(1R or 3D) or 5R"} or as \emph{"1R or (3D or 5R)"}, even
-    though the paranthesis are technically redundant. There is also a
+    though the parenthesis are technically redundant. There is also a
     limit on the size of the interactions, please see \bold{Details}
     below.}
 
@@ -73,7 +73,7 @@ trio.sim(freq, interaction = "1R and 2D", prev = 1e-3, OR = 1, pi.usr = 0,
     value is \code{NULL}. In that case, a new object will be generated.}
   
   \item{verbose}{A logical value indicating whether or not to print
-    information about memeory and time usage.}
+    information about memory and time usage.}
 }
 
 
@@ -133,7 +133,7 @@ and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents 
 
 \examples{\dontrun{
 data(trio.data)
-sim = trio.sim(freq=simuBkMap, interaction="1R and 5R", prev=.001, OR=2, n=20, rep=1)
+sim <- trio.sim(freq=simuBkMap, interaction="1R and 5R", prev=.001, OR=2, n=20, rep=1)
 sim[[1]][1:6, 1:12]
 }}
 

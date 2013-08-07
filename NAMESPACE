@@ -15,7 +15,9 @@ getMatPseudo, getGxEstats,
 colGxG, tdtGxG, colGxGPerms,
 allelicTDT,
 getLDlarge,
-trio.power
+trio.power,
+probTDT,
+colPOlrt, colTAT
 )
 
 S3method(plot, getLD)
@@ -38,7 +40,8 @@ S3method(plot, trioFS)
 S3method(print, aTDT)
 S3method(plot, getLDlarge)
 S3method(print, trio.power)
-
+S3method(print, polrt)
+S3method(print, tat)
 S3method(trioLR, default)
 S3method(trioLR, trioPrepare)
 S3method(trioLR, formula)

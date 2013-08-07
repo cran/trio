@@ -68,6 +68,19 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \code{\link{tdt}}
 }
 
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# Perform a MAX test by only computing the MAX statistics.
+max.out <- colTDTmaxStat(mat.test)
+
+\dontrun{
+# Permutation-based p-values are additionally computed when using
+max.out2 <- colTDTmaxTest(mat.test)
+}
+}
+
 \keyword{htest}
 \keyword{models}
 \keyword{array}

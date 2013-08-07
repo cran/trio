@@ -127,6 +127,26 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \seealso{
 \code{\link{colTDT}}, \code{\link{ped2geno}}
 }
+
+\examples{
+# Load the simulated data for the analysis.
+data(trio.data)
+
+# Set up a vector with the binary environmental variable.
+# Here, we consider the gene-gender interactions and
+# assume that the children in the first 50 trios are
+# girls, and the remaining 50 are boys.
+sex <- rep(0:1, each = 50)
+
+# Test the interaction of sex with each of the SNPs in mat.test
+gxe.out <- colGxE(mat.test, sex)
+
+# By default, an additive mode of inheritance is considered.
+# If, e.g., a dominant mode should be considered, then this can
+# be done by calling
+gxeDom.out <- colGxE(mat.test, sex, model="dominant")
+}
+
 \keyword{htest}
 \keyword{models}
 \keyword{array}

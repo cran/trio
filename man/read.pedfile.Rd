@@ -51,6 +51,22 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \code{\link{ped2geno}}
 }
 
+\examples{\dontrun{
+# Assuming there is a ped-file called pedfile.ped in the 
+# R working directory, this file can be read into R by
+ped <- read.pedfile("pedfile.ped")
+
+# The resulting data frame is in the typical ped format
+# which needs to be transformed into the genotype format
+# for applications of most of the functions in the trio
+# package. This transformation can be done by
+geno <- ped2geno(ped)
+
+# This transformation can also be done directly when
+# reading the ped-file into R by
+geno2 <- read.pedfile("pedfile.ped", p2g = TRUE)
+}}
+
 \keyword{IO}
 \keyword{file}
 

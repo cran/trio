@@ -48,5 +48,46 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \seealso{
 \code{\link{colGxE}}
 }
+
+\examples{
+# Load the simulated data for the analysis.
+data(trio.data)
+
+# Set up a vector with the binary environmental variable.
+# Here, we consider the gene-gender interactions and
+# assume that the children in the first 50 trios are
+# girls, and the remaining 50 are boys.
+sex <- rep(0:1, each = 50)
+
+# Test the interaction of sex with each of the SNPs in mat.test
+gxe.out <- colGxE(mat.test, sex)
+
+\dontrun{
+# By default, the statistics are shown for the parameters of
+# the top 5 GxE interactions and the parameters of the
+# corresponding SNPs. 
+gxe.out
+
+# If the top 10 GxE interactions should be displayed, then this
+# can be done by
+print(gxe.out, top = 10)
+
+# The statististics for all GxE interactions (and SNPs) are
+# shown, when calling
+print(gxe.out, top = 0)
+
+# If only the statistics for the GxE parameters, but not for
+# the SNPs should be displayed, then use
+print(gxe.out, onlyGxE)
+}
+
+# A convenient way to generate a data frame with all the statistics
+# computed by colGxE either for the top SNPs or for all SNPs (here,
+# the top 10 SNPs) ordered by the p-values of one of the considered 
+# tests, e.g., the 2 df likelihood ratio test, is
+dat.top3 <- getGxEstats(gxe.out, top=10, sortBy="lrt2df")
+}
+
+
 \keyword{print}
 \keyword{utilities}

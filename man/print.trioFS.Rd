@@ -60,5 +60,53 @@ Prints or plots the most important interactions found in a trioFS analysis.
    \code{\link{trioFS}}
 }
 
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Prepare the data in trio.ped1 for a trioFS analysis 
+# by first calling
+trio.tmp <- trio.check(dat = trio.ped1)
+
+# and then applying
+set.seed(123456)
+trio.bin <- trio.prepare(trio.dat=trio.tmp, blocks=c(1,4,2,3))
+
+# where we here assume the block structure to be
+# c(1, 4, 2, 3), which means that the first LD "block"
+# only consists of the first SNP, the second LD block
+# consists of the following four SNPs in trio.bin,
+# the third block of the following two SNPs,
+# and the last block of the last three SNPs.
+# set.seed() is specified to make the results reproducible.
+
+# For the application of trioFS, some parameters of trio 
+# logic regression are changed to make the following example faster.
+my.control <- lrControl(start=1, end=-3, iter=1000, output=-4)
+
+# Please note typically you should consider much more
+# than 1000 iterations (usually, at least a few hundred
+# thousand).
+
+# TrioFS can then be applied to the trio data in trio.ped1 by
+fs.out <- trioFS(trio.bin, control=my.control, rand=9876543)
+
+# where we specify rand just to make the results reproducible.
+
+# The output of trioFS can be printed by
+fs.out
+
+# By default, the five most important interactions are displayed.
+# If another number of interactions, e.g., 10, should be shown,
+# then this can be done by
+print(fs.out, topX = 10)
+
+# The importances can also be plotted by
+plot(fs.out)
+}
+}
+
+
 \keyword{print}
 \keyword{hplot}

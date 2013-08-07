@@ -25,7 +25,7 @@ with base learner trio logic regression (Li et al., 2011).
      (e.g., codng for a dominant or a recessive effect of a SNP), and each row to a case or a pseudo-control,
      where each trio is represented by a block of four consecutive rows of \code{x} containing the data for the case
      and the three matched pseudo-controls (in this order) so that the first four rows of \code{x} comprise
-     the data for the first trio, rows 5-8 the data for the seocnd trio, and so on. Missing values are not
+     the data for the first trio, rows 5-8 the data for the second trio, and so on. Missing values are not
      allowed. A convenient way to generate this matrix is to use the function \code{\link{trio.prepare}}. Afterwards, \code{trioLR} 
      can be directly applied to the output of \code{\link{trio.prepare}}.
 }
@@ -119,6 +119,43 @@ in Case-Parent Trios. \emph{Annals of Human Genetics}, 75, 122-132.
 \seealso{
 \code{\link{trioLR}}, \code{\link{print.trioFS}}, \code{\link{trio.prepare}}
 }
+
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Prepare the data in trio.ped1 for a trioFS analysis 
+# by first calling
+trio.tmp <- trio.check(dat = trio.ped1)
+
+# and then applying
+set.seed(123456)
+trio.bin <- trio.prepare(trio.dat=trio.tmp, blocks=c(1,4,2,3))
+
+# where we here assume the block structure to be
+# c(1, 4, 2, 3), which means that the first LD "block"
+# only consists of the first SNP, the second LD block
+# consists of the following four SNPs in trio.bin,
+# the third block of the following two SNPs,
+# and the last block of the last three SNPs.
+# set.seed() is specified to make the results reproducible.
+
+# For the application of trioFS, some parameters of trio 
+# logic regression are changed to make the following example faster.
+my.control <- lrControl(start=1, end=-3, iter=1000, output=-4)
+
+# Please note typically you should consider much more
+# than 1000 iterations (usually, at least a few hundred
+# thousand).
+
+# TrioFS can then be applied to the trio data in trio.ped1 by
+fs.out <- trioFS(trio.bin, control=my.control, rand=9876543)
+
+# where we specify rand just to make the results reproducible.
+}
+}
+
 
 \keyword{tree}
 \keyword{multivariate}

@@ -77,5 +77,18 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \code{\link{plot.getLD}}, \code{\link{findLDblocks}}
 }
 
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# The values of Dprime and Rsquare for each pair of SNPs 
+# in LDdata can be computed by
+ld.out <- getLD(LDdata)
+
+# By default, the LD measures are returned as a vector.
+# If they should be returned as a matrix, then use
+ld.out2 <- getLD(LDdata, asMatrix = TRUE)
+}
+
 \keyword{array}
 \keyword{univar}

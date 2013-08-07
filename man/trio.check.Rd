@@ -121,21 +121,21 @@ and Ruczinski, I. (2010). Detection of SNP-SNP Interactions in Trios of Parents 
 
 \examples{\dontrun{
 data(trio.data)
-trio.tmp = trio.check(dat=trio.ped1)
+trio.tmp <- trio.check(dat=trio.ped1)
 str(trio.tmp, max=1)
 trio.tmp$trio[1:6,]
 
-trio.tmp = trio.check(dat=trio.ped.err)
+trio.tmp <- trio.check(dat=trio.ped.err)
 str(trio.tmp, max=1)
 trio.tmp$errors
 trio.tmp$trio.err[1:3, c(1,2, 11:12)]
 trio.ped.err[1:3,c(1:2, 23:26)]
 
-trio.tmp = trio.check(dat=trio.gen.err, is.linkage=FALSE)
+trio.tmp <- trio.check(dat=trio.gen.err, is.linkage=FALSE)
 trio.tmp$errors
 trio.tmp$trio.err[1:6, c(1,2,7), drop=FALSE]
 
-trio.rep = trio.check(dat=trio.gen.err, is.linkage=FALSE, replace=TRUE)
+trio.rep <- trio.check(dat=trio.gen.err, is.linkage=FALSE, replace=TRUE)
 trio.rep$trio[1:6,c(1,2,7)]
 }}
 

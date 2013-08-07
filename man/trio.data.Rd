@@ -12,6 +12,7 @@
 \alias{step3way}
 \alias{LDdata}
 \alias{mat.test}
+\alias{prob.mat.test}
 \title{Case-Parent Trio Data}
 \description{
 \code{trio.data} contains several simulated data sets used in the different examples for the analyses with the functions in the \code{R}
@@ -20,6 +21,10 @@ package \code{trio}.
 For the applications of genotypic TDTs for individual SNPs and two-way interactions with, for example,
 \code{\link{tdt}} and \code{\link{tdt2way}}, respectively, \code{trio.data} contains a 300 x 6 matrix
 called \code{mat.test} consisting of genotype data for 100 trios genotyped at 6 SNPs.
+
+For the application of \code{\link{probTDT}} to genotype probabilities, \code{trio.data} contains a 334 x 180 matrix called
+\code{prob.mat.test} containing genotype probabilities for 334 SNPs and 20 trios.
+
 
 For the preparation of the trio data for an application of trio logic regression with \code{\link{trio.check}} and
 \code{\link{trio.prepare}}, \code{trio.data} contains different data set containing genotype data for 10 SNPs in 100
@@ -50,7 +55,12 @@ for simulation, containing some indexes and sampling frequencies.
 }
 
 \author{\code{LDdata} and \code{mat.test}: Holger Schwender, \email{holger.schwender@udo.edu};
+\code{prob.mat.test}: Margaret Taub, \email{mtaub@jhsph.edu};
 all other data sets: Qing Li, \email{mail2qing@yahoo.com}}
 
+\examples{
+# Data can be loaded by
+data(trio.data)
+}
 
 \keyword{datasets}

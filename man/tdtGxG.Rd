@@ -109,6 +109,51 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \code{\link{tdt}}, \code{\link{ped2geno}}
 }
 
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# The interaction between a particular pair of SNPs
+# (e.g., the ones in the first and second column of 
+# mat.test) can be tested by
+gxg.out <- tdt(mat.test[,1], mat.test[,2])
+
+# All pairs of SNPs in mat.test can be tested by
+gxg.out2 <- colGxG(mat.test)
+
+# By default, Cordell's likelihood ratio test for
+# epistatistic interactions is used. This is the
+# most sophisticated, but also most time-consuming
+# test. If another test, e.g., the one considering
+# a conditional logistic regression model only
+# containing a term for the interaction, should
+# be used, then this can be done by
+gxg.out3 <- colGxG(mat.test, test = "screen")
+
+# In this case, different modes of inheritance can
+# be considered (by default, the additive mode is
+# considered). If a dominant model (for both SNPs)
+# should be tested, this can be done by
+gxg.out4 <- colGxG(mat.test, test = "screen", model ="dom")
+
+# If just a subset of all pairs of SNPs should be 
+# tested, e.g., only pairs of SNPs belonging to different
+# genes, then this can be done by first specifying a
+# vector specifying which SNP belongs to which genes.
+# If we, e.g., assume that the first two SNPs in mat.test 
+# belong to gene G1 and the other four SNPs to G2, then
+# this vector can be specified by
+genes <- paste("G", rep(1:2, c(2,4)), sep="")
+
+# and only the pairs of SNPs in which the two SNPs belong
+# to different genes can be tested with Cordell's 
+# likelihood ratio test by
+gxg.out5 <- colGxG(mat.test, genes = genes)
+}
+}
+
+
 \keyword{htest}
 \keyword{models}
 \keyword{array}

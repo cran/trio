@@ -74,6 +74,36 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \seealso{
 \code{\link{tdt2way}}, \code{\link{ped2geno}}
 }
+
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# One particular SNP (e.g., the one in the first 
+# column of mat.test) can be tested by
+tdt.out <- tdt(mat.test[,1])
+
+# All SNPs in mat.test can be tested by
+tdt.out2 <- colTDT(mat.test)
+
+# By default, an additive mode of inheritance is considered.
+# If another mode, e.g., the dominant mode, should be 
+# considered, then this can be done by
+tdt.out3 <- colTDT(mat.test, model = "dominant")
+
+\dontrun{
+# By default, statistics for the top 5 SNPs are displayed.
+# If another number of SNPs, say 10, should be displayed,
+# then this can be done by
+print(tdt.out2, top = 10)
+
+# The statistics for all SNPs (not ordered by their 
+# significance) can be obtained by
+print(tdt.out2, top = 0)
+}
+}
+
+
 \keyword{htest}
 \keyword{models}
 \keyword{array}

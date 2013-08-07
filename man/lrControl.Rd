@@ -68,4 +68,15 @@ lrControl(start = 0, end = 0, iter = 0, earlyout = 0, update = 0,
 \author{
 Holger Schwender, \email{holger.schwender@udo.edu}
 }
+
+\examples{
+# The default values for the parameters in trio logic regression
+# can be specified by
+myControl <- lrControl()
+
+# If the starting temperature of Simulated Annealing should be set
+# to 100 and the lowest temperature to 0.001, then this can be done by
+myControl2 <- lrControl(start = 2, end = -3)
+}
+
 \keyword{utilities}

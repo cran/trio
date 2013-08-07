@@ -51,4 +51,53 @@ implemented by Ingo Ruczinski and Charles Kooperberg in the \code{R} package \co
 
 \seealso{\code{\link{trioLR}}
 }
+
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Prepare the data in trio.ped1 for a trio logic
+# regression analysis by first calling
+trio.tmp <- trio.check(dat = trio.ped1)
+
+# and then applying
+set.seed(123456)
+trio.bin <- trio.prepare(trio.dat=trio.tmp, blocks=c(1,4,2,3))
+
+# where we here assume the block structure to be
+# c(1, 4, 2, 3), which means that the first LD "block"
+# only consists of the first SNP, the second LD block
+# consists of the following four SNPs in trio.bin,
+# the third block of the following two SNPs,
+# and the last block of the last three SNPs.
+# set.seed() is specified to make the results reproducible.
+
+# For the application of trio logic regression, some
+# parameters of trio logic regression are changed
+# to make the following example faster.
+my.control <- lrControl(start=1, end=-3, iter=1000, output=-4)
+
+# Please note typically you should consider much more
+# than 1000 iterations (usually, at least a few hundred
+# thousand).
+
+# Trio regression can then be applied to the trio data in
+# trio.ped1 by
+lr.out <- trioLR(trio.bin, control=my.control, rand=9876543)
+
+# where we specify rand just to make the results reproducible.
+
+# The output of trioLR can then be displayed by
+lr.out
+
+# This output shows the detected logic expression. If this
+# expression should be displayed in disjunctive normal form,
+# then this can be done by
+print(lr.out, asDNF = TRUE)
+}
+}
+
+
+
 \keyword{print}

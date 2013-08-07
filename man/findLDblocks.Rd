@@ -104,4 +104,16 @@ splitBlocks(blocks)
    \code{\link{plot.LDblocks}}, \code{\link{getLD}}
 }
 
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# Estimate LD blocks.
+blocks <- findLDblocks(LDdata)
+
+# Alternatively, the LD blocks can be estimated by
+ld.out <- getLD(LDdata, addVarN=TRUE)
+blocks2 <- findLDblocks(ld.out)
+}
+
 \keyword{multivariate}

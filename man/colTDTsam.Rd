@@ -114,6 +114,25 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \code{\link{colTDT}}, \code{\link{colTDTmaxStat}}, \code{\link[siggenes]{sam}}, \code{\link[siggenes]{ebam}},
 \code{\link[siggenes]{SAM-class}}, \code{\link[siggenes]{EBAM-class}}
 }
+
+\examples{\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Perform a Significance Analysis of Microarrays (SAM).
+sam.out <- colTDTsam(mat.test)
+
+# By default an additive mode of inheritance is considered.
+# If another mode, e.g., the dominant mode, should be 
+# considered, then this can be done by
+samDom.out <- colTDTsam(mat.test, model="dominant")
+
+# Analogously, an Empirical Bayes Analysis of Microarrays based
+# on the genotypic TDT can be performed by
+ebam.out <- colTDTebam(mat.test)
+}
+}
+
 \keyword{htest}
 \keyword{array}
 \keyword{models}

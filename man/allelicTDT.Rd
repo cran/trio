@@ -57,6 +57,24 @@ Holger Schwender, \email{holger.schwender@udo.edu}
 \seealso{
 \code{\link{colTDT}}
 }
+
+\examples{
+# Load the simulated data for the analysis.
+data(trio.data)
+
+# Perform an allelic TDT
+a.out <- allelicTDT(mat.test)
+
+\dontrun{
+# By default, the top 5 SNPs are shown.
+# Another number of SNPs, e.g., 10, are displayed by
+print(a.out, top=10)
+
+# If the results for all SNPs should be shown (or returned), use
+print(a.out, top=0)
+}
+}
+
 \keyword{htest}
 \keyword{models}
 \keyword{array}

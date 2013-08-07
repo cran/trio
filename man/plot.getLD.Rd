@@ -76,6 +76,27 @@ the categorizations used in the procedure of Gabriel et al. (2002).
 Holger Schwender, \email{holger.schwender@udo.edu}
 }
 
+\examples{
+# Load the simulated data.
+data(trio.data)
+
+# The values of Dprime and Rsquare for each pair of SNPs 
+# in LDdata can be computed by
+ld.out <- getLD(LDdata)
+
+# By default, the LD measures are returned as a vector.
+# If they should be returned as a matrix, then use
+ld.out2 <- getLD(LDdata, asMatrix = TRUE)
+
+\dontrun{
+# The matrix of the Rsquare values can be plotted by
+plot(ld.out)
+
+# The matrix of the Dprime values can be plotted by
+plot(ld.out, "Dprime")
+}
+}
+
 \seealso{
  \code{\link{getLD}}, \code{\link{plot.LDblocks}}
 }

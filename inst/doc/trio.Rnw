@@ -27,7 +27,7 @@
 
 
 %\setlength{\topmargin}{-15mm}
-\setlength{\parskip}{2ex plus0.5ex minus0.2ex}
+\setlength{\parskip}{1.5ex plus0.5ex minus0.2ex}
 
 %\doublespacing
 \parindent0em
@@ -44,6 +44,8 @@
 
 \begin{center}
 
+\vspace*{3cm}
+
 {\LARGE \bf Preparing Case-Parent Trio Data\\[-6pt] and Detecting Disease-Associated\\[-6pt]
 SNPs, SNP Interactions,\\[-6pt] and  Gene-Environment Interactions\\[12pt] with \texttt{trio}}
 
@@ -53,6 +55,12 @@ SNPs, SNP Interactions,\\[-6pt] and  Gene-Environment Interactions\\[12pt] with 
 \vspace*{0.1cm}
 \end{center}
 %\doublespace
+
+\newpage
+
+\tableofcontents
+
+\newpage
 
 \section{Introduction}
 
@@ -79,8 +87,8 @@ disease is specified by (higher order) SNP interactions.
 In Section \ref{read} of this vignette, it is shown how family-based data stored in a linkage/ped file can be read into
 \texttt{R} and transformed into a format suitable for the application of the functions for performing the allelic and genotypic TDTs
 as well as the score tests. While Section \ref{testing} contains examples for the application of the gTDT functions to individual 
-SNPs, two-way SNP interactions, and gene-environment interactions, Section \ref{score} briefly shows how the allelic TDT and the 
-score tests related to the genotypic TDTs can be used to test these factors.
+SNPs, two-way SNP interactions, and gene-environment interactions, Sections \ref{allelicTDT} and \ref{score} briefly show how the allelic TDT and the 
+score tests related to the genotypic TDTs, respectively, can be used to test these factors.
 
 Section \ref{trio} is devoted to the steps relevant
 for data processing necessary to generate a matrix suitable as
@@ -96,7 +104,7 @@ process. While this function is intended to generate complete case-pseudo-contro
 data as input for trio logic regression, an option to
 simply return the completed trio data is also available.
 
-In Section \ref{triolr}, it is shown how trio logic regression and trioFS
+In Sections \ref{triolr} and \ref{triofs}, it is shown how trio logic regression and trioFS
 \citep[trio Feature Selection;][]{schwender2011}, in which bagging with
 base learner trio logic regression is used to stabilize the search for
 relevant SNP interactions, can be applied to the data generated as described
@@ -120,6 +128,8 @@ case-parent trio data are generated.
 
 \section{Preparing Data for the Genotypic TDTs}\label{read}
 
+\subsection{Dataframe in ped format}
+
 Case-parent trio data are typically stored in a ped file. 
 The first six columns in such a ped file, which is also referred to as linkage file, 
 identify the family structure of the data, and the
@@ -137,6 +147,8 @@ str(trio.ped1)
 trio.ped1[1:10,1:12]
 @
 
+\subsection{Reading a ped file into R}
+
 If not already available as data frame or matrix in the \texttt{R} workspace, 
 trio data can be read into \texttt{R} using the function \texttt{read.pedfile}.
 If we, for example, assume that the working directory of the current \texttt{R} session contains a file called "pedfile.ped" 
@@ -151,6 +163,8 @@ are not specified by the user, \texttt{read.pedfile} automatically tries to
 figures out how the alleles in the ped file are coded, and whether the first row contains the SNP names (\texttt{first.row = FALSE})
 or the data for the first subject (\texttt{first.row = TRUE}). In the former case, \texttt{read.pedfile} adds the SNP names
 (with extensions \texttt{.1} and \texttt{.2} to differ between the two alleles) to the respective columns of the read-in data frame. 
+
+\subsection{Transforming a data frame in ped format to a matrix in genotype format}
 
 For the applications of the functions for performing gTDTs (see Section \ref{testing}), 
 the trio data must be in a matrix in genotype format. In such a matrix,
@@ -197,7 +211,9 @@ trio.gen1[1:5, 3:12]
 table(trio.gen1[,3:12] == geno)
 @
 
-\section{Testing SNPs, Pairs of SNPs, and GxE Interactions with Genotypic TDTs}\label{testing}
+\section{Genotypic TDTs}\label{testing}
+
+\subsection{Testing a Single SNP with a Genotypic TDT}
 
 A single SNP or two-way interaction can be tested with a gTDT by employing the functions \texttt{tdt}
 and \texttt{tdtGxG}. If we, for example, would like to test the first SNP in the matrix \texttt{mat.test}
@@ -222,6 +238,9 @@ or a recessive effect
 <<>>=
 tdt(mat.test[,1], model="recessive")
 @
+
+
+\subsection{Testing a Single Interaction between two SNPs}
 
 Similarly the interaction between \texttt{SNP1} and \texttt{SNP2} in \texttt{mat.test} can be tested by
 
@@ -252,6 +271,8 @@ Thus, if the most simplest of these tests should be performed, then this could b
 tdtGxG(mat.test[,1], mat.test[,2], test="screen")
 @
 
+\subsection{Testing all SNPs in a Matrix in Genotype Format with a Genotypic TDT}
+
 All SNPs represented by the columns of a matrix in genotype format can be tested with a gTDT by employing the function \texttt{colTDT}.
 Thus, all SNPs in \texttt{mat.test} can be tested by calling
 
@@ -273,6 +294,8 @@ statistics for all SNPs are displayed in the order of their appearance in this m
 <<>>=
 print(tdt.out, 10)
 @
+
+\subsection{Performing a MAX Test}
 
 Since the genetic mode of inheritance is typically unknown, it might be beneficial to use the maximum over the gTDT statistics
 for an additive, a dominant, and a recessive effect as test statistic, which can be done using the function \texttt{colTDTmaxStat}
@@ -296,6 +319,8 @@ computes p-values for the six SNPs in \texttt{mat.test} based on 1000 permutatio
 <<>>=
 max.out
 @
+
+\subsection{Testing all Pairs of SNPs in a Matrix in Genotype Format}
 
 All two-way interactions comprised a matrix in genotype format can be tested using the function \texttt{colGxG}. Since both the gTDT
 for two-way interactions and the likelihood ratio test of \citet{cordell2004}
@@ -330,6 +355,8 @@ Again, by default the top five SNP interactions are shown. The statistics for al
 print(tdt2.out, 8)
 @ 
 
+\subsection{Testing Gene-Environment Interactions with a Genotypic TDT}
+
 In genetic association studies, it is often also of interest to test gene-environment interactions, where most of the usually
 considered environmental variables are binary. The \texttt{R} package \texttt{trio} therefore also provides a function called
 \texttt{colGxE} to test the interactions between each of the SNPs comprised by a matrix in genotype format and a binary environmental
@@ -352,7 +379,7 @@ a variable coding for an additive effect of the SNP, and $G\times E$ is the corr
 to the other gTDT functions, a dominant or a recessive effect can also be considered by changing the argument \texttt{model} of
 \texttt{colGxE}. 
 
-For both $\beta_\text{G}$ and $\beta_\text{GxE}$, the same as stastistics as, for example, in \texttt{colTDT}, are ocmputed.
+For both $\beta_\text{G}$ and $\beta_\text{GxE}$, the same as statistics as, for example, in \texttt{colTDT}, are computed.
 Additionally, the odds ratios and their confidence intervals for the exposed trios are determined (note that the odds ratios for
 the unexposed trios are given by $\exp\left(\beta_\text{G}\right)$), and a 2 degree of freedom Wald test for testing both
 $\beta_\text{G}$ and $\beta_\text{GxE}$ simultaneously as well as two likelihood ratio tests are performed, where the 2 df likelihood
@@ -378,7 +405,8 @@ dat.top3 <- getGxEstats(gxe.out, top=3, sortBy="lrt2df")
 dat.top3
 @
 
-\section{Score Tests and the Allelic TDT}\label{score}
+\section{Allelic TDT}\label{allelicTDT}
+
 
 Besides functions for performing genotypic TDTs, \texttt{trio} also provides functions for applying an allelic TDT and score
 tests related to the genotypic TDTs to matrices in genotype format. For example, the case-parent trio data in \texttt{mat.test}
@@ -407,6 +435,9 @@ a.out2 <- allelicTDT(mat.test, correct=TRUE)
 a.out2
 @
 
+
+\section{Score Tests}\label{score}
+
 If a score test instead of a Wald test, i.e.\ a genotypic TDT, should be considered in the analysis of genotype data, then
 \texttt{scoreTDT}, \texttt{scoreMaxStat}, \texttt{scoreGxG}, and \texttt{scoreGxE} can be used instead of and in the same way as 
 \texttt{colTDT}, \texttt{colTDTmaxStat}, \texttt{colGxG}, and \texttt{colGxE}, respectively. For example, the SNPs in \texttt{mat.test} 
@@ -420,7 +451,7 @@ s.out
 Score tests, however, only provide scores and p-values, but do not the allow the computation of odds ratios, relative risks, and confidence
 intervals. Usually, score tests have the advantage that their test statistic is much faster too compute than the statistic of a Wald test.
 However, when considering SNPs or interactions between SNPs and binary environmental factors, both the score tests and the genotypic TDTs have
-about the same computation time, as in these situations, there also exist analytic solutiongs for the genotypic TDT statistics 
+about the same computation time, as in these situations, there also exist analytic solutions for the genotypic TDT statistics 
 \citep[see][]{schwender2012}.
 
 
@@ -680,6 +711,8 @@ trio.imp3$trio[1:6,]
 After having prepared a matrix suitable for a trio logic regression analysis, the function \texttt{trioLR} can be used
 to perform this analysis.
 
+\subsection{Parameter Settings for Trio Logic Regression}
+
 To ensure that the following examples are fast to run, we here only use 1000 iterations, i.e.\ the minimum number of iterations allowed,
 in the stochastic search algorithms, simulated annealing and MCMC, employed in trio logic regression. \textit{\bf In a real trio
 logic regression analysis, at least a few hundred thousands of iterations should be used, where the number of iterations
@@ -695,7 +728,7 @@ my.control <- lrControl(start=1, end=-3, iter=1000, output=-4)
 @
 
 where \texttt{start} and \texttt{end} are the starting and end temperature on log10-scale in simulated annealing, where the temperature
-governs how likely it is that the model proposed in an iteration of trio logic regression is accepted although it acutally performs worse than the
+governs how likely it is that the model proposed in an iteration of trio logic regression is accepted although it actually performs worse than the
 model accepted in the previous iteration (at the beginning, this acceptance probability is comparatively high so that many models are
 visited/accepted, whereas in the last iterations, this probability is very low so that virtually only models are accepted if they are
 better than the current trio logic regression model). Again, it is very hard to give a good recommendation how to choose \texttt{start}
@@ -707,6 +740,9 @@ introduction on how the control parameters of simulated annealing can be chosen.
 
 Finally, we have set \texttt{output = -4}, so that the models visited during the search for the best trio logic regression model
 with an MCMC algorithm are not stored in file, but all statistics for individual SNPs, pairs of SNPs, and triplets of SNPs are computed.
+
+
+\subsection{Performing a Trio Logic Regression Analysis}
 
 Employing this specification of these four parameters and the defaults for the other control parameters, \texttt{trioLR} can
 be directly applied to the output of \texttt{trio.prepare}, i.e.\ for example \texttt{trio.bin} (see Section \ref{missing}),
@@ -730,7 +766,7 @@ directly given by the AND-combinations (\&) in this disjunctive normal form. In 
 really exist, but when a much larger and more complex logic tree is grown, the logic expression represented by this logic tree
 can be very hard to interpret.
 
-It is also possible to consruct the matrix \texttt{x} containing the values of the cases and the matched pseudo-controls and
+It is also possible to construct the matrix \texttt{x} containing the values of the cases and the matched pseudo-controls and
 the vector \texttt{y} comprising the class labels of the (artificial) subjects without using \texttt{trio.prepare}. In this situation, each
 column of \texttt{x} must represent one of the logic/binary variable, coded by zeros and ones, and each row must correspond to
 a case or a pseudo-control, where each block of four consecutive rows has to consist of the data for a case and the three matched
@@ -757,6 +793,9 @@ lr.out2 <- trioLR(x, y, control=my.control, rand=9876543)
 lr.out2
 @ 
 
+\subsection{Permutation Tests for the Trio Logic Regression Model}
+
+
 The trio logic regression model resulting from such an application can then be tested by a null-model permutation
 procedure, which checks whether there is signal in the data, or by a conditional permutation test for model selection.
 Both can be performed using the function \texttt{trio.permTest} in which the argument \texttt{conditional} specifies
@@ -771,6 +810,8 @@ while the conditional permutation test can be performed by
    > trio.permTest(lr.out, conditional=TRUE, n.perm=20)
 \end{verbatim} 
 
+
+\subsection{Fitting Several Trio Logic Regression Models}
 
 By default, (trio) logic regression uses simulated annealing as search algorithm, and \texttt{trioLR} fits one trio logic regression
 model comprising one logic tree with a maximum of five leaves, i.e.\ five binary variables coded by zeros and ones
@@ -794,6 +835,9 @@ lr.out3 <- trioLR(trio.bin, nleaves=c(3,5), control=my.control, rand=9876543)
 lr.out3
 @
 
+
+\subsection{Plotting Trio Logic Regression Models}
+
 The resulting logic trees cannot only be printed, but also plotted. If, for example, the logic tree in the third trio logic regression
 model (i.e.\ the model with a maximum of five leaves) should be plotted, then this can be done by
 
@@ -803,6 +847,8 @@ model (i.e.\ the model with a maximum of five leaves) should be plotted, then th
 (see Figure \ref{fig:tree}), where the argument \texttt{whichTree} needs only to be specified if several models have been fitted.
 
 
+\subsection{Greedy Search in Trio Logic Regression}
+
 Alternatively to simulated annealing, a greedy search can be employed in trio logic regression by changing the
 argument \texttt{search} to \texttt{"greedy"}.
 
@@ -811,11 +857,14 @@ lr.out4 <- trioLR(trio.bin, search="greedy", rand=9876543)
 lr.out4
 @  
    
+   
+\subsection{MC Trio Logic Regression}
+   
 While trio logic regression based on simulated annealing or a greedy search tries to identify the logic expression, and thus, the
 trio logic regression model, that provides the best prediction for the disease risk, the main goal of trio MC logic regression, i.e.\ trio
 logic regression based on MCMC is the specification of the individual relevance of SNPs and the joint importance of pairs and triplets
 of SNPs for disease risk by counting how often the individual SNPs occur in the models visited (and accepted) during the MCMC search
-and how ofteh pairs and triplets of SNPs occur jointly in these models \citep[cf.][]{kooperberg2005}. 
+and how often pairs and triplets of SNPs occur jointly in these models \citep[cf.][]{kooperberg2005}. 
 This trio MC logic regression can be performed by
 
 <<>>=
@@ -830,7 +879,7 @@ lr.out5
 \end{figure} 
 
 The results of this analysis can be visualized by plotting for each SNP the percentages of visited models in which this SNP occurs
-(\texttt{freqType = 1}; the default), and for each pair of SNPs in how many of the visited models this pair cocurs jointly
+(\texttt{freqType = 1}; the default), and for each pair of SNPs in how many of the visited models this pair occurs jointly
 (\texttt{freqType = 2}) and the observed-to-expected ratio of being jointly in the models (\texttt{freqType = 3}). For example,
 in Figure \ref{fig:mc},
 
@@ -846,6 +895,8 @@ the frequencies for the individual SNPs are displayed.
 \vspace*{-8pt}
 \caption{Values of the importance measure of trioFS for the five most important identified SNP interactions.}\label{fig:fs}
 \end{figure} 
+
+\section{Analysis of Trio Data with trioFS}\label{trioFS}
 
 Another way to quantify the importance of SNPs and SNP interactions for the prediction of the disease risk is to apply trio logic
 regression to several subsets of the case-parent trio data and then employ the resulting trio logic regression models to compute
@@ -885,6 +936,9 @@ the pairwise values of the LD measures and the estimation of the LD blocks. Furt
 is only considered once so that parents with more than one offspring do not bias the estimations.
 If trio data is used as input, the functions assume that the matrix containing the SNP data is in genotype format.
 
+\subsection{Computing Values of LD Measures}
+
+
 Here, we consider a simulated matrix \texttt{LDdata} from a population-based study. Thus, all subjects are assumed
 to be unrelated. This matrix contains simulated genotype data for 10 LD blocks each consisting of 5 SNPs each typed
 on 500 subjects. The pairwise $D^\prime$ and $r^2$ values for the SNPs in this matrix can be computed by
@@ -922,6 +976,7 @@ and the pairwise LD plot for all SNPs can be generated by
 \end{verbatim} 
 (not shown).
 
+\subsection{Estimating LD Blocks}
 
 The LD blocks in genotype data can be identified using the modified algorithm of \citet{gabriel2002}
 by calling

@@ -21,7 +21,7 @@ logic regression (Ruczinski et al., 2003) for case-parent trio data.
 \arguments{
   \item{x}{either an object of class \code{trioPrepare}, i.e. the output of \code{\link{trio.prepare}}, or 
       a binary matrix consisting of zeros and ones. If the latter, then each column of \code{x} must correspond to a binary variable 
-     (e.g., codng for a dominant or a recessive effect of a SNP), and each row to a case or a pseudo-control,
+     (e.g., coding for a dominant or a recessive effect of a SNP), and each row to a case or a pseudo-control,
      where each trio is represented by a block of four consecutive rows of \code{x} containing the data for the case
      and the three matched pseudo-controls (in this order) so that the first four rows of \code{x} comprise
      the data for the first trio, rows 5-8 the data for the seocnd trio, and so on. Missing values are not
@@ -52,7 +52,7 @@ logic regression (Ruczinski et al., 2003) for case-parent trio data.
      \code{nleaves[1]} to \code{nleaves[2]}. 
 }
   \item{penalty}{a non-negative value for the \code{penalty} parameter used in logic regression. The penalty takes the
-     form \code{penalty} times the number of leaves in the model. By defaulty, larger models are not penalized. 
+     form \code{penalty} times the number of leaves in the model. By default, larger models are not penalized. 
      \code{penalty} is only relevant when one logic regression model is fitted. 
 }
   \item{weights}{a numeric vector containing one weight for each trio considered in \code{x}. Thus, \code{weights}
@@ -132,6 +132,47 @@ Graphical Statistics}, 12, 475-511.
 \seealso{
 \code{\link[LogicReg]{logreg}}, \code{\link{trio.prepare}}, \code{\link{trio.check}}, \code{\link{trio.permTest}}
 }
+
+\examples{
+\dontrun{
+# Load the simulated data.
+data(trio.data)
+
+# Prepare the data in trio.ped1 for a trio logic
+# regression analysis by first calling
+trio.tmp <- trio.check(dat = trio.ped1)
+
+# and then applying
+set.seed(123456)
+trio.bin <- trio.prepare(trio.dat=trio.tmp, blocks=c(1,4,2,3))
+
+# where we here assume the block structure to be
+# c(1, 4, 2, 3), which means that the first LD "block"
+# only consists of the first SNP, the second LD block
+# consists of the following four SNPs in trio.bin,
+# the third block of the following two SNPs,
+# and the last block of the last three SNPs.
+# set.seed() is specified to make the results reproducible.
+
+# For the application of trio logic regression, some
+# parameters of trio logic regression are changed
+# to make the following example faster.
+my.control <- lrControl(start=1, end=-3, iter=1000, output=-4)
+
+# Please note typically you should consider much more
+# than 1000 iterations (usually, at least a few hundred
+# thousand).
+
+# Trio regression can then be applied to the trio data in
+# trio.ped1 by
+lr.out <- trioLR(trio.bin, control=my.control, rand=9876543)
+
+# where we specify rand just to make the results reproducible.
+}
+}
+
+
+
 
 \keyword{tree}
 \keyword{multivariate}

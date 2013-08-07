@@ -33,6 +33,12 @@ poly4rootMat(amat)
 \author{Holger Schwender, \email{holger.schwender@udo.edu}
 }
 
+\examples{
+# The roots of 
+# 2 * x^4 + 3 * x^3 - x^2 + 5 * x^1 - 4 
+# can be determined by
+poly4root(c(2, 3, -1, 5, -4))
+}  
 
 \keyword{math}
 \keyword{array}
